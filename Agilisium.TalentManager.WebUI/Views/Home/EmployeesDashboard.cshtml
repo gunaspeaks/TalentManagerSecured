@@ -1,0 +1,44 @@
+﻿@model Agilisium.TalentManager.WebUI.Models.ResourceCountModel
+
+<div class="dashboardItem">
+    <div class="dashboardItemHeader">Our Strength</div>
+    <div class="dashboardItemBody">
+        <table class="tbl">
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.TotalCount)
+                </td>
+                <td>:</td>
+                <td class="text-right">@Html.DisplayFor(model => model.TotalCount)</td>
+            </tr>
+            <tr>
+
+                <td>
+                    @Html.DisplayNameFor(model => model.DeliveryCount)
+                </td>
+                <td>:</td>
+                <td class="text-right">
+                    @Html.DisplayFor(model => model.DeliveryCount)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.BdCount)
+                </td>
+                <td>:</td>
+                <td class="text-right">
+                    @Html.DisplayFor(model => model.BdCount)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.BoCount)
+                </td>
+                <td>:</td>
+                <td class="text-right">
+                    @Html.DisplayFor(model => model.BoCount)
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

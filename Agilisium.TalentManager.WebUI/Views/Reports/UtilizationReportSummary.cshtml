@@ -1,0 +1,38 @@
+﻿@model List<Agilisium.TalentManager.WebUI.Models.BillabilityWiseAllocationSummaryModel>
+
+@{
+    ViewBag.Title = "Utilization Report";
+}
+
+<div class="panel panel-default">
+    <div style="text-align:center" class="panel-heading">
+        <h3><b>Utilization Report</b></h3>
+    </div>
+    <div class="panel-body">
+        <table style="width:40%" class="table">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model[0].AllocationType)
+                </th>
+                <th class="text-right">
+                    @Html.DisplayNameFor(model => model[0].NumberOfEmployees)
+                </th>
+            </tr>
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model[i].AllocationType)
+                    </td>
+                    <td class="text-right">
+                        @Html.ActionLink(Model[i].NumberOfEmployees.ToString(), "UtilizationReportDetail", new { filterType = "alt", filterValue = Model[i].AllocationTypeID })
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+    <div class="panel-footer">
+        @Html.ActionLink("Back to Reports Index", "Index", null, new { @class = "btn btn-default" })
+    </div>
+</div>
+
