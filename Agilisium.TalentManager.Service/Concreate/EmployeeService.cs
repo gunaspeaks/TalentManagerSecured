@@ -139,5 +139,10 @@ namespace Agilisium.TalentManager.Service.Concreate
         {
             return repository.GetBillabilityCountSummary();
         }
+
+        public string GetEmailID(int employeeID)
+        {
+            return repository.GetEmailID(employeeID);
+        }
     }
 }

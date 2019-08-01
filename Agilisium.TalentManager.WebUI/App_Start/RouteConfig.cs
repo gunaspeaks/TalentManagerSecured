@@ -16,8 +16,8 @@ namespace Agilisium.TalentManager.WebUI
             );
 
             routes.MapRoute(
-                name: "AwsRoute", 
-                url: "rmt.agilisium.com/{controller}/{action}/{id}", 
+                name: "AwsRoute",
+                url: "agilisium.com/rmt/{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
 

@@ -7,7 +7,7 @@
     <ProjectGuid>{C7989FD1-6841-4A13-BBE3-625216544D8D}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Agilisium.TalentManager.Tools.WindowsServiceExecutor</RootNamespace>
-    <AssemblyName>Agilisium.TalentManager.Tools.WindowsServiceExecutor</AssemblyName>
+    <AssemblyName>WindowsServiceExecutor</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -72,6 +72,7 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="MyLogger.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="MainForm.resx">

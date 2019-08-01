@@ -743,6 +743,16 @@ namespace Agilisium.TalentManager.Repository.Repositories
             return PrepareUtilizedDaysSummary(filterBy, filterValue, sortBy, sortType);
         }
 
+        public bool AnyOtherActiveAllocation(int allocationID, int employeeID, DateTime allocationEndDate)
+        {
+            return Entities.Any(a => a.IsDeleted == false && a.AllocationEntryID != allocationID
+                        && a.EmployeeID == employeeID && a.AllocationEndDate >= allocationEndDate);
+        }
+
+        #endregion
+
+        #region Private Methods
+
         private List<UtilizedDaysSummaryDto> PrepareUtilizedDaysSummary(string filterBy, string filterValue, string sortBy, string sortType)
         {
             List<UtilizedDaysSummaryDto> entries = new List<UtilizedDaysSummaryDto>();
@@ -807,10 +817,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
             return entries;
         }
-
-        #endregion
-
-        #region Private Methods
 
         private List<BillabilityWiseAllocationDetailDto> GetAllocationEntriesByAllocationType(int allocationType)
         {
@@ -1097,5 +1103,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
         //IEnumerable<UtilizedDaysDetailDto> GetUtilizedDaysDetail(string filterBy, string filterValue, int pageSize = -1, int pageNo = -1);
 
         IEnumerable<UtilizedDaysSummaryDto> GetUtilizedDaysSummary(string filterBy, string filterValue, string sortBy, string sortType);
+
+        bool AnyOtherActiveAllocation(int allocationID, int employeeID, DateTime allocationEndDate);
     }
 }

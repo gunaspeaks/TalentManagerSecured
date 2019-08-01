@@ -11,57 +11,49 @@ namespace Agilisium.TalentManager.WindowsServices
     {
         private Timer serviceTimer;
         private readonly ILog logger;
+        private int dayOfWeek = 1;
+        private string appTempDirectory = @"D:\OfficeApps\Temp";
 
         public AllocationsMessengerService()
         {
             InitializeComponent();
-            logger = log4net.LogManager.GetLogger(typeof(AllocationsMessengerService));
+            logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            log4net.Config.XmlConfigurator.Configure();
+        }
+
+        private void InitializeService()
+        {
+            serviceTimer = new Timer();
+            int defaultScheduledMin = 12 * 60 * 60 * 1000;
+
+            try
+            {
+                defaultScheduledMin = Convert.ToInt32(ConfigurationManager.AppSettings["serviceTriggerInterval"]) * 60 * 60 * 1000;
+                dayOfWeek = Convert.ToInt32(ConfigurationManager.AppSettings["serviceExecutionDayOfWeek"]);
+                appTempDirectory = ConfigurationManager.AppSettings["appTempDirectory"];
+
+                serviceTimer.Elapsed += new ElapsedEventHandler(ServiceTimer_Elapsed);
+                serviceTimer.Interval = defaultScheduledMin;
+            }
+            catch (Exception exp)
+            {
+                logger.Error("Error while reading configuration");
+                logger.Error(exp);
+            }
+
+
+            serviceTimer.Start();
+            logger.Info($"Service will be triggered for every {defaultScheduledMin} Milli Seconds");
         }
 
         protected override void OnStart(string[] args)
         {
             try
             {
-                logger.Info("");
-                logger.Info("*********************************************************************************************");
-                logger.Info(" Starting the service...");
+                // ExecuteServiceLocally();
 
-                int serviceExecutionDayOfWeek = 1;
-                double defaultScheduledMin = 12 * 60 * 60 * 1000;
-
-                if (string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["serviceExecutionDayOfWeek"]) == false)
-                {
-                    try
-                    {
-                        serviceExecutionDayOfWeek = Convert.ToInt32(ConfigurationManager.AppSettings["serviceExecutionDayOfWeek"]);
-                        defaultScheduledMin = Convert.ToDouble(ConfigurationManager.AppSettings["serviceTriggerInterval"]) * 60 * 60 * 1000;
-                    }
-                    catch (Exception exp)
-                    {
-                        logger.Error("Error while reading configuration");
-                        logger.Error(exp);
-                    }
-                }
-
-                if (serviceExecutionDayOfWeek != (int)DateTime.Today.DayOfWeek)
-                {
-                    logger.Info("Service execution is igored as it not is scheduled on this day");
-                    return;
-                }
-
-                //AllocationsMessengerServiceProcessor processor = new AllocationsMessengerServiceProcessor();
-                //logger.Info("Generating resource allocation report");
-
-                //processor.GenerateResourceAllocationReport();
-
-                serviceTimer = new Timer
-                {
-                    Interval = defaultScheduledMin,
-                    Enabled = true
-                };
-                serviceTimer.Start();
-                serviceTimer.Elapsed += TimerElapsed;
-                logger.Info("Started successfully");
+                logger.Info("Service has been started");
+                InitializeService();
             }
             catch (Exception exp)
             {
@@ -70,26 +62,43 @@ namespace Agilisium.TalentManager.WindowsServices
             }
         }
 
-        private void TimerElapsed(object sender, ElapsedEventArgs e)
+        private void ExecuteServiceLocally()
         {
-            logger.Info("Execution started");
+            AllocationsMessengerServiceProcessor processor = new AllocationsMessengerServiceProcessor();
+            processor.GenerateResourceAllocationReport(appTempDirectory);
+        }
+
+        private void ServiceTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            logger.Info("");
+            logger.Info("*********************************************************************************************");
+            logger.Info($"Service execution triggered on {DateTime.Now.DayOfWeek}");
             try
             {
+                if (dayOfWeek != (int)DateTime.Now.DayOfWeek)
+                {
+                    logger.Info($"Skipping service execution as it is {DateTime.Now.DayOfWeek.ToString()}.");
+                    return;
+                }
+                logger.Info("Initiating processor");
                 AllocationsMessengerServiceProcessor processor = new AllocationsMessengerServiceProcessor();
-                processor.GenerateResourceAllocationReport();
-                logger.Info("Execution completed");
-                logger.Info("*********************************************************************************************");
-                logger.Info("");
+                processor.GenerateResourceAllocationReport(appTempDirectory);
             }
             catch (Exception exp)
             {
                 logger.Error("Error while executing the service");
                 logger.Error(exp);
             }
+            finally
+            {
+                logger.Info("Execution completed");
+                logger.Info("*********************************************************************************************");
+            }
         }
 
         protected override void OnStop()
         {
+            logger.Info("Service has been stopped");
             serviceTimer.Stop();
             serviceTimer.Dispose();
         }

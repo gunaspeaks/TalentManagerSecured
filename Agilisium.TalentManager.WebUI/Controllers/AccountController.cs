@@ -1,50 +1,61 @@
-﻿using System;
-using System.Globalization;
+﻿using Agilisium.TalentManager.Dto;
+using Agilisium.TalentManager.Service.Abstract;
+using Agilisium.TalentManager.WebUI.Helpers;
+using Agilisium.TalentManager.WebUI.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin.Security;
+using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
-using Agilisium.TalentManager.WebUI.Models;
 
 namespace Agilisium.TalentManager.WebUI.Controllers
 {
     [Authorize]
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
+        #region Private Members
+
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationSignInManager _signInManager;
         private readonly IAuthenticationManager _authManager;
+        private readonly IEmployeeService empService;
+        private readonly IEmployeeLoginMappingService userService;
+        private readonly ApplicationDbContext context;
+
+        #endregion
+
+        #region Constructors
 
         public AccountController()
         {
         }
 
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager, IAuthenticationManager authManager)
+        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager, IAuthenticationManager authManager, IEmployeeService empService, IEmployeeLoginMappingService userService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _authManager = authManager;
+            this.empService = empService;
+            this.userService = userService;
+            context = new ApplicationDbContext();
         }
 
-        public ApplicationSignInManager SignInManager
-        {
-            get
-            {
-                return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
-            }
-        }
+        #endregion
 
-        public ApplicationUserManager UserManager
-        {
-            get
-            {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            }
-        }
+        #region Properties
+
+        public ApplicationSignInManager SignInManager => _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
+
+        public ApplicationUserManager UserManager => _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+
+        #endregion
+
+        #region Public Methods
 
         //
         // GET: /Account/Login
@@ -69,7 +80,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
 
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+            SignInStatus result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -114,7 +125,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             // If a user enters incorrect codes for a specified amount of time then the user account 
             // will be locked out for a specified amount of time. 
             // You can configure the account lockout settings in IdentityConfig
-            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent:  model.RememberMe, rememberBrowser: model.RememberBrowser);
+            SignInStatus result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent: model.RememberMe, rememberBrowser: model.RememberBrowser);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -133,6 +144,13 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
+            try
+            {
+                GetEmployeesList();
+                GetRolesList();
+            }
+            catch (Exception)
+            { }
             return View();
         }
 
@@ -143,25 +161,50 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-                var result = await UserManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
+                GetEmployeesList();
+                GetRolesList();
+
+                if (ModelState.IsValid)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
-                    // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
-                    // Send an email with this link
-                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                    if (!model.Email.ToLower().EndsWith("@agilisium.com"))
+                    {
+                        DisplayWarningMessage("Please use Agilisium Email ID to register");
+                        return View(model);
+                    }
 
-                    return RedirectToAction("Index", "Home");
+                    ApplicationUser user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                    IdentityResult result = await UserManager.CreateAsync(user, model.Password);
+                    if (result.Succeeded)
+                    {
+                        EmployeeLoginMappingDto mapping = new EmployeeLoginMappingDto
+                        {
+                            EmployeeID = model.EmployeeID,
+                            LoginUserID = user.Id,
+                            RoleID = model.RoleID,
+                            LoginUserEmail = model.Email
+                        };
+                        userService.Add(mapping);
+
+                        await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+
+                        // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
+                        // Send an email with this link
+                        // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                        // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                        // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+
+                        return RedirectToAction("List", "ELogin");
+                    }
+                    AddErrors(result);
                 }
-                AddErrors(result);
-            }
 
+            }
+            catch (Exception exp)
+            {
+                DisplayUpdateErrorMessage(exp);
+            }
             // If we got this far, something failed, redisplay form
             return View(model);
         }
@@ -175,7 +218,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             {
                 return View("Error");
             }
-            var result = await UserManager.ConfirmEmailAsync(userId, code);
+            IdentityResult result = await UserManager.ConfirmEmailAsync(userId, code);
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
@@ -196,7 +239,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await UserManager.FindByNameAsync(model.Email);
+                ApplicationUser user = await UserManager.FindByNameAsync(model.Email);
                 if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
                 {
                     // Don't reveal that the user does not exist or is not confirmed
@@ -242,13 +285,13 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             {
                 return View(model);
             }
-            var user = await UserManager.FindByNameAsync(model.Email);
+            ApplicationUser user = await UserManager.FindByNameAsync(model.Email);
             if (user == null)
             {
                 // Don't reveal that the user does not exist
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
             }
-            var result = await UserManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
+            IdentityResult result = await UserManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
             if (result.Succeeded)
             {
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
@@ -281,13 +324,13 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> SendCode(string returnUrl, bool rememberMe)
         {
-            var userId = await SignInManager.GetVerifiedUserIdAsync();
+            string userId = await SignInManager.GetVerifiedUserIdAsync();
             if (userId == null)
             {
                 return View("Error");
             }
-            var userFactors = await UserManager.GetValidTwoFactorProvidersAsync(userId);
-            var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList();
+            IList<string> userFactors = await UserManager.GetValidTwoFactorProvidersAsync(userId);
+            List<SelectListItem> factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList();
             return View(new SendCodeViewModel { Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe });
         }
 
@@ -316,14 +359,14 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> ExternalLoginCallback(string returnUrl)
         {
-            var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync();
+            ExternalLoginInfo loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync();
             if (loginInfo == null)
             {
                 return RedirectToAction("Login");
             }
 
             // Sign in the user with this external login provider if the user already has a login
-            var result = await SignInManager.ExternalSignInAsync(loginInfo, isPersistent: false);
+            SignInStatus result = await SignInManager.ExternalSignInAsync(loginInfo, isPersistent: false);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -356,13 +399,13 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             if (ModelState.IsValid)
             {
                 // Get the information about the user from the external login provider
-                var info = await AuthenticationManager.GetExternalLoginInfoAsync();
+                ExternalLoginInfo info = await AuthenticationManager.GetExternalLoginInfoAsync();
                 if (info == null)
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-                var result = await UserManager.CreateAsync(user);
+                ApplicationUser user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                IdentityResult result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
                     result = await UserManager.AddLoginAsync(user.Id, info.Login);
@@ -415,21 +458,17 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         //    base.Dispose(disposing);
         //}
 
+        #endregion
+
         #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
 
-        private IAuthenticationManager AuthenticationManager
-        {
-            get
-            {
-                return HttpContext.GetOwinContext().Authentication;
-            }
-        }
+        private IAuthenticationManager AuthenticationManager => HttpContext.GetOwinContext().Authentication;
 
         private void AddErrors(IdentityResult result)
         {
-            foreach (var error in result.Errors)
+            foreach (string error in result.Errors)
             {
                 ModelState.AddModelError("", error);
             }
@@ -464,7 +503,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
 
             public override void ExecuteResult(ControllerContext context)
             {
-                var properties = new AuthenticationProperties { RedirectUri = RedirectUri };
+                AuthenticationProperties properties = new AuthenticationProperties { RedirectUri = RedirectUri };
                 if (UserId != null)
                 {
                     properties.Dictionary[XsrfKey] = UserId;
@@ -472,6 +511,38 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                 context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
             }
         }
+        #endregion
+
+        #region Private Methods
+
+        private void GetEmployeesList()
+        {
+            List<EmployeeDto> employees = empService.GetAllEmployees("");
+
+            List<SelectListItem> empListItems = (from e in employees
+                                                 select new SelectListItem
+                                                 {
+                                                     Text = $"{e.FirstName} {e.LastName}",
+                                                     Value = e.EmployeeEntryID.ToString()
+                                                 }).OrderBy(i => i.Text).ToList();
+
+            ViewBag.EmployeeListItems = empListItems;
+        }
+
+        private void GetRolesList()
+        {
+            List<IdentityRole> roles = context.Roles.ToList();
+
+            List<SelectListItem> empListItems = (from e in roles
+                                                 select new SelectListItem
+                                                 {
+                                                     Text = e.Name,
+                                                     Value = e.Id
+                                                 }).OrderBy(i => i.Text).ToList();
+
+            ViewBag.UserRoleListItems = empListItems;
+        }
+
         #endregion
     }
 }

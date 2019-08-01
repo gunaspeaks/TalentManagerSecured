@@ -2,6 +2,7 @@
 using Agilisium.TalentManager.Repository.Abstract;
 using Agilisium.TalentManager.Repository.Repositories;
 using Agilisium.TalentManager.ServerUtilities;
+using log4net;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -13,6 +14,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
 {
     public class AllocationsUpdaterServiceProcessor
     {
+        private readonly ILog logger;
         private readonly AllocationRepository allocationRepo;
         private readonly EmployeeRepository employeeRepo;
         private readonly NotificationsTrackerRepository trackerRepo;
@@ -25,6 +27,9 @@ namespace Agilisium.TalentManager.ServiceProcessors
 
         public AllocationsUpdaterServiceProcessor()
         {
+            logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            log4net.Config.XmlConfigurator.Configure();
+
             allocationRepo = new AllocationRepository();
             employeeRepo = new EmployeeRepository();
             projectRepo = new ProjectRepository();
@@ -37,34 +42,84 @@ namespace Agilisium.TalentManager.ServiceProcessors
 
         public int ProcessAllocations()
         {
+            logger.Info($"Service Execution Time : {DateTime.Now.ToLongTimeString()}");
             int newAllocations = 0;
-            List<ProjectAllocationDto> activeAllocations = allocationRepo.GetAllRecords().ToList();
-            List<ProjectAllocationDto> allocationsToProcess = activeAllocations.Where(a => a.AllocationEndDate.Subtract(DateTime.Now).TotalDays <= 30
-            && a.ProjectName.ToLower().Contains("bench") == false).ToList();
-
-            foreach (ProjectAllocationDto allocation in allocationsToProcess)
+            try
             {
-                double daysDifference = allocation.AllocationEndDate.Subtract(DateTime.Now).TotalDays;
+                List<ProjectAllocationDto> activeAllocations = allocationRepo.GetAllRecords().ToList();
+                List<ProjectAllocationDto> allocationsToProcess = activeAllocations.Where(a => a.AllocationEndDate.Subtract(DateTime.Now).TotalDays <= 31
+                && a.ProjectName.ToLower().Contains("bench") == false).ToList();
+                logger.Info($"There are {allocationsToProcess.Count} allocations to be processed");
+                foreach (ProjectAllocationDto allocation in allocationsToProcess)
+                {
+                    logger.Info($"Processing allocation entry with ID {allocation.AllocationEntryID}");
+                    if (allocationRepo.AnyOtherActiveAllocation(allocation.AllocationEntryID, allocation.EmployeeID, allocation.AllocationEndDate))
+                    {
+                        logger.Info("found another allocation with the extended date. Email alert will not be sent");
+                        // found another allocation with the extended date. igore this allocation
+                        continue;
+                    }
 
-                if ((daysDifference > 29 && daysDifference < 31)
-                    || (daysDifference > 14 && daysDifference < 16)
-                    || (daysDifference > 4 && daysDifference < 6)
-                    || (daysDifference > 0 && daysDifference < 2))
-                {
-                    SendAllocationEmail(allocation);
-                }
-                else if (daysDifference < 0 && daysDifference > -2)
-                {
-                    MoveResourceToBenchProject(allocation);
-                }
-                else
-                {
-                    continue;
+                    double daysDifference = allocation.AllocationEndDate.Subtract(DateTime.Now).TotalDays;
+                    logger.Info($"Allocation days difference {daysDifference}");
+                    if ((daysDifference > 29 && daysDifference < 31)
+                        || (daysDifference > 14 && daysDifference < 16)
+                        || (daysDifference > 4 && daysDifference < 6)
+                        || (daysDifference > 0 && daysDifference < 2))
+                    {
+                        logger.Info("Matching the criteria. Preparing email content");
+                        SendAllocationEmail(allocation);
+                        logger.Info("Email sent");
+                    }
+                    else if (daysDifference < 0 && daysDifference > -2)
+                    {
+                        logger.Info("Moving the resource under bench project");
+                        MoveResourceToBenchProject(allocation.EmployeeID);
+                    }
+                    else
+                    {
+                        logger.Info("No Alerts will be sent today (only on 30, 15, 5, 1) ");
+                        continue;
+                    }
                 }
             }
-
+            catch (Exception exp)
+            {
+                logger.Error(exp.Message, exp);
+            }
             return newAllocations;
         }
+
+        public void ProcessExpiredAllocations()
+        {
+            logger.Info("Processing expired allocations");
+            try
+            {
+                List<BillabilityWiseAllocationDetailDto> expiredAllocations = allocationRepo.GetBillabilityWiseAllocationDetail("alt", "-1").ToList();
+                logger.Info($"There are {expiredAllocations.Count} entries to be processed");
+                foreach (BillabilityWiseAllocationDetailDto allocation in expiredAllocations)
+                {
+                    if (!allocation.EmployeeEntryID.HasValue) continue;
+
+                    logger.Info($"Processing Employee ID {allocation.EmployeeEntryID}");
+                    if (allocationRepo.AnyActiveAllocationInBenchProject(allocation.EmployeeEntryID.Value))
+                    {
+                        logger.Info("found another allocation in bench project. This employee will not be moved to a new bench project");
+                        // found another allocation with the extended date. igore this allocation
+                        continue;
+                    }
+
+                    logger.Info("Moving the resource under bench project");
+                    MoveResourceToBenchProject(allocation.EmployeeEntryID.Value);
+                }
+            }
+            catch (Exception exp)
+            {
+                logger.Error(exp.Message, exp);
+            }
+        }
+
+        #region Private Methods
 
         private void SendAllocationEmail(ProjectAllocationDto allocation)
         {
@@ -104,13 +159,14 @@ namespace Agilisium.TalentManager.ServiceProcessors
             emailHandler.SendEmail(emailClientIP, toEmailID.ToString(), emailSubject, emailContent, bccEmailIDs.ToString());
         }
 
-        private void MoveResourceToBenchProject(ProjectAllocationDto allocation)
+        private void MoveResourceToBenchProject(int employeeID)
         {
-            EmployeeDto emp = employeeRepo.GetByID(allocation.EmployeeID);
+            EmployeeDto emp = employeeRepo.GetByID(employeeID);
             ProjectDto benchProject = projectRepo.GetBenchProjectByPractice(emp.PracticeID);
             if (benchProject == null)
             {
-                SendAllocationFailureNotification(allocation);
+                logger.Info($"Bench Project not found for Employee {emp.EmployeeID} under his POD {emp.PracticeID}");
+                //SendAllocationFailureNotification(allocation);
                 return;
             }
 
@@ -119,13 +175,15 @@ namespace Agilisium.TalentManager.ServiceProcessors
                 AllocationEndDate = benchProject.EndDate,
                 AllocationStartDate = DateTime.Now,
                 AllocationTypeID = (int)AllocationType.NonCommittedBuffer,
-                EmployeeID = allocation.EmployeeID,
+                EmployeeID = employeeID,
                 PercentageOfAllocation = 100,
                 ProjectID = benchProject.ProjectID,
                 Remarks = "Automatically moved to Bench by RMT"
             };
             allocationRepo.Add(newAllocation);
-            SendNewAllocationNotification(allocation, benchProject, emp);
+            logger.Info("New allocation has been created");
+            logger.Info("sending email alert");
+            SendNewAllocationNotification(benchProject, emp);
         }
 
         private void SendAllocationFailureNotification(ProjectAllocationDto allocation)
@@ -166,7 +224,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
             emailHandler.SendEmail(emailClientIP, toEmailID.ToString(), emailSubject, emailContent, bccEmailIDs.ToString());
         }
 
-        private void SendNewAllocationNotification(ProjectAllocationDto allocation, ProjectDto benchProject, EmployeeDto employee)
+        private void SendNewAllocationNotification(ProjectDto benchProject, EmployeeDto employee)
         {
             EmployeeDto pm = employeeRepo.GetByID(benchProject.ProjectManagerID);
             EmployeeDto rm = employee.ReportingManagerID.HasValue ? employeeRepo.GetByID(employee.ReportingManagerID.Value) : null;
@@ -252,5 +310,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
             emailBody.Replace("__RESOURCE_ID__", allocation.EmployeeID.ToString());
             return emailBody.ToString();
         }
+
+        #endregion
     }
 }

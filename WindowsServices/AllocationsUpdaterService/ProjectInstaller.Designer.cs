@@ -43,7 +43,7 @@
             this.AllocationsUpdaterServiceInstaller.Description = "A Windows service designed by Agilisium for sending alerts and updating project a" +
     "llocations";
             this.AllocationsUpdaterServiceInstaller.DisplayName = "Agilisium - Allocations Updater Service";
-            this.AllocationsUpdaterServiceInstaller.ServiceName = "Agilisium-AllocationsUpdaterService";
+            this.AllocationsUpdaterServiceInstaller.ServiceName = "Agilisium-Allocations Updater Service";
             this.AllocationsUpdaterServiceInstaller.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // ProjectInstaller

@@ -55,7 +55,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                 }
                 else
                 {
-                    DisplayWarningMessage("There are no Project Allocations to display");
+                    DisplayWarningMessage("No records to display");
                 }
             }
             catch (Exception exp)
@@ -109,7 +109,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                 }
                 else
                 {
-                    DisplayWarningMessage("There are no Project Allocations History to display");
+                    DisplayWarningMessage("No records to display");
                 }
             }
             catch (Exception exp)

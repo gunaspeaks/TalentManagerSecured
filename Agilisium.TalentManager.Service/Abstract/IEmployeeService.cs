@@ -54,5 +54,7 @@ namespace Agilisium.TalentManager.Service.Abstract
         string GetNameByEmployeeID(string empID);
 
         BillabilityWiseResourceCountDto GetBillabilityCountSummary();
+
+        string GetEmailID(int employeeID);
     }
 }

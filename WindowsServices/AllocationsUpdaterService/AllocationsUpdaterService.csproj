@@ -7,7 +7,7 @@
     <ProjectGuid>{8EC49C94-6A3A-4006-8F14-EFE930A94DDF}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Agilisium.TalentManager.WindowsServices.AllocationsUpdaterService</RootNamespace>
-    <AssemblyName>Agilisium.TalentManager.WindowsServices.AllocationsUpdaterService</AssemblyName>
+    <AssemblyName>AllocationsUpdaterService</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -57,6 +57,7 @@
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />

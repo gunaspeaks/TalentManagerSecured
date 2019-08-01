@@ -41,7 +41,7 @@ namespace Agilisium.TalentManager.PostgresModel
 
         public DbSet<ProjectAccount> ProjectAccounts { get; set; }
 
-        public DbSet<NotificationsTracker> AlertNotifications { get; set; }
+        public DbSet<EmployeeLoginMapping> EmployeeLoginMappings { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -58,7 +58,7 @@ namespace Agilisium.TalentManager.PostgresModel
             modelBuilder.Entity<SubPractice>().ToTable("SubPractice", "TalentManager");
             modelBuilder.Entity<SystemSetting>().ToTable("SystemSettings", "TalentManager");
             modelBuilder.Entity<Vendor>().ToTable("Vendor", "TalentManager");
-            modelBuilder.Entity<NotificationsTracker>().ToTable("AlertNotificationsTracker", "TalentManager");
+            modelBuilder.Entity<EmployeeLoginMapping>().ToTable("EmployeeLoginMapping", "TalentManager");
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Agilisium.TalentManager.Dto;
 using Agilisium.TalentManager.Repository.Repositories;
 using Agilisium.TalentManager.ServerUtilities;
+using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,16 +13,20 @@ namespace Agilisium.TalentManager.ServiceProcessors
     {
         private readonly AllocationRepository allocationService;
         private readonly EmployeeRepository empService;
+        private readonly ILog logger;
 
         public AllocationsMessengerServiceProcessor()
         {
 
             allocationService = new AllocationRepository();
             empService = new EmployeeRepository();
+            logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            log4net.Config.XmlConfigurator.Configure();
         }
 
-        public void GenerateResourceAllocationReport()
+        public void GenerateResourceAllocationReport(string appTempDirectory)
         {
+            logger.Info("Reading system settings");
             string emailClientIP = ProcessorHelper.GetSettingsValue(ProcessorHelper.EMAIL_PROXY_SERVER);
             string ownerEmailID = ProcessorHelper.GetSettingsValue(ProcessorHelper.CONTRACTOR_REQ_EMAIL_OWNER);
             string templateFilePath = ProcessorHelper.GetSettingsValue(ProcessorHelper.TEMPLATE_FOLDER_PATH) + "\\ResourceAllocationReportTemplate.html";
@@ -30,14 +35,16 @@ namespace Agilisium.TalentManager.ServiceProcessors
             string emailSubject = "Agilisium - Resource Allocation Report (From EC2)";
             string bccEmailIDs = ProcessorHelper.GetSettingsValue(ProcessorHelper.CONTRACTOR_REQ_BCC_RECEIPIENTS);
             EmailHandler emailHandler = new EmailHandler(ownerEmailID, outlookPwd);
-            string emailContent = GenerateEmailBody(templateFilePath);
-            string attachmentFilePath = GenerateAllocationReportAsCsvFile();
-            emailHandler.SendEmail(emailClientIP, toEmailID, emailSubject, emailContent, bccEmailIDs, attachmentFilePath);
 
+            string emailContent = GenerateEmailBody(templateFilePath);
+            string attachmentFilePath = GenerateAllocationReportAsCsvFile(appTempDirectory);
+            logger.Info("Sending email with attachment");
+            emailHandler.SendEmail(emailClientIP, toEmailID, emailSubject, emailContent, bccEmailIDs, attachmentFilePath);
         }
 
         private string GenerateEmailBody(string templateFilePath)
         {
+            logger.Info("Generating email body");
             List<BillabilityWiseAllocationSummaryDto> allocationSummary = allocationService.GetBillabilityWiseAllocationSummary().ToList();
             ResourceCountDto dto = empService.GetEmployeesCountSummary();
             string emailTemplateContent = FilesHandler.GetFileContent(templateFilePath);
@@ -55,8 +62,10 @@ namespace Agilisium.TalentManager.ServiceProcessors
             return emailBody.ToString();
         }
 
-        private string GenerateAllocationReportAsCsvFile()
+        private string GenerateAllocationReportAsCsvFile(string appTempDirectory)
         {
+            logger.Info("Generate CSV file for the attachment");
+            string filePath = "";
             StringBuilder recordString = new StringBuilder($"Employee ID,Employee Name,Primary Skills,Secondary Skills,Business Unit,POD,Project Name,Account Name,Allocation Type,Allocation Start Date,Allocation End Date,Project Manager,Comments{Environment.NewLine}");
             try
             {
@@ -77,15 +86,16 @@ namespace Agilisium.TalentManager.ServiceProcessors
                     recordString.Append($"{dto.ProjectManager},");
                     recordString.Append($"{dto.Comments}{Environment.NewLine}");
                 }
+
+                
+                string fileName = $"ResourceAllocationReport-AsOn-{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}.csv";
+                filePath = FilesHandler.CreateFile(appTempDirectory, fileName, recordString.ToString());
             }
-            catch (Exception)
+            catch (Exception exp)
             {
-
+                logger.Error("Error while generating CSV file", exp);
             }
 
-            string tempDir = FilesHandler.GetApplicationTempDirectory();
-            string fileName = $"ResourceAllocationReport-AsOn-{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}.csv";
-            string filePath = FilesHandler.CreateFile(tempDir, fileName, recordString.ToString());
             return filePath;
         }
     }

@@ -7,7 +7,7 @@
     <ProjectGuid>{0C711E2B-7AE7-45B2-9AEA-95E580C54910}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Agilisium.TalentManager.WindowsServices.AllocationsMessengerService</RootNamespace>
-    <AssemblyName>Agilisium.TalentManager.WindowsServices.AllocationsMessengerService</AssemblyName>
+    <AssemblyName>AllocationsMessengerService</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

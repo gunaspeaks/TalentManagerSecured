@@ -1,75 +1,68 @@
 ﻿using Agilisium.TalentManager.ServiceProcessors;
 using log4net;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Configuration;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Agilisium.TalentManager.Tools.WindowsServiceExecutor
 {
     public partial class MainForm : Form
     {
-
-        private readonly ILog logger;
-
         public MainForm()
         {
             InitializeComponent();
-            logger = log4net.LogManager.GetLogger(typeof(MainForm));
         }
 
         private void EmailReportingServiceButton_Click(object sender, EventArgs e)
         {
             try
             {
-                logger.Info("");
-                logger.Info("*********************************************************************************************");
-                logger.Info("Email Service has started processing");
+                MyLogger.LogMessage("");
+                MyLogger.LogMessage("*********************************************************************************************");
+                MyLogger.LogMessage("Email Service has started processing");
 
                 MessageBox.Show(DateTime.Today.DayOfWeek.ToString());
 
                 AllocationsMessengerServiceProcessor processor = new AllocationsMessengerServiceProcessor();
-                logger.Info("Generating resource allocation report");
-
-                processor.GenerateResourceAllocationReport();
+                MyLogger.LogMessage("Generating resource allocation report");
+                //processor.GenerateResourceAllocationReport();
+                MyLogger.LogMessage("Service execution complete.");
 
                 MessageBox.Show("Service execution complete.");
             }
             catch (Exception exp)
             {
                 MessageBox.Show(exp.Message);
-                logger.Error("Error while generating allocation report");
-                logger.Error(exp);
+                MyLogger.LogMessage("Error while generating allocation report", exp);
+            }
+            finally
+            {
+                MyLogger.LogMessage("*********************************************************************************************");
             }
         }
 
-        private void allocationsUpdatorServiceButton_Click(object sender, EventArgs e)
+        private void AllocationsUpdatorServiceButton_Click(object sender, EventArgs e)
         {
             try
             {
-                logger.Info("");
-                logger.Info("*********************************************************************************************");
-                logger.Info("Allocation Updator Service has initiated");
-
-                MessageBox.Show(DateTime.Today.DayOfWeek.ToString());
+                MyLogger.LogMessage("");
+                MyLogger.LogMessage("*********************************************************************************************");
+                MyLogger.LogMessage("Allocation Updator Service has initiated");
 
                 AllocationsUpdaterServiceProcessor processor = new AllocationsUpdaterServiceProcessor();
 
-                processor.ProcessAllocations();
+                //processor.ProcessAllocations();
+                MyLogger.LogMessage("Service execution complete.");
 
                 MessageBox.Show("Service execution complete.");
             }
             catch (Exception exp)
             {
                 MessageBox.Show(exp.Message);
-                logger.Error("Error while executing Allocation Updator service");
-                logger.Error(exp);
+                MyLogger.LogMessage("Error while executing Allocation Updator service", exp);
+            }
+            finally
+            {
+                MyLogger.LogMessage("*********************************************************************************************");
             }
         }
     }

@@ -28,6 +28,7 @@ namespace Agilisium.TalentManager.Model
             {
                 CreatedBy = userName;
                 CreatedOn = DateTime.Now;
+                IsDeleted = false;
             }
             else
             {

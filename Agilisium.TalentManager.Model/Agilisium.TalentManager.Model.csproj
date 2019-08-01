@@ -69,6 +69,7 @@
     <Compile Include="Entities\DropDownSubCategory.cs" />
     <Compile Include="Entities\Employee.cs" />
     <Compile Include="Entities\EmployeeIDTracker.cs" />
+    <Compile Include="Entities\EmployeeLoginMapping.cs" />
     <Compile Include="Entities\ProjectAccount.cs" />
     <Compile Include="Entities\ServiceRequest.cs" />
     <Compile Include="Entities\SystemSetting.cs" />

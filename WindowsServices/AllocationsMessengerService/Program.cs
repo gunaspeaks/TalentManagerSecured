@@ -21,21 +21,19 @@ namespace Agilisium.TalentManager.WindowsServices
             {
                 new AllocationsMessengerService()
             };
-            ServiceBase.Run(ServicesToRun);
 
             if (Environment.UserInteractive)
             {
                 RunInteractive(ServicesToRun);
+                return;
             }
-            else
-            {
-                ServiceBase.Run(ServicesToRun);
-            }
+
+            ServiceBase.Run(ServicesToRun);
         }
 
         private static void RunInteractive(ServiceBase[] servicesToRun)
         {
-            Console.WriteLine("Services running in interactive mode.");
+            Console.WriteLine("Service is running in interactive mode.");
 
             MethodInfo onStartMethod = typeof(ServiceBase).GetMethod("OnStart", BindingFlags.Instance | BindingFlags.NonPublic);
             foreach (ServiceBase service in servicesToRun)

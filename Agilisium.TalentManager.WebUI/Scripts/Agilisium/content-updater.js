@@ -148,6 +148,26 @@ function generateEmployeeIDForEmpPage() {
     }
 }
 
+function getEmailIDOfEmployee() {
+    if ($("#EmployeeID").val().length > 0) {
+        $.ajax({
+            url: rootUrl + "Employee/GetEmailID",
+            type: "POST",
+            data: { id: $("#EmployeeID").val() },
+            success: function (data) {
+                $("#Email").val(data);
+                if ($("#Email").val().length != 0) {
+                    //$("#Email").attr('disabled', 'disabled');
+                }
+                else {
+                    //$("#Email").removeAttr('disabled', 'disabled');
+                }
+            },
+            error: function (eid) { alert("Error while retrieving Email ID"); }
+        });
+    }
+}
+
 function loadSubPracticeDropDownForEmpPage() {
     if ($("#PracticeID").val().length > 0) {
         $.ajax({

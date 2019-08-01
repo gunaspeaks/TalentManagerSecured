@@ -12,7 +12,14 @@
                     </td>
                     <td>:</td>
                     <td>
-                        @Html.ActionLink(Model[i].NumberOfEmployees.ToString(), "UtilizationReportDetail", "Reports", new { filterType = "alt", filterValue = Model[i].AllocationTypeID }, new { @style = "color:navy;" })
+                        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Project Manager"))
+                        {
+                            @Html.ActionLink(Model[i].NumberOfEmployees.ToString(), "UtilizationReportDetail", "Reports", new { filterType = "alt", filterValue = Model[i].AllocationTypeID }, new { @style = "color:navy;" })
+                        }
+                        else
+                        {
+                            @Html.DisplayTextFor(modelItem => Model[i].NumberOfEmployees)
+                        }
                     </td>
                 </tr>
             }

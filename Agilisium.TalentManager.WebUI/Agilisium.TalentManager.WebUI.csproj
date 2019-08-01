@@ -277,10 +277,11 @@
     <Compile Include="Controllers\PracticeController.cs" />
     <Compile Include="Controllers\ProjectController.cs" />
     <Compile Include="Controllers\ReportsController.cs" />
+    <Compile Include="Controllers\RolesController.cs" />
     <Compile Include="Controllers\ServiceRequestController.cs" />
-    <Compile Include="Controllers\SettingsController.cs" />
     <Compile Include="Controllers\SubCategoryController.cs" />
     <Compile Include="Controllers\SubPracticeController.cs" />
+    <Compile Include="Controllers\ELoginController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -297,12 +298,14 @@
     <Compile Include="Models\BillabilityWiseAllocationSummaryModel.cs" />
     <Compile Include="Models\BillabilityWiseResourceCountModel.cs" />
     <Compile Include="Models\CategoryModel.cs" />
+    <Compile Include="Models\EmployeeLoginMappingViewModel.cs" />
     <Compile Include="Models\CategoryViewModel.cs" />
     <Compile Include="Models\ContractorViewModel.cs" />
     <Compile Include="Models\ContractorWidgetModel.cs" />
     <Compile Include="Models\CustomAllocationModel.cs" />
     <Compile Include="Models\DevelopmentRequestModel.cs" />
     <Compile Include="Models\DevelopmentRequestViewModel.cs" />
+    <Compile Include="Models\EmployeeLoginMappingModel.cs" />
     <Compile Include="Models\EmployeeModel.cs" />
     <Compile Include="Models\EmployeeQuickModel.cs" />
     <Compile Include="Models\EmployeeViewModel.cs" />
@@ -380,6 +383,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Connected Services\Office365\ConnectedService.json" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\Web Deploy HTTPS.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />
@@ -474,6 +479,10 @@
     <Content Include="Views\SubPractice\Create.cshtml" />
     <Content Include="Views\SubPractice\Edit.cshtml" />
     <Content Include="Views\SubPractice\List.cshtml" />
+    <Content Include="Views\Roles\List.cshtml" />
+    <Content Include="Views\Roles\Create.cshtml" />
+    <Content Include="Views\Roles\Edit.cshtml" />
+    <Content Include="Views\ELogin\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

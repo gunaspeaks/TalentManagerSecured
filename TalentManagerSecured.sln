@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllocationsMessengerService
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllocationsUpdaterService", "WindowsServices\AllocationsUpdaterService\AllocationsUpdaterService.csproj", "{8EC49C94-6A3A-4006-8F14-EFE930A94DDF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagementNotifications", "WindowsServices\ManagementNotifications\ManagementNotifications.csproj", "{C5FD7BF7-64AC-4C52-8E55-E2365B07A745}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -97,6 +99,10 @@ Global
 		{8EC49C94-6A3A-4006-8F14-EFE930A94DDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8EC49C94-6A3A-4006-8F14-EFE930A94DDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8EC49C94-6A3A-4006-8F14-EFE930A94DDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5FD7BF7-64AC-4C52-8E55-E2365B07A745}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5FD7BF7-64AC-4C52-8E55-E2365B07A745}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5FD7BF7-64AC-4C52-8E55-E2365B07A745}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5FD7BF7-64AC-4C52-8E55-E2365B07A745}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -107,6 +113,7 @@ Global
 		{C7989FD1-6841-4A13-BBE3-625216544D8D} = {D52294D3-2899-4AB1-A289-F65F30BCF974}
 		{0C711E2B-7AE7-45B2-9AEA-95E580C54910} = {2A4B7EFE-8733-43E0-BFA8-508756F45B67}
 		{8EC49C94-6A3A-4006-8F14-EFE930A94DDF} = {2A4B7EFE-8733-43E0-BFA8-508756F45B67}
+		{C5FD7BF7-64AC-4C52-8E55-E2365B07A745} = {2A4B7EFE-8733-43E0-BFA8-508756F45B67}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E78208C7-91A1-4401-9353-68EA466A0177}

@@ -129,7 +129,8 @@ namespace Agilisium.TalentManager.Repository.Repositories
             List<EmployeeDto> employees = new List<EmployeeDto>();
 
             List<Employee> pastEmployees = (from emp in Entities
-                                            where emp.IsDeleted == true || (emp.LastWorkingDay.HasValue == true && emp.LastWorkingDay.Value < DateTime.Now)
+                                            where emp.IsDeleted == true
+                                            || (emp.LastWorkingDay.HasValue == true && emp.LastWorkingDay.Value < DateTime.Now)
                                             select emp).ToList();
 
             foreach (Employee emp in pastEmployees)
@@ -162,7 +163,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         public int GetPastEmployeesCount()
         {
-            return Entities.Count(emp => emp.IsDeleted == true || (emp.LastWorkingDay.HasValue == true && emp.LastWorkingDay.Value >= DateTime.Now));
+            return Entities.Count(emp => emp.IsDeleted == true || (emp.LastWorkingDay.HasValue == true && emp.LastWorkingDay.Value < DateTime.Now));
         }
 
         public bool IsDuplicateName(string firstName, string lastName)
@@ -406,6 +407,11 @@ namespace Agilisium.TalentManager.Repository.Repositories
             return Entities.FirstOrDefault(e => e.EmployeeID == empID)?.FirstName;
         }
 
+        public string GetEmailID(int employeeID)
+        {
+            return Entities.FirstOrDefault(e => e.EmployeeEntryID == employeeID)?.EmailID;
+        }
+
         #endregion
 
         #region Private Methods
@@ -610,6 +616,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         BillabilityWiseResourceCountDto GetBillabilityCountSummary();
 
-
+        string GetEmailID(int employeeID);
     }
 }

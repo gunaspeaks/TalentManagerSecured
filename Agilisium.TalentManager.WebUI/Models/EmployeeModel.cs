@@ -31,6 +31,7 @@ namespace Agilisium.TalentManager.WebUI.Models
         [DisplayName("Email ID")]
         [MaxLength(100, ErrorMessage = "Last Name should not exceed 100 characters")]
         [DataType(DataType.EmailAddress)]
+        [EmailAddress]
         public string EmailID { get; set; }
 
         [DisplayName("Business Unit")]

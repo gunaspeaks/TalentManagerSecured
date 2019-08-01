@@ -48,12 +48,12 @@ namespace Agilisium.TalentManager.WebUI.Models
 
     public class LoginViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Please enter your Agilisium Email")]
         [Display(Name = "Email")]
         [EmailAddress]
         public string Email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Please enter Password")]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }
@@ -64,12 +64,20 @@ namespace Agilisium.TalentManager.WebUI.Models
 
     public class RegisterViewModel
     {
+        public string Name { get; set; }
+
+        [Display(Name = "User Name")]
+        public string UserName { get; set; }
+
+        [Display(Name = "User Role")]
+        public string RoleID { get; set; }
+
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage ="Please enter Password")]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
@@ -79,6 +87,9 @@ namespace Agilisium.TalentManager.WebUI.Models
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        [Display(Name = "Employee Name")]
+        public int EmployeeID { get; set; }
     }
 
     public class ResetPasswordViewModel

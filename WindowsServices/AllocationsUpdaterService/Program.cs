@@ -21,16 +21,14 @@ namespace Agilisium.TalentManager.WindowsServices
             {
                 new AllocationsUpdaterService()
             };
-            ServiceBase.Run(ServicesToRun);
 
             if (Environment.UserInteractive)
             {
                 RunInteractive(ServicesToRun);
+                return;
             }
-            else
-            {
-                ServiceBase.Run(ServicesToRun);
-            }
+
+            ServiceBase.Run(ServicesToRun);
         }
 
         private static void RunInteractive(ServiceBase[] servicesToRun)

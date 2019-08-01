@@ -54,7 +54,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                 }
                 else
                 {
-                    DisplayWarningMessage("There are no Employees to display");
+                    DisplayWarningMessage("No records to display");
                 }
             }
             catch (Exception exp)
@@ -85,7 +85,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                 }
                 else
                 {
-                    DisplayWarningMessage("There are no Employees to display");
+                    DisplayWarningMessage("No records to display");
                 }
             }
             catch (Exception exp)
@@ -120,7 +120,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                 }
                 else
                 {
-                    DisplayWarningMessage("There are no Employees to display");
+                    DisplayWarningMessage("No records to display");
                 }
             }
             catch (Exception exp)
@@ -155,7 +155,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                 }
                 else
                 {
-                    DisplayWarningMessage("There are no Employees to display");
+                    DisplayWarningMessage("No records to display");
                 }
             }
             catch (Exception exp)
@@ -370,6 +370,12 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         {
             EmployeeDto emp = empService.GetEmployee(id);
             return Json(emp);
+        }
+
+        [HttpPost]
+        public JsonResult GetEmailID(int id)
+        {
+            return Json(empService.GetEmailID(id));
         }
 
         public FileStreamResult DownloadAllEmployees(string filterType, string filterValue)

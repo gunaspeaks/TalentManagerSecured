@@ -54,7 +54,7 @@
             this.allocationsUpdatorServiceButton.TabIndex = 1;
             this.allocationsUpdatorServiceButton.Text = "Run Allocations Updator Service";
             this.allocationsUpdatorServiceButton.UseVisualStyleBackColor = false;
-            this.allocationsUpdatorServiceButton.Click += new System.EventHandler(this.allocationsUpdatorServiceButton_Click);
+            this.allocationsUpdatorServiceButton.Click += new System.EventHandler(this.AllocationsUpdatorServiceButton_Click);
             // 
             // MainForm
             // 

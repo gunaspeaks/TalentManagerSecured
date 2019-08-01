@@ -70,11 +70,13 @@
     <Compile Include="Abstract\EnumerationTypes.cs" />
     <Compile Include="Abstract\RepositoryBase.cs" />
     <Compile Include="Abstract\IRepository.cs" />
+    <Compile Include="Repositories\EmployeeLoginMappingRepository.cs" />
     <Compile Include="Repositories\DevRequestRepository.cs" />
     <Compile Include="Repositories\NotificationsTrackerRepository.cs" />
     <Compile Include="Repositories\ProjectAccountRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\ContractorRepository.cs" />
+    <Compile Include="Repositories\SecurityRepository.cs" />
     <Compile Include="Repositories\SystemSettingsRepository.cs" />
     <Compile Include="Repositories\DropDownCategoryRepository.cs" />
     <Compile Include="Repositories\DropDownSubCategoryRepository.cs" />

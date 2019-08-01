@@ -9,10 +9,11 @@ namespace Agilisium.TalentManager.PostgresDbHelper
         public int GetNonAllocatedResourcesCountFromPostgres(bool forDelivery = true)
         {
             int count = 0;
-            Npgsql.NpgsqlConnection con = new Npgsql.NpgsqlConnection(PostgresSqlQueries.CONNECTION_STRING);
+            Npgsql.NpgsqlConnection con = null;
 
             try
             {
+                con = new Npgsql.NpgsqlConnection(PostgresSqlQueries.CONNECTION_STRING);
                 con.Open();
                 string qry = PostgresSqlQueries.GET_COUNT_OF_NON_ALLOCATED_EMPLOYEES_FROM_DELIVERY;
                 if (!forDelivery)
@@ -38,9 +39,10 @@ namespace Agilisium.TalentManager.PostgresDbHelper
         public IEnumerable<PracticeHeadCountDto> GetPracticeWiseHeadCountPostgres()
         {
             List<PracticeHeadCountDto> records = new List<PracticeHeadCountDto>();
-            Npgsql.NpgsqlConnection con = new Npgsql.NpgsqlConnection(PostgresSqlQueries.CONNECTION_STRING);
+            Npgsql.NpgsqlConnection con = null;
             try
             {
+                con = new Npgsql.NpgsqlConnection(PostgresSqlQueries.CONNECTION_STRING);
                 con.Open();
                 string qry = PostgresSqlQueries.GET_PRACTICE_WISE_HEAD_COUNT;
                 qry = qry.Replace("__CURRENT_DATE__", $"{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}");
@@ -73,9 +75,10 @@ namespace Agilisium.TalentManager.PostgresDbHelper
         public IEnumerable<SubPracticeHeadCountDto> GetSubPracticeWiseHeadCountFromPostgres()
         {
             List<SubPracticeHeadCountDto> records = new List<SubPracticeHeadCountDto>();
-            Npgsql.NpgsqlConnection con = new Npgsql.NpgsqlConnection(PostgresSqlQueries.CONNECTION_STRING);
+            Npgsql.NpgsqlConnection con = null;
             try
             {
+                con = new Npgsql.NpgsqlConnection(PostgresSqlQueries.CONNECTION_STRING);
                 con.Open();
                 string qry = PostgresSqlQueries.GET_SUB_PRACTICE_WISE_HEAD_COUNT;
                 qry = qry.Replace("__CURRENT_DATE__", $"{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}");
@@ -110,9 +113,10 @@ namespace Agilisium.TalentManager.PostgresDbHelper
         public List<BillabilityWiseAllocationDetailDto> GetAllocationEntriesByAllocationTypeFromPostgres(int allocationType)
         {
             List<BillabilityWiseAllocationDetailDto> allocationDetailDtos = new List<BillabilityWiseAllocationDetailDto>();
-            Npgsql.NpgsqlConnection con = new Npgsql.NpgsqlConnection(PostgresDbHelper.PostgresSqlQueries.CONNECTION_STRING);
+            Npgsql.NpgsqlConnection con = null;
             try
             {
+                con = new Npgsql.NpgsqlConnection(PostgresSqlQueries.CONNECTION_STRING);
                 con.Open();
                 string qry = PostgresSqlQueries.GET_ALLOCATION_DETAIL_FOR_VALID_ALLOCATIONS;
                 if (allocationType == -1)
@@ -162,7 +166,7 @@ namespace Agilisium.TalentManager.PostgresDbHelper
                     }
                 }
             }
-            catch (Exception) { }
+            catch (Exception exp) { }
             finally
             {
                 con.Close();
@@ -175,9 +179,10 @@ namespace Agilisium.TalentManager.PostgresDbHelper
         public IEnumerable<ManagerWiseAllocationDto> GetManagerWiseAllocationSummaryFromPostgres()
         {
             List<ManagerWiseAllocationDto> records = new List<ManagerWiseAllocationDto>();
-            Npgsql.NpgsqlConnection con = new Npgsql.NpgsqlConnection(PostgresSqlQueries.CONNECTION_STRING);
+            Npgsql.NpgsqlConnection con = null;
             try
             {
+                con = new Npgsql.NpgsqlConnection(PostgresSqlQueries.CONNECTION_STRING);
                 con.Open();
                 string qry = PostgresSqlQueries.GET_MANAGER_WISE_PROJECTS_SUMMARY.Replace("__CURRENT_DATE__", $"{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}");
                 Npgsql.NpgsqlCommand cmd = new Npgsql.NpgsqlCommand(qry, con);
@@ -204,6 +209,85 @@ namespace Agilisium.TalentManager.PostgresDbHelper
             }
 
             return records;
+        }
+
+        public int CreateMappingEntryForUserAndRole(string userID, string roleID)
+        {
+            Npgsql.NpgsqlConnection con = null;
+            int res = 0;
+            try
+            {
+                con = new Npgsql.NpgsqlConnection(PostgresSqlQueries.SECURITY_DB_CONNECTION_STRING);
+                con.Open();
+                string qry = PostgresSqlQueries.INSERT_USER_AND_ROLE_MAPPING_QUERY.Replace("__USER_ID__", userID).Replace("__ROLE_ID__", roleID);
+                Npgsql.NpgsqlCommand cmd = new Npgsql.NpgsqlCommand(qry, con);
+                res = cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception) { }
+            finally
+            {
+                con.Close();
+                con.Dispose();
+            }
+
+            return res;
+        }
+
+        public IEnumerable<EmployeeLoginDto> GetUserAndRoleMapEntries()
+        {
+            List<EmployeeLoginDto> records = new List<EmployeeLoginDto>();
+            Npgsql.NpgsqlConnection con = null;
+            try
+            {
+                con = new Npgsql.NpgsqlConnection(PostgresSqlQueries.SECURITY_DB_CONNECTION_STRING);
+                con.Open();
+                Npgsql.NpgsqlCommand cmd = new Npgsql.NpgsqlCommand(PostgresSqlQueries.GET_USER_LOGIN_ROLE_ENTRIES, con);
+                Npgsql.NpgsqlDataReader res = cmd.ExecuteReader();
+
+                if (res.HasRows)
+                {
+                    while (res.Read())
+                    {
+                        records.Add(new EmployeeLoginDto
+                        {
+                            Email = res.IsDBNull(1) == false ? res.GetString(1) : "",
+                            RoleName = res.IsDBNull(2) == false ? res.GetString(2) : "",
+                            UserID = res.IsDBNull(0) == false ? res.GetString(0) : ""
+                        });
+                    }
+                }
+            }
+            catch (Exception) { }
+            finally
+            {
+                con.Close();
+                con.Dispose();
+            }
+
+            return records;
+        }
+
+        public int DeleteRoleMappingEntryForUser(string userID)
+        {
+            Npgsql.NpgsqlConnection con = null;
+            int res = 0;
+            try
+            {
+                con = new Npgsql.NpgsqlConnection(PostgresSqlQueries.SECURITY_DB_CONNECTION_STRING);
+                con.Open();
+                string qry = PostgresSqlQueries.DELETE_USER_AND_ROLE_MAPPING_QUERY.Replace("__USER_ID__", userID);
+                Npgsql.NpgsqlCommand cmd = new Npgsql.NpgsqlCommand(qry, con);
+                res = cmd.ExecuteNonQuery();
+            }
+            catch (Exception) { }
+            finally
+            {
+                con.Close();
+                con.Dispose();
+            }
+
+            return res;
         }
     }
 }

@@ -44,7 +44,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                 }
                 else
                 {
-                    DisplayWarningMessage("There are no Accounts to display");
+                    DisplayWarningMessage("No records to display");
                 }
             }
             catch (Exception exp)
