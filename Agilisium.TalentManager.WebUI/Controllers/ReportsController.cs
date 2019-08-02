@@ -219,6 +219,21 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             return File(stream, "application/vnd.ms-excel", "Resource Allocation Report.csv");
         }
 
+        public ActionResult VisaHoldingEmployees()
+        {
+            List<EmployeeVisaModel> entries = new List<EmployeeVisaModel>();
+            try
+            {
+                List<EmployeeVisaDto> summaryDtos = empService.GetVisaHolderingEmployees();
+                entries = Mapper.Map<List<EmployeeVisaDto>, List<EmployeeVisaModel>>(summaryDtos);
+            }
+            catch (Exception exp)
+            {
+                DisplayLoadErrorMessage(exp);
+            }
+            return View(entries);
+        }
+
         #region Private Methods
 
         private List<SelectListItem> GetEmployeesList()

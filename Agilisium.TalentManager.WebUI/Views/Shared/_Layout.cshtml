@@ -84,7 +84,8 @@
                             <li> @Html.ActionLink("Allocations", "List", "Allocation") </li>
                         }
 
-                        @if (Request.Url.ToString().ToLower().Contains("reports"))
+                        @if (Request.Url.ToString().ToLower().Contains("reports")
+                            ||Request.Url.ToString().ToLower().Contains("visaholdingemployees"))
                         {
                             <li> @Html.ActionLink("Reports", "Index", "Reports", new { @style = "color:GreenYellow" }) </li>
                         }
@@ -99,6 +100,7 @@
                             || Request.Url.ToString().ToLower().Contains("practice")
                             || Request.Url.ToString().ToLower().Contains("subpractice")
                             || Request.Url.ToString().ToLower().Contains("users")
+                            || Request.Url.ToString().ToLower().Contains("certification")
                             )
                             {
                                 <li> @Html.ActionLink("Administration", "List", "Category", new { @style = "color:GreenYellow" }) </li>

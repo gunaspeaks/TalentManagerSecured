@@ -43,6 +43,8 @@ namespace Agilisium.TalentManager.PostgresModel
 
         public DbSet<EmployeeLoginMapping> EmployeeLoginMappings { get; set; }
 
+        public DbSet<Certification> Certifications { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Contractor>().ToTable("Contractor", "TalentManager");
@@ -59,6 +61,7 @@ namespace Agilisium.TalentManager.PostgresModel
             modelBuilder.Entity<SystemSetting>().ToTable("SystemSettings", "TalentManager");
             modelBuilder.Entity<Vendor>().ToTable("Vendor", "TalentManager");
             modelBuilder.Entity<EmployeeLoginMapping>().ToTable("EmployeeLoginMapping", "TalentManager");
+            modelBuilder.Entity<Certification>().ToTable("Certification", "TalentManager");
         }
     }
 }

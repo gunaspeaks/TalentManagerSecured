@@ -69,5 +69,9 @@ namespace Agilisium.TalentManager.Dto
         public DateTime? PassportValidUpto { get; set; }
 
         public string TravelledCountries { get; set; }
+
+        public int BenchCategoryID { get; set; }
+
+        public string BenchCategory { get; set; }
     }
 }

@@ -309,6 +309,7 @@
     <Compile Include="Models\EmployeeModel.cs" />
     <Compile Include="Models\EmployeeQuickModel.cs" />
     <Compile Include="Models\EmployeeViewModel.cs" />
+    <Compile Include="Models\EmployeeVisaModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManagerWiseAllocationModel.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -483,10 +484,10 @@
     <Content Include="Views\Roles\Create.cshtml" />
     <Content Include="Views\Roles\Edit.cshtml" />
     <Content Include="Views\ELogin\List.cshtml" />
+    <Content Include="Views\Reports\VisaHoldingEmployees.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Settings\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

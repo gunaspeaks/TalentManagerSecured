@@ -44,6 +44,7 @@
     <Compile Include="BillabilityWiseAllocationDetailDto.cs" />
     <Compile Include="BillabilityWiseAllocationSummaryDto.cs" />
     <Compile Include="BillabilityWiseResourceCountDto.cs" />
+    <Compile Include="CertificationDto.cs" />
     <Compile Include="ContractorDto.cs" />
     <Compile Include="CustomAllocationDto.cs" />
     <Compile Include="DevelopmentRequestDto.cs" />
@@ -53,7 +54,9 @@
     <Compile Include="EmployeeDto.cs" />
     <Compile Include="EmployeeLoginDto.cs" />
     <Compile Include="EmployeeLoginMappingDto.cs" />
+    <Compile Include="EmployeeVisaDto.cs" />
     <Compile Include="NotificationsTrackerDto.cs" />
+    <Compile Include="PodWiseEmployeeDto.cs" />
     <Compile Include="ResourceCountDto.cs" />
     <Compile Include="ManagerWiseAllocationDto.cs" />
     <Compile Include="PracticeDto.cs" />

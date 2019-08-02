@@ -165,6 +165,14 @@
                                         {
                                             <li>@Html.ActionLink("Competencies", "List", "SubPractice")</li>
                                         }
+                                        if (Request.Url.ToString().ToLower().Contains("certification"))
+                                        {
+                                            <li>@Html.ActionLink("Certifications", "List", "Certification", new { @style = "color:GreenYellow" })</li>
+                                        }
+                                        else
+                                        {
+                                            <li>@Html.ActionLink("Certifications", "List", "Certification")</li>
+                                        }
                                     }
                                     @if (Request.Url.ToString().ToLower().Contains("manage"))
                                     {

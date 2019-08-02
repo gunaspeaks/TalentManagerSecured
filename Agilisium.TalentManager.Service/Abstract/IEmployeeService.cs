@@ -56,5 +56,7 @@ namespace Agilisium.TalentManager.Service.Abstract
         BillabilityWiseResourceCountDto GetBillabilityCountSummary();
 
         string GetEmailID(int employeeID);
+
+        List<EmployeeVisaDto> GetVisaHolderingEmployees();
     }
 }

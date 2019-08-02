@@ -58,6 +58,8 @@ namespace Agilisium.TalentManager.Repository.Repositories
                     from etd in ete.DefaultIfEmpty()
                     join vt in DataContext.DropDownSubCategories on emp.VisaCategoryID equals vt.SubCategoryID into vte
                     from vtd in vte.DefaultIfEmpty()
+                    join bt in DataContext.DropDownSubCategories on emp.BenchCategoryID equals bt.SubCategoryID into bte
+                    from btd in bte.DefaultIfEmpty()
                     join pm in DataContext.Employees on emp.EmployeeEntryID equals pm.EmployeeEntryID into pme
                     from pmd in pme.DefaultIfEmpty()
                     where emp.EmployeeEntryID == id
@@ -89,6 +91,8 @@ namespace Agilisium.TalentManager.Repository.Repositories
                         VisaCategoryID = emp.VisaCategoryID,
                         VisaValidUpto = emp.VisaValidUpto,
                         VisaCategory = vtd.SubCategoryName,
+                        BenchCategoryID = emp.BenchCategoryID,
+                        BenchCategory = btd.SubCategoryName,
                     }).FirstOrDefault();
         }
 
@@ -412,6 +416,43 @@ namespace Agilisium.TalentManager.Repository.Repositories
             return Entities.FirstOrDefault(e => e.EmployeeEntryID == employeeID)?.EmailID;
         }
 
+        public IEnumerable<EmployeeVisaDto> GetVisaHoldingEmployees()
+        {
+            IEnumerable<EmployeeVisaDto> entries = null;
+
+            entries = (
+                from e in Entities
+                join vc in DataContext.DropDownSubCategories on e.VisaCategoryID equals vc.SubCategoryID into vce
+                from vcd in vce.DefaultIfEmpty()
+                join pd in DataContext.Practices on e.PracticeID equals pd.PracticeID into pde
+                from pdd in pde.DefaultIfEmpty()
+                join al in DataContext.ProjectAllocations on e.EmployeeEntryID equals al.EmployeeID into ale
+                from ald in ale.DefaultIfEmpty()
+                join at in DataContext.DropDownSubCategories on ald.AllocationTypeID equals at.SubCategoryID into ate
+                from atd in ate.DefaultIfEmpty()
+                join pr in DataContext.Projects on ald.ProjectID equals pr.ProjectID into pre
+                from prd in pre.DefaultIfEmpty()
+                where e.VisaCategoryID.HasValue && e.IsDeleted == false
+                && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue && e.LastWorkingDay.Value >= DateTime.Now))
+                && ald.AllocationEndDate >= DateTime.Now && ald.IsDeleted == false
+                orderby e.FirstName, e.LastName
+                select new EmployeeVisaDto
+                {
+                    AllocationType = atd.SubCategoryName,
+                    EmployeeID = e.EmployeeID,
+                    EmployeeEntryID = e.EmployeeEntryID,
+                    EmployeeName = e.FirstName + " " + e.LastName,
+                    POD = pdd.PracticeName,
+                    PrimarySkills = e.PrimarySkills,
+                    ProjectName = prd.ProjectName,
+                    SecondarySkills = e.SecondarySkills,
+                    TravelledCountries = e.TravelledCountries,
+                    VisaCategory = vcd.SubCategoryName,
+                    VisaValidity = e.VisaValidUpto
+                });
+            return entries;
+        }
+
         #endregion
 
         #region Private Methods
@@ -517,7 +558,8 @@ namespace Agilisium.TalentManager.Repository.Repositories
                 TravelledCountries = employeeDto.TravelledCountries,
                 VisaCategoryID = employeeDto.VisaCategoryID,
                 VisaValidUpto = employeeDto.VisaValidUpto,
-                IsDeleted = false
+                IsDeleted = false,
+                BenchCategoryID = employeeDto.BenchCategoryID,
             };
 
             employee.UpdateTimeStamp(employeeDto.LoggedInUserName, true);
@@ -548,6 +590,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
             targetEntity.TravelledCountries = sourceEntity.TravelledCountries;
             targetEntity.VisaCategoryID = sourceEntity.VisaCategoryID;
             targetEntity.VisaValidUpto = sourceEntity.VisaValidUpto;
+            targetEntity.BenchCategoryID = sourceEntity.BenchCategoryID;
 
             targetEntity.UpdateTimeStamp(sourceEntity.LoggedInUserName);
         }
@@ -617,5 +660,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
         BillabilityWiseResourceCountDto GetBillabilityCountSummary();
 
         string GetEmailID(int employeeID);
+
+        IEnumerable<EmployeeVisaDto> GetVisaHoldingEmployees();
     }
 }

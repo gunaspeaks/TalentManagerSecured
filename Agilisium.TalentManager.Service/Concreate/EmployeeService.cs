@@ -144,5 +144,10 @@ namespace Agilisium.TalentManager.Service.Concreate
         {
             return repository.GetEmailID(employeeID);
         }
+
+        public List<EmployeeVisaDto> GetVisaHolderingEmployees()
+        {
+            return repository.GetVisaHoldingEmployees().ToList();
+        }
     }
 }

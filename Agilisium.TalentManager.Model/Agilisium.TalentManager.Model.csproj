@@ -62,6 +62,7 @@
     <Compile Include="Configuration\SubPracticeEntityConfiguration.cs" />
     <Compile Include="Configuration\SystemSettingTypeConfiguration.cs" />
     <Compile Include="Configuration\VendorEntityConfiguration.cs" />
+    <Compile Include="Entities\Certification.cs" />
     <Compile Include="Entities\Contractor.cs" />
     <Compile Include="Entities\CustomAllocation.cs" />
     <Compile Include="Entities\DevelopmentRequest.cs" />

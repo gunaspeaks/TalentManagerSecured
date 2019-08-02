@@ -124,5 +124,11 @@ namespace Agilisium.TalentManager.WebUI.Models
         [DisplayName("Travelled Countries")]
         [MaxLength(100, ErrorMessage = "100 Characters maximum")]
         public string TravelledCountries { get; set; }
+
+        [DisplayName("Availability")]
+        public int BenchCategoryID { get; set; }
+
+        [DisplayName("Availability")]
+        public string BenchCategory { get; set; }
     }
 }
