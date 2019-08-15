@@ -51,6 +51,7 @@
     <Compile Include="DropDownCategoryDto.cs" />
     <Compile Include="DropDownSubCategoryDto.cs" />
     <Compile Include="DtoBase.cs" />
+    <Compile Include="EmpCertificationDto.cs" />
     <Compile Include="EmployeeDto.cs" />
     <Compile Include="EmployeeLoginDto.cs" />
     <Compile Include="EmployeeLoginMappingDto.cs" />

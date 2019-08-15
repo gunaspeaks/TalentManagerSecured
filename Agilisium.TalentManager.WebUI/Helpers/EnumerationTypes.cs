@@ -19,6 +19,8 @@ namespace Agilisium.TalentManager.WebUI.Helpers
         DevelopmentPriority,
         DevelopmentRequestStatus,
         VisaCategory,
+        BenchCategory,
+        TechnologyArea,
     }
 
     public enum PracticeType

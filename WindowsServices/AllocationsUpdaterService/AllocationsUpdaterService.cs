@@ -26,7 +26,11 @@ namespace Agilisium.TalentManager.WindowsServices
 
             try
             {
-                defaultScheduledMin = Convert.ToInt32(ConfigurationManager.AppSettings["serviceTriggerInterval"]) * 60 * 60 * 1000;
+                if (!string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["serviceTriggerInterval"]))
+                {
+                    defaultScheduledMin = Convert.ToInt32(ConfigurationManager.AppSettings["serviceTriggerInterval"]) * 60 * 60 * 1000;
+                }
+
                 serviceTimer.Elapsed += new ElapsedEventHandler(ServiceTimer_Elapsed);
                 serviceTimer.Interval = defaultScheduledMin;
             }

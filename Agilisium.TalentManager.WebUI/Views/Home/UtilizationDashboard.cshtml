@@ -23,6 +23,20 @@
                     </td>
                 </tr>
             }
+            <tr>
+                <td>
+                    <b>Total Allocations</b>
+                </td>
+                <td>:</td>
+                <td>
+                    <b>@Model.Sum(ne => ne.NumberOfEmployees)</b>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <text style="font-size:small; color:red;"><b>Note:</b> Mismatch with total resource count means one or more employees are allocated to multiple projects</text>
+                </td>
+            </tr>
         </table>
     </div>
 </div>

@@ -43,6 +43,8 @@ namespace Agilisium.TalentManager.Model
 
         public DbSet<DevelopmentRequest> DevelopmentRequests { get; set; }
 
+        public DbSet<EmpCertification> EmpCertifications { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Configurations.Add(new PracticeEntityConfiguration());

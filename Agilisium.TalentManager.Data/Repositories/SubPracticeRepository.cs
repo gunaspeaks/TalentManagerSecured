@@ -64,7 +64,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                                                        SubPracticeName = c.SubPracticeName,
                                                        ShortName = c.ShortName,
                                                        ManagerID = c.ManagerID,
-                                                       ManagerName = string.IsNullOrEmpty(ed.FirstName) ? "" : ed.LastName + ", " + ed.FirstName,
+                                                       ManagerName = ed.FirstName + " " + ed.LastName,
                                                        HeadCount = DataContext.Employees.Count(h => h.SubPracticeID == c.SubPracticeID)
                                                    };
 
@@ -93,7 +93,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                                                        SubPracticeName = c.SubPracticeName,
                                                        ShortName = c.ShortName,
                                                        ManagerID = c.ManagerID,
-                                                       ManagerName = string.IsNullOrEmpty(ed.FirstName) ? "" : ed.LastName + ", " + ed.FirstName,
+                                                       ManagerName = ed.FirstName + " " + ed.LastName,
                                                        HeadCount = DataContext.Employees.Count(h => h.SubPracticeID == c.SubPracticeID)
                                                    };
 
@@ -119,7 +119,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                         SubPracticeName = c.SubPracticeName,
                         ShortName = c.ShortName,
                         ManagerID = c.ManagerID,
-                        ManagerName = string.IsNullOrEmpty(ed.FirstName) ? "" : ed.LastName + ", " + ed.FirstName
+                        ManagerName = ed.FirstName + " " + ed.LastName
                     }).FirstOrDefault();
         }
 
@@ -164,7 +164,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                     join e in DataContext.Employees on p.ManagerID equals e.EmployeeEntryID into ee
                     from ed in ee.DefaultIfEmpty()
                     where p.SubPracticeID == subPracticeID
-                    select string.IsNullOrEmpty(ed.FirstName) ? "" : ed.LastName + ", " + ed.FirstName).FirstOrDefault();
+                    select ed.FirstName + " " + ed.LastName).FirstOrDefault();
         }
 
         public int TotalRecordsCountByPracticeID(int practiceID)

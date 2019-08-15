@@ -277,7 +277,8 @@ namespace Agilisium.TalentManager.Repository.Repositories
                         ProjectID = p.ProjectID,
                         Remarks = p.Remarks,
                         PercentageOfAllocation = p.PercentageOfAllocation,
-                        IsActive = p.IsActive
+                        IsActive = p.IsActive,
+                        BenchCategoryID = p.BenchCategoryID,
                     }).FirstOrDefault();
         }
 
@@ -687,6 +688,20 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
             items.Add(new BillabilityWiseAllocationSummaryDto
             {
+                AllocationType = "Bench (Available)",
+                AllocationTypeID = -5,
+                NumberOfEmployees = GetEmployeesCountByAllocationType(AllocationType.Bench, BenchCategory.Available)
+            });
+
+            items.Add(new BillabilityWiseAllocationSummaryDto
+            {
+                AllocationType = "Bench (Earmarked)",
+                AllocationTypeID = -6,
+                NumberOfEmployees = GetEmployeesCountByAllocationType(AllocationType.Bench, BenchCategory.Earmarked)
+            });
+
+            items.Add(new BillabilityWiseAllocationSummaryDto
+            {
                 AllocationType = "Not Allocated - Delivery",
                 AllocationTypeID = -1,
                 NumberOfEmployees = DataContext.IsPostgresDB ? postgresSqlProcessor.GetNonAllocatedResourcesCountFromPostgres(true) : GetNonAllocatedResourcesCount(true),
@@ -851,6 +866,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                 AllocationEntryID = projectDto.AllocationEntryID,
                 IsActive = projectDto.AllocationEndDate > DateTime.Now,
                 Remarks = projectDto.Remarks,
+                BenchCategoryID = projectDto.BenchCategoryID,
             };
 
             entity.UpdateTimeStamp(projectDto.LoggedInUserName, isNewEntity: true);
@@ -866,18 +882,34 @@ namespace Agilisium.TalentManager.Repository.Repositories
             targetEntity.ProjectID = sourceEntity.ProjectID;
             targetEntity.PercentageOfAllocation = sourceEntity.PercentageOfAllocation;
             targetEntity.Remarks = sourceEntity.Remarks;
+            targetEntity.BenchCategoryID = sourceEntity.BenchCategoryID;
+
             targetEntity.UpdateTimeStamp(sourceEntity.LoggedInUserName);
         }
 
-        private int GetEmployeesCountByAllocationType(AllocationType allocationType)
+        private int GetEmployeesCountByAllocationType(AllocationType allocationType, BenchCategory benchCategory = BenchCategory.Available)
         {
-            return (from e in DataContext.Employees
-                    join a in Entities on e.EmployeeEntryID equals a.EmployeeID
-                    where a.AllocationTypeID == (int)allocationType
-                    && e.IsDeleted == false && a.IsDeleted == false
-                    && a.AllocationEndDate >= DateTime.Now
-                    && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now))
-                    select a.EmployeeID).Distinct().Count();
+            if (allocationType == AllocationType.Bench)
+            {
+                return (from e in DataContext.Employees
+                        join a in Entities on e.EmployeeEntryID equals a.EmployeeID
+                        where a.AllocationTypeID == (int)allocationType
+                        && a.BenchCategoryID == (int)benchCategory
+                        && e.IsDeleted == false && a.IsDeleted == false
+                        && a.AllocationEndDate >= DateTime.Now
+                        && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now))
+                        select a.EmployeeID).Distinct().Count();
+            }
+            else
+            {
+                return (from e in DataContext.Employees
+                        join a in Entities on e.EmployeeEntryID equals a.EmployeeID
+                        where a.AllocationTypeID == (int)allocationType
+                        && e.IsDeleted == false && a.IsDeleted == false
+                        && a.AllocationEndDate >= DateTime.Now
+                        && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now))
+                        select a.EmployeeID).Distinct().Count();
+            }
         }
 
         private List<BillabilityWiseAllocationDetailDto> GetAllAllocationDetailFilteredByProjectData(string filterBy, string filterValue)

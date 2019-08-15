@@ -70,8 +70,6 @@ namespace Agilisium.TalentManager.Dto
 
         public string TravelledCountries { get; set; }
 
-        public int BenchCategoryID { get; set; }
-
-        public string BenchCategory { get; set; }
+        public int Certifications { get; set; }
     }
 }

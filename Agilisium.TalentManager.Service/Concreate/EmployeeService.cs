@@ -149,5 +149,20 @@ namespace Agilisium.TalentManager.Service.Concreate
         {
             return repository.GetVisaHoldingEmployees().ToList();
         }
+
+        public List<EmpCertificationDto> GetCertificationsByEmployeeID(int id)
+        {
+            return repository.GetCertificationsByEmployeeID(id).ToList();
+        }
+
+        public void AddCertification(EmpCertificationDto empCertification)
+        {
+            repository.AddCertification(empCertification);
+        }
+
+        public void DeleteCertification(EmpCertificationDto empCertification)
+        {
+            repository.DeleteCertification(empCertification);
+        }
     }
 }

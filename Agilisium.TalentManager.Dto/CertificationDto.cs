@@ -6,16 +6,18 @@ using System.Threading.Tasks;
 
 namespace Agilisium.TalentManager.Dto
 {
-    public class CertificationDto
+    public class CertificationDto : DtoBase
     {
+        public bool IsSelected { get; set; }
+
         public int CertificationID { get; set; }
 
-        public int TypeID { get; set; }
+        public int TechnologyAreaID { get; set; }
 
         public string TechnologyArea { get; set; }
 
         public string Name { get; set; }
 
-        public DateTime? ValidUpto { get; set; }
+        public string ShortName { get; set; }
     }
 }

@@ -68,6 +68,7 @@
     <Compile Include="Entities\DevelopmentRequest.cs" />
     <Compile Include="Entities\DropDownCategory.cs" />
     <Compile Include="Entities\DropDownSubCategory.cs" />
+    <Compile Include="Entities\EmpCertification.cs" />
     <Compile Include="Entities\Employee.cs" />
     <Compile Include="Entities\EmployeeIDTracker.cs" />
     <Compile Include="Entities\EmployeeLoginMapping.cs" />

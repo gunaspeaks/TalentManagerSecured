@@ -28,9 +28,20 @@ namespace Agilisium.TalentManager.WindowsServices
 
             try
             {
-                defaultScheduledMin = Convert.ToInt32(ConfigurationManager.AppSettings["serviceTriggerInterval"]) * 60 * 60 * 1000;
-                dayOfWeek = Convert.ToInt32(ConfigurationManager.AppSettings["serviceExecutionDayOfWeek"]);
-                appTempDirectory = ConfigurationManager.AppSettings["appTempDirectory"];
+                if (!string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["serviceTriggerInterval"]))
+                {
+                    defaultScheduledMin = Convert.ToInt32(ConfigurationManager.AppSettings["serviceTriggerInterval"]) * 60 * 60 * 1000;
+                }
+
+                if (!string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["serviceExecutionDayOfWeek"]))
+                {
+                    dayOfWeek = Convert.ToInt32(ConfigurationManager.AppSettings["serviceExecutionDayOfWeek"]);
+                }
+
+                if (!string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["appTempDirectory"]))
+                {
+                    appTempDirectory = ConfigurationManager.AppSettings["appTempDirectory"];
+                }
 
                 serviceTimer.Elapsed += new ElapsedEventHandler(ServiceTimer_Elapsed);
                 serviceTimer.Interval = defaultScheduledMin;

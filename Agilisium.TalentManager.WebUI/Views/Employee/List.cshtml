@@ -34,6 +34,9 @@
                 <th class="text-left">
                     @Html.DisplayNameFor(model => model.Employees.FirstOrDefault().PrimarySkills)
                 </th>
+                <th class="text-center">
+                    @Html.DisplayNameFor(model => model.Employees.FirstOrDefault().Certifications)
+                </th>
                 <th class="text-center">Actions</th>
             </tr>
 
@@ -60,6 +63,9 @@
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.PrimarySkills)
+                    </td>
+                    <td class="text-center">
+                        @Html.ActionLink(item.Certifications.ToString(), "Certifications", new { eid = item.EmployeeEntryID, page=Request.QueryString["page"]})
                     </td>
                     <td class="text-center">
                         @using (Html.BeginForm("Delete", "Employee"))

@@ -58,5 +58,11 @@ namespace Agilisium.TalentManager.Service.Abstract
         string GetEmailID(int employeeID);
 
         List<EmployeeVisaDto> GetVisaHolderingEmployees();
+
+        List<EmpCertificationDto> GetCertificationsByEmployeeID(int id);
+
+        void AddCertification(EmpCertificationDto empCertification);
+
+        void DeleteCertification(EmpCertificationDto empCertification);
     }
 }

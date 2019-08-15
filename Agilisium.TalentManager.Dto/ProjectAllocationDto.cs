@@ -35,5 +35,7 @@ namespace Agilisium.TalentManager.Dto
         public string AccountName { get; set; }
 
         public bool IsActive { get; set; }
+
+        public int? BenchCategoryID { get; set; }
     }
 }

@@ -20,6 +20,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
         private readonly NotificationsTrackerRepository trackerRepo;
         private readonly ProjectRepository projectRepo;
         private readonly PracticeRepository practiceRepository;
+        private readonly string dmEmailID = "satish.srinivasan @agilisium.com";
 
         private readonly string emailClientIP;
         private readonly string ownerEmailID;
@@ -136,7 +137,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
             }
             else
             {
-                toEmailID.Append("satish.srinivasan@agilisium.com");
+                toEmailID.Append(dmEmailID);
             }
 
             StringBuilder bccEmailIDs = new StringBuilder();
@@ -150,7 +151,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
                 bccEmailIDs.Append(rm.EmailID + ";");
             }
 
-            bccEmailIDs.Append("satish.srinivasan@agilisium.com");
+            bccEmailIDs.Append(dmEmailID);
 
             string emailSubject = "RMT Alert - Resource Allocation Notification";
             EmailHandler emailHandler = new EmailHandler(ownerEmailID, outlookPwd);
@@ -201,7 +202,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
             }
             else
             {
-                toEmailID.Append("satish.srinivasan@agilisium.com");
+                toEmailID.Append(dmEmailID);
             }
 
             StringBuilder bccEmailIDs = new StringBuilder();
@@ -215,7 +216,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
                 bccEmailIDs.Append(rm.EmailID + ";");
             }
 
-            bccEmailIDs.Append("satish.srinivasan@agilisium.com");
+            bccEmailIDs.Append(dmEmailID);
 
             string emailSubject = "Automated Resource Allocation Failure";
             EmailHandler emailHandler = new EmailHandler(ownerEmailID, outlookPwd);
@@ -238,7 +239,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
             }
             else
             {
-                toEmailID.Append("satish.srinivasan@agilisium.com");
+                toEmailID.Append(dmEmailID);
             }
 
             StringBuilder bccEmailIDs = new StringBuilder();
@@ -257,7 +258,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
                 bccEmailIDs.Append(practiceMgr.EmailID + ";");
             }
 
-            bccEmailIDs.Append("satish.srinivasan@agilisium.com");
+            bccEmailIDs.Append(dmEmailID);
 
             string emailSubject = $"RMT Alert - {employee.FirstName} {employee.LastName} had been Moved to Bench Project";
             EmailHandler emailHandler = new EmailHandler(ownerEmailID, outlookPwd);

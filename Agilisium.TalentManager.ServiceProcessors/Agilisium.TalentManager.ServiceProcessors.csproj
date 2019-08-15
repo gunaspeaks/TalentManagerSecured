@@ -47,6 +47,7 @@
     <Compile Include="AllocationsUpdaterServiceProcessor.cs" />
     <Compile Include="ContractorRequestProcessor.cs" />
     <Compile Include="AllocationsMessengerServiceProcessor.cs" />
+    <Compile Include="ManagementNotificationsProcessor.cs" />
     <Compile Include="ProcessorHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

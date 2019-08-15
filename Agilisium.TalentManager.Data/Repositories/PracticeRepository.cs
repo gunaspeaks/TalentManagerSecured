@@ -63,7 +63,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                                                     ShortName = p.ShortName,
                                                     IsReserved = p.IsReserved,
                                                     ManagerID = p.ManagerID,
-                                                    ManagerName = string.IsNullOrEmpty(ed.FirstName) ? "" : ed.LastName + ", " + ed.FirstName,
+                                                    ManagerName = ed.FirstName + " " + ed.LastName,
                                                     HeadCount = DataContext.Employees.Count(h => h.PracticeID == p.PracticeID && h.IsDeleted == false && h.LastWorkingDay.HasValue == false)
                                                 };
 
@@ -94,7 +94,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                                                     ShortName = p.ShortName,
                                                     IsReserved = p.IsReserved,
                                                     ManagerID = p.ManagerID,
-                                                    ManagerName = string.IsNullOrEmpty(ed.FirstName) ? "" : ed.LastName + ", " + ed.FirstName
+                                                    ManagerName = ed.FirstName + " " + ed.LastName
                                                 };
 
             return practices;
@@ -113,7 +113,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                         PracticeName = p.PracticeName,
                         ShortName = p.ShortName,
                         ManagerID = p.ManagerID,
-                        ManagerName = string.IsNullOrEmpty(ed.FirstName) ? "" : ed.LastName + ", " + ed.FirstName
+                        ManagerName = ed.FirstName + " " + ed.LastName
                     }).FirstOrDefault();
         }
 
@@ -181,7 +181,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                     join e in DataContext.Employees on p.ManagerID equals e.EmployeeEntryID into ee
                     from ed in ee.DefaultIfEmpty()
                     where p.PracticeID == practiceID
-                    select string.IsNullOrEmpty(ed.FirstName) ? "" : ed.LastName + ", " + ed.FirstName).FirstOrDefault();
+                    select ed.FirstName + " " + ed.LastName).FirstOrDefault();
         }
 
         public string GetPracticeName(int practiceID)

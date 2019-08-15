@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstract\ICertificationService.cs" />
     <Compile Include="Abstract\IEmployeeLoginMappingService.cs" />
     <Compile Include="Abstract\IAllocationService.cs" />
     <Compile Include="Abstract\IContractorService.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="Abstract\IEmployeeService.cs" />
     <Compile Include="Abstract\IPracticeService.cs" />
     <Compile Include="Abstract\ISubPracticeService.cs" />
+    <Compile Include="Concreate\CertificationService.cs" />
     <Compile Include="Concreate\EmployeeLoginMappingService.cs" />
     <Compile Include="Concreate\AllocationService.cs" />
     <Compile Include="Concreate\ContractorService.cs" />

@@ -274,6 +274,7 @@
     <Compile Include="Controllers\EmployeeController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\CertsController.cs" />
     <Compile Include="Controllers\PracticeController.cs" />
     <Compile Include="Controllers\ProjectController.cs" />
     <Compile Include="Controllers\ReportsController.cs" />
@@ -298,6 +299,10 @@
     <Compile Include="Models\BillabilityWiseAllocationSummaryModel.cs" />
     <Compile Include="Models\BillabilityWiseResourceCountModel.cs" />
     <Compile Include="Models\CategoryModel.cs" />
+    <Compile Include="Models\CertificationViewModel.cs" />
+    <Compile Include="Models\CertificationModel.cs" />
+    <Compile Include="Models\EmpCertificationModel.cs" />
+    <Compile Include="Models\EmpCertificationsViewModel.cs" />
     <Compile Include="Models\EmployeeLoginMappingViewModel.cs" />
     <Compile Include="Models\CategoryViewModel.cs" />
     <Compile Include="Models\ContractorViewModel.cs" />
@@ -348,6 +353,7 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\dashboard.css" />
+    <Content Include="Content\EmailTemplates\PODWiseEmployees.html" />
     <Content Include="Content\EmailTemplates\AllocationEndingEmailTemplate.html" />
     <Content Include="Content\EmailTemplates\AllocationFailureEmailTemplate.html" />
     <Content Include="Content\EmailTemplates\ContractorRequestEmailTemplate.html" />
@@ -485,6 +491,10 @@
     <Content Include="Views\Roles\Edit.cshtml" />
     <Content Include="Views\ELogin\List.cshtml" />
     <Content Include="Views\Reports\VisaHoldingEmployees.cshtml" />
+    <Content Include="Views\Certs\Create.cshtml" />
+    <Content Include="Views\Certs\Edit.cshtml" />
+    <Content Include="Views\Certs\List.cshtml" />
+    <Content Include="Views\Employee\Certifications.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

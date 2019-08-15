@@ -16,7 +16,7 @@ namespace Agilisium.TalentManager.ServerUtilities
         }
 
         public void SendEmail(string emailClientIp, string toEmailID, string emailSubject,
-            string emailBody, string bccEmailId = "", string attachedFilePath = "")
+            string emailBody, string bccEmailId = "", string attachedFilePath = "", MailPriority priority = MailPriority.Normal)
         {
             SmtpClient smtpClient = null;
             MailMessage mailMessage = new MailMessage()
@@ -25,7 +25,9 @@ namespace Agilisium.TalentManager.ServerUtilities
                 Subject = emailSubject,
                 IsBodyHtml = true,
                 Body = emailBody,
+                Priority = priority,
             };
+
 
             if (string.IsNullOrEmpty(attachedFilePath) == false)
             {

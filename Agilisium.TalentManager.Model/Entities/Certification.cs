@@ -1,23 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Agilisium.TalentManager.Model.Entities
 {
-    public class Certification
+    public class Certification : EntityBase
     {
         [Key]
         public int CertificationID { get; set; }
 
-        public int TypeID { get; set; }
-
-        public string TechnologyArea { get; set; }
+        public int TechnologyAreaID { get; set; }
 
         public string Name { get; set; }
 
-        public DateTime? ValidUpto { get; set; }
+        public string ShortName { get; set; }
     }
 }

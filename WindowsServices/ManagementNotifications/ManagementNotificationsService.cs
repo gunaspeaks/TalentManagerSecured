@@ -1,4 +1,5 @@
-﻿using log4net;
+﻿using Agilisium.TalentManager.ServiceProcessors;
+using log4net;
 using System;
 using System.Configuration;
 using System.ServiceProcess;
@@ -10,6 +11,8 @@ namespace Agilisium.TalentManager.WindowsServices.ManagementNotifications
     {
         private Timer serviceTimer;
         private readonly ILog logger;
+        private int dayOfExecution = 22;
+        private string appTempDirectory = @"D:\OfficeApps\Temp";
 
         public ManagementNotificationsService()
         {
@@ -25,7 +28,21 @@ namespace Agilisium.TalentManager.WindowsServices.ManagementNotifications
 
             try
             {
-                defaultScheduledMin = Convert.ToInt32(ConfigurationManager.AppSettings["serviceTriggerInterval"]) * 60 * 60 * 1000;
+                if (!string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["serviceTriggerInterval"]))
+                {
+                    defaultScheduledMin = Convert.ToInt32(ConfigurationManager.AppSettings["serviceTriggerInterval"]) * 60 * 60 * 1000;
+                }
+
+                if (!string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["dayOfExecution"]))
+                {
+                    dayOfExecution = Convert.ToInt32(ConfigurationManager.AppSettings["dayOfExecution"]);
+                }
+
+                if (!string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["appTempDirectory"]))
+                {
+                    appTempDirectory = ConfigurationManager.AppSettings["appTempDirectory"];
+                }
+
                 serviceTimer.Elapsed += new ElapsedEventHandler(ServiceTimer_Elapsed);
                 serviceTimer.Interval = defaultScheduledMin;
             }
@@ -45,10 +62,27 @@ namespace Agilisium.TalentManager.WindowsServices.ManagementNotifications
             logger.Info("Service execution triggered");
             try
             {
-                //AllocationsUpdaterServiceProcessor processor = new AllocationsUpdaterServiceProcessor();
-                logger.Info("Processing allocations");
-                //int newEntries = processor.ProcessAllocations();
-                //logger.Info($"There are {newEntries} entries had been processed");
+                if (dayOfExecution != DateTime.Now.Day)
+                {
+                    logger.Info($"Service will not be processed today as today is not {dayOfExecution} as configured");
+                    return;
+                }
+
+                int reportingDay = 27;
+                if (DateTime.Now.Day == dayOfExecution)
+                {
+                    if (DateTime.Now.DayOfWeek == DayOfWeek.Thursday)
+                    {
+                        reportingDay += 1;
+                    }
+                    else if (DateTime.Now.DayOfWeek == DayOfWeek.Friday)
+                    {
+                        reportingDay += 2;
+                    }
+                }
+
+                ManagementNotificationsProcessor processor = new ManagementNotificationsProcessor();
+                processor.GenerateManagementNotifications(appTempDirectory, reportingDay);
             }
             catch (Exception exp)
             {
@@ -66,7 +100,8 @@ namespace Agilisium.TalentManager.WindowsServices.ManagementNotifications
         {
             try
             {
-                // ExecuteServiceLocally();
+                //ExecuteServiceLocally();
+
                 logger.Info("Service has been started");
                 InitializeTimer();
             }
@@ -88,6 +123,8 @@ namespace Agilisium.TalentManager.WindowsServices.ManagementNotifications
 
         private void ExecuteServiceLocally()
         {
+            ManagementNotificationsProcessor processor = new ManagementNotificationsProcessor();
+            processor.GenerateManagementNotifications(appTempDirectory, 27);
         }
     }
 }

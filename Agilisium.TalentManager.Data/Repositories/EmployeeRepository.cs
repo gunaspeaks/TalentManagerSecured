@@ -58,8 +58,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                     from etd in ete.DefaultIfEmpty()
                     join vt in DataContext.DropDownSubCategories on emp.VisaCategoryID equals vt.SubCategoryID into vte
                     from vtd in vte.DefaultIfEmpty()
-                    join bt in DataContext.DropDownSubCategories on emp.BenchCategoryID equals bt.SubCategoryID into bte
-                    from btd in bte.DefaultIfEmpty()
                     join pm in DataContext.Employees on emp.EmployeeEntryID equals pm.EmployeeEntryID into pme
                     from pmd in pme.DefaultIfEmpty()
                     where emp.EmployeeEntryID == id
@@ -91,8 +89,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                         VisaCategoryID = emp.VisaCategoryID,
                         VisaValidUpto = emp.VisaValidUpto,
                         VisaCategory = vtd.SubCategoryName,
-                        BenchCategoryID = emp.BenchCategoryID,
-                        BenchCategory = btd.SubCategoryName,
                     }).FirstOrDefault();
         }
 
@@ -453,6 +449,51 @@ namespace Agilisium.TalentManager.Repository.Repositories
             return entries;
         }
 
+        public IEnumerable<EmpCertificationDto> GetCertificationsByEmployeeID(int id)
+        {
+            return (from ec in DataContext.EmpCertifications
+                    join c in DataContext.Certifications on ec.CertificationID equals c.CertificationID into ce
+                    from cd in ce.DefaultIfEmpty()
+                    where ec.IsDeleted == false && ec.EmployeeID == id && cd.IsDeleted == false
+                    select new EmpCertificationDto
+                    {
+                        CertificationID = cd.CertificationID,
+                        CertificationName = cd.Name,
+                        EmployeeID = ec.CertificationID,
+                        EntryID = ec.EntryID,
+                        ShortName = cd.ShortName,
+                        ValidUpto = ec.ValidUpto,
+                        CertifiedOn = ec.CertifiedOn,
+                    });
+        }
+
+        public void AddCertification(EmpCertificationDto empCertification)
+        {
+            EmpCertification empCert = new EmpCertification
+            {
+                CertificationID = empCertification.CertificationID,
+                CertifiedOn = empCertification.CertifiedOn,
+                EmployeeID = empCertification.EmployeeID,
+                ValidUpto = empCertification.ValidUpto,
+            };
+            empCert.UpdateTimeStamp(empCertification.LoggedInUserName, true);
+
+            DataContext.EmpCertifications.Add(empCert);
+            DataContext.Entry(empCert).State = EntityState.Added;
+            DataContext.SaveChanges();
+        }
+
+        public void DeleteCertification(EmpCertificationDto empCertification)
+        {
+            EmpCertification empCert = DataContext.EmpCertifications.FirstOrDefault(ec => ec.CertificationID == empCertification.CertificationID);
+
+            empCert.IsDeleted = true;
+            empCert.UpdateTimeStamp(empCertification.LoggedInUserName);
+            DataContext.EmpCertifications.Add(empCert);
+            DataContext.Entry(empCert).State = EntityState.Modified;
+            DataContext.SaveChanges();
+        }
+
         #endregion
 
         #region Private Methods
@@ -522,7 +563,8 @@ namespace Agilisium.TalentManager.Repository.Repositories
                             EmploymentTypeName = etd.SubCategoryName,
                             SubPracticeID = emp.SubPracticeID,
                             SubPracticeName = spd.SubPracticeName,
-                            ReportingManagerName = string.IsNullOrEmpty(rmd.FirstName) ? "" : rmd.LastName + ", " + rmd.FirstName,
+                            ReportingManagerName = rmd.FirstName + " " + rmd.LastName,
+                            Certifications = DataContext.EmpCertifications.Count(ec => ec.IsDeleted == false && ec.EmployeeID == emp.EmployeeEntryID),
                         };
 
             if (string.IsNullOrEmpty(searchText) == false)
@@ -559,7 +601,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                 VisaCategoryID = employeeDto.VisaCategoryID,
                 VisaValidUpto = employeeDto.VisaValidUpto,
                 IsDeleted = false,
-                BenchCategoryID = employeeDto.BenchCategoryID,
             };
 
             employee.UpdateTimeStamp(employeeDto.LoggedInUserName, true);
@@ -590,7 +631,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
             targetEntity.TravelledCountries = sourceEntity.TravelledCountries;
             targetEntity.VisaCategoryID = sourceEntity.VisaCategoryID;
             targetEntity.VisaValidUpto = sourceEntity.VisaValidUpto;
-            targetEntity.BenchCategoryID = sourceEntity.BenchCategoryID;
 
             targetEntity.UpdateTimeStamp(sourceEntity.LoggedInUserName);
         }
@@ -662,5 +702,11 @@ namespace Agilisium.TalentManager.Repository.Repositories
         string GetEmailID(int employeeID);
 
         IEnumerable<EmployeeVisaDto> GetVisaHoldingEmployees();
+
+        IEnumerable<EmpCertificationDto> GetCertificationsByEmployeeID(int id);
+
+        void AddCertification(EmpCertificationDto empCertification);
+
+        void DeleteCertification(EmpCertificationDto empCertification);
     }
 }

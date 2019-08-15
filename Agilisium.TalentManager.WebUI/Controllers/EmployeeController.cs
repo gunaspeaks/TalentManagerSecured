@@ -14,21 +14,26 @@ namespace Agilisium.TalentManager.WebUI.Controllers
 {
     public class EmployeeController : BaseController
     {
+        private const string NO_VALID_VISA = "No Valid Visa";
+
         private readonly IEmployeeService empService;
         private readonly IDropDownSubCategoryService subCategoryService;
         private readonly IPracticeService practiceService;
         private readonly ISubPracticeService subPracticeService;
-        private const string NO_VALID_VISA = "No Valid Visa";
+        private readonly ICertificationService certService;
+
 
         public EmployeeController(IEmployeeService empService,
             IDropDownSubCategoryService subCategoryService,
             IPracticeService practiceService,
-            ISubPracticeService subPracticeService)
+            ISubPracticeService subPracticeService,
+            ICertificationService certService)
         {
             this.empService = empService;
             this.subCategoryService = subCategoryService;
             this.practiceService = practiceService;
             this.subPracticeService = subPracticeService;
+            this.certService = certService;
         }
 
         // GET: Employee
@@ -246,7 +251,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                 EmployeeDto emp = empService.GetEmployee(id.Value);
                 GetSubPracticeList(emp.PracticeID);
                 empModel = Mapper.Map<EmployeeDto, EmployeeModel>(emp);
-                if(String.IsNullOrWhiteSpace(empModel.TravelledCountries))
+                if (string.IsNullOrWhiteSpace(empModel.TravelledCountries))
                 {
                     empModel.TravelledCountries = "None";
                 }
@@ -378,6 +383,61 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             return Json(empService.GetEmailID(id));
         }
 
+        public ActionResult Certifications(string id)
+        {
+            EmpCertificationsViewModel viewModel = new EmpCertificationsViewModel();
+
+            try
+            {
+                int empID = -1;
+                List<CertificationDto> allCerts = certService.GetAll();
+                viewModel.AvailableCertifications = Mapper.Map<List<CertificationDto>, List<CertificationModel>>(allCerts);
+
+                if (!string.IsNullOrWhiteSpace(id))
+                {
+                    int.TryParse(id, out empID);
+                    List<EmpCertificationDto> aquiredCerts = empService.GetCertificationsByEmployeeID(empID);
+                    viewModel.AquiredCertifications = Mapper.Map<List<EmpCertificationDto>, List<EmpCertificationModel>>(aquiredCerts);
+                    foreach (EmpCertificationModel ac in viewModel.AquiredCertifications)
+                    {
+                        if (viewModel.AvailableCertifications.Any(c => c.CertificationID == ac.CertificationID))
+                        {
+                            viewModel.AvailableCertifications
+                                .FirstOrDefault(c => c.CertificationID == ac.CertificationID)
+                                .IsSelected = true;
+                        }
+                    }
+                }
+            }
+            catch (Exception exp)
+            {
+                DisplayLoadErrorMessage(exp);
+            }
+
+            return View(viewModel);
+        }
+
+        public ActionResult DeleteCertification(int? id, int eid)
+        {
+            if (!id.HasValue)
+            {
+                DisplayWarningMessage("Looks like, the Certification ID is missing in your request");
+                return RedirectToAction("Certifications", new { eid = eid });
+            }
+
+            try
+            {
+                empService.Delete(new EmployeeDto { EmployeeEntryID = id.Value });
+                DisplaySuccessMessage("Employee details have been deleted successfully");
+                return RedirectToAction("Certifications", new { eid = eid });
+            }
+            catch (Exception exp)
+            {
+                DisplayDeleteErrorMessage(exp);
+                return RedirectToAction("Certifications", new { eid = eid });
+            }
+        }
+
         public FileStreamResult DownloadAllEmployees(string filterType, string filterValue)
         {
             StringBuilder recordString = new StringBuilder($"Employee ID,Employee Name,Employee Type,Business Unit,POD,Competency,Date of Join,Last Working Day,Primary Skills,Secondary Skills,Reporting Manager{Environment.NewLine}");
@@ -497,6 +557,17 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                                                   }).ToList();
             ViewBag.NoVisaCategoryID = visaListItems.FirstOrDefault(i => i.Text == NO_VALID_VISA).Value;
             ViewBag.VisaCategoryListItems = visaListItems;
+
+            List<SelectListItem> benchCategoryList = (from c in buList
+                                                      orderby c.SubCategoryName
+                                                      where c.CategoryID == (int)CategoryType.BenchCategory
+                                                      select new SelectListItem
+                                                      {
+                                                          Text = c.SubCategoryName,
+                                                          Value = c.SubCategoryID.ToString()
+                                                      }).ToList();
+
+            ViewBag.BenchCategoryListItems = benchCategoryList;
 
             List<SelectListItem> gradeListItems = new List<SelectListItem>();
             for (int i = 10; i >= 1; i--)

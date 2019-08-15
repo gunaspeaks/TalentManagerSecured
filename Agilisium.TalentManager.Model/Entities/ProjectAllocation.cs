@@ -26,5 +26,7 @@ namespace Agilisium.TalentManager.Model.Entities
 
         [DefaultValue(true)]
         public bool IsActive { get; set; }
+
+        public int? BenchCategoryID { get; set; }
     }
 }

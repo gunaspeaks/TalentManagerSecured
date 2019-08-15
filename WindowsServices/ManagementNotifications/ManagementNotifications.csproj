@@ -90,5 +90,11 @@
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Agilisium.TalentManager.ServiceProcessors\Agilisium.TalentManager.ServiceProcessors.csproj">
+      <Project>{bf5ce7aa-78f3-4d62-b200-82cc38cfbab2}</Project>
+      <Name>Agilisium.TalentManager.ServiceProcessors</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
