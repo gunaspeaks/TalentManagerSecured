@@ -13,6 +13,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
     {
         private readonly AllocationRepository allocationService;
         private readonly EmployeeRepository empService;
+        private readonly SystemSettingRepository settingRepository;
         private readonly ILog logger;
 
         public AllocationsMessengerServiceProcessor()
@@ -20,6 +21,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
 
             allocationService = new AllocationRepository();
             empService = new EmployeeRepository();
+            settingRepository = new SystemSettingRepository();
             logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             log4net.Config.XmlConfigurator.Configure();
         }
@@ -32,7 +34,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
             string templateFilePath = ProcessorHelper.GetSettingsValue(ProcessorHelper.TEMPLATE_FOLDER_PATH) + "\\ResourceAllocationReportTemplate.html";
             string toEmailID = ProcessorHelper.GetSettingsValue(ProcessorHelper.MANAGERS_EMAIL_GROUP);
             string outlookPwd = ProcessorHelper.GetSettingsValue(ProcessorHelper.EMAIL_OWNERS_PASSWORD);
-            string emailSubject = "Agilisium - Resource Allocation Report (From EC2)";
+            string emailSubject = "Agilisium - Resource Allocation Report";
             string bccEmailIDs = ProcessorHelper.GetSettingsValue(ProcessorHelper.CONTRACTOR_REQ_BCC_RECEIPIENTS);
             EmailHandler emailHandler = new EmailHandler(ownerEmailID, outlookPwd);
 
@@ -40,6 +42,14 @@ namespace Agilisium.TalentManager.ServiceProcessors
             string attachmentFilePath = GenerateAllocationReportAsCsvFile(appTempDirectory);
             logger.Info("Sending email with attachment");
             emailHandler.SendEmail(emailClientIP, toEmailID, emailSubject, emailContent, bccEmailIDs, attachmentFilePath);
+
+            WindowsServiceSettingsDto windowsService = new WindowsServiceSettingsDto
+            {
+                ExecutionInterval = "Weekly",
+                ServiceID = (int)WindowsServices.WeeklyAllocationsMailer,
+                ServiceName = WindowsServices.WeeklyAllocationsMailer.ToString(),
+            };
+            settingRepository.UpdateWindowsServiceStatus(windowsService);
         }
 
         private string GenerateEmailBody(string templateFilePath)
@@ -59,6 +69,8 @@ namespace Agilisium.TalentManager.ServiceProcessors
             emailBody.Replace("__NON_COMMITED_BUFFER__", allocationSummary.FirstOrDefault(e => e.AllocationType == "Non-Committed Buffer")?.NumberOfEmployees.ToString());
             emailBody.Replace("__NOT_ALLOCATED_YET_DELIVERY__", allocationSummary.FirstOrDefault(e => e.AllocationType == "Not Allocated - Delivery")?.NumberOfEmployees.ToString());
             emailBody.Replace("__NOT_ALLOCATED_YET_OTHERS__", allocationSummary.FirstOrDefault(e => e.AllocationType == "BD & BO")?.NumberOfEmployees.ToString());
+            emailBody.Replace("__BENCH_AVAILABLE__", allocationSummary.FirstOrDefault(e => e.AllocationType == "Bench (Available)")?.NumberOfEmployees.ToString());
+            emailBody.Replace("__BENCH_EARMARKED__", allocationSummary.FirstOrDefault(e => e.AllocationType == "Bench (Earmarked)")?.NumberOfEmployees.ToString());
             return emailBody.ToString();
         }
 

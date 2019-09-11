@@ -45,6 +45,8 @@ namespace Agilisium.TalentManager.Model
 
         public DbSet<EmpCertification> EmpCertifications { get; set; }
 
+        public DbSet<WindowsServiceSettings> WindowsServiceSettingEntries { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Configurations.Add(new PracticeEntityConfiguration());

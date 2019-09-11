@@ -5,6 +5,7 @@ using System.Web.Mvc;
 
 namespace Agilisium.TalentManager.WebUI.Helpers
 {
+    [Authorize]
     public class BaseController : Controller
     {
         private const string readErrorMessage = "Oops! an error has occured while retrieving the details";

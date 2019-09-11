@@ -704,14 +704,14 @@ namespace Agilisium.TalentManager.Repository.Repositories
             {
                 AllocationType = "Not Allocated - Delivery",
                 AllocationTypeID = -1,
-                NumberOfEmployees = DataContext.IsPostgresDB ? postgresSqlProcessor.GetNonAllocatedResourcesCountFromPostgres(true) : GetNonAllocatedResourcesCount(true),
+                NumberOfEmployees = GetNonAllocatedResourcesCount(true),
             });
 
             items.Add(new BillabilityWiseAllocationSummaryDto
             {
                 AllocationType = "BD & BO",
                 AllocationTypeID = -2,
-                NumberOfEmployees = DataContext.IsPostgresDB ? postgresSqlProcessor.GetNonAllocatedResourcesCountFromPostgres(false) : GetNonAllocatedResourcesCount(false),
+                NumberOfEmployees = GetNonAllocatedResourcesCount(false),
             });
 
             return items;
@@ -762,6 +762,49 @@ namespace Agilisium.TalentManager.Repository.Repositories
         {
             return Entities.Any(a => a.IsDeleted == false && a.AllocationEntryID != allocationID
                         && a.EmployeeID == employeeID && a.AllocationEndDate >= allocationEndDate);
+        }
+
+        public IEnumerable<PodWiseHeadCountDto> GetPodWiseAllocationCount()
+        {
+            List<PodWiseHeadCountDto> podWiseCountResult = new List<PodWiseHeadCountDto>();
+            List<Practice> pods = DataContext.Practices.Where(p => p.IsDeleted == false).OrderBy(p => p.PracticeName).ToList();
+            List<PodWiseCountDto> allPodWiseCount = postgresSqlProcessor.GetPodWiseAllocationCount().ToList();
+            IQueryable<DropDownSubCategory> allocationTypes = DataContext.DropDownSubCategories.Where(s => s.CategoryID == 2 && s.IsDeleted == false);
+
+            foreach (Practice pod in pods)
+            {
+                List<PodWiseCountDto> podCount = allPodWiseCount.Where(p => p.PracticeName == pod.PracticeName).ToList();
+                int ba = (from a in Entities
+                          join e in DataContext.Employees on a.EmployeeID equals e.EmployeeEntryID
+                          where a.IsDeleted == false && e.IsDeleted == false
+                          && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue && e.LastWorkingDay > DateTime.Now))
+                          && a.AllocationEndDate > DateTime.Now && a.BenchCategoryID == (int)BenchCategory.Available
+                          && e.PracticeID == pod.PracticeID
+                          select a).Count();
+
+                int be = (from a in Entities
+                          join e in DataContext.Employees on a.EmployeeID equals e.EmployeeEntryID
+                          where a.IsDeleted == false && e.IsDeleted == false
+                          && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue && e.LastWorkingDay > DateTime.Now))
+                          && a.AllocationEndDate > DateTime.Now && a.BenchCategoryID == (int)BenchCategory.Earmarked
+                          && e.PracticeID == pod.PracticeID
+                          select a).Count();
+
+                podWiseCountResult.Add(new PodWiseHeadCountDto
+                {
+                    PracticeID = pod.PracticeID,
+                    PracticeName = pod.PracticeName,
+                    BenchCount = podCount.Any(a => a.SubCategoryName == "Bench") ? podCount.FirstOrDefault(a => a.SubCategoryName == "Bench").Count : 0,
+                    BillableCount = podCount.Any(a => a.SubCategoryName == "Billable") ? podCount.FirstOrDefault(a => a.SubCategoryName == "Billable").Count : 0,
+                    ComBufferCount = podCount.Any(a => a.SubCategoryName == "Committed Buffer") ? podCount.FirstOrDefault(a => a.SubCategoryName == "Committed Buffer").Count : 0,
+                    NonComBufferCount = podCount.Any(a => a.SubCategoryName == "Non-Committed Buffer") ? podCount.FirstOrDefault(a => a.SubCategoryName == "Non-Committed Buffer").Count : 0,
+                    TotalCount = DataContext.Employees.Count(e => e.IsDeleted == false && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue && e.LastWorkingDay > DateTime.Now)) && e.PracticeID == pod.PracticeID),
+                    BenchAvailableCount = ba,
+                    BenchEarmarkedCount = be,
+                });
+            }
+
+            return podWiseCountResult;
         }
 
         #endregion
@@ -891,14 +934,12 @@ namespace Agilisium.TalentManager.Repository.Repositories
         {
             if (allocationType == AllocationType.Bench)
             {
-                return (from e in DataContext.Employees
-                        join a in Entities on e.EmployeeEntryID equals a.EmployeeID
-                        where a.AllocationTypeID == (int)allocationType
-                        && a.BenchCategoryID == (int)benchCategory
-                        && e.IsDeleted == false && a.IsDeleted == false
-                        && a.AllocationEndDate >= DateTime.Now
-                        && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now))
-                        select a.EmployeeID).Distinct().Count();
+                return (from a in Entities
+                        join e in DataContext.Employees on a.EmployeeID equals e.EmployeeEntryID
+                        where a.IsDeleted == false && e.IsDeleted == false
+                        && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue && e.LastWorkingDay > DateTime.Now))
+                        && a.AllocationEndDate > DateTime.Now && a.BenchCategoryID == (int)benchCategory
+                        select a).Distinct().Count();
             }
             else
             {
@@ -1080,20 +1121,30 @@ namespace Agilisium.TalentManager.Repository.Repositories
             return allocationDetails;
         }
 
-        private int GetNonAllocatedResourcesCount(bool forDelivery = true)
+        private int GetNonAllocatedResourcesCount(bool forDeliveryBU)
         {
-            DbCommand cmd = DataContext.Database.Connection.CreateCommand();
-            cmd.CommandText = "dbo.GetCountOfNotAllocatedEmployees";
-            SqlParameter param = new SqlParameter
+            int count = 0;
+            List<Employee> emps = null;
+            if (forDeliveryBU)
             {
-                ParameterName = "IsForDelivery",
-                Value = forDelivery ? 1 : 0
-            };
-            cmd.Parameters.Add(param); cmd.CommandType = CommandType.StoredProcedure;
-            DataContext.Database.Connection.Open();
-            object result = cmd.ExecuteScalar();
-            int count = result != null ? int.Parse(result.ToString()) : 0;
-            DataContext.Database.Connection.Close();
+                emps = DataContext.Employees.Where(e => e.IsDeleted == false
+                  && e.BusinessUnitID == 3 && e.LastWorkingDay.HasValue == false
+                  || (e.LastWorkingDay.HasValue && e.LastWorkingDay.Value > DateTime.Now)).ToList();
+            }
+            else
+            {
+                emps = DataContext.Employees.Where(e => e.IsDeleted == false
+                    && e.BusinessUnitID != 3 && e.LastWorkingDay.HasValue == false
+                    || (e.LastWorkingDay.HasValue && e.LastWorkingDay.Value > DateTime.Now)).ToList();
+            }
+
+            foreach (Employee emp in emps)
+            {
+                if (Entities.Count(a => a.IsDeleted == false && a.EmployeeID == emp.EmployeeEntryID && a.AllocationEndDate > DateTime.Now) == 0)
+                {
+                    count++;
+                }
+            }
             return count;
         }
 
@@ -1132,7 +1183,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         IEnumerable<BillabilityWiseAllocationDetailDto> GetBillabilityWiseAllocationDetail(string filterBy, string filterValue);
 
-        //IEnumerable<UtilizedDaysDetailDto> GetUtilizedDaysDetail(string filterBy, string filterValue, int pageSize = -1, int pageNo = -1);
+        IEnumerable<PodWiseHeadCountDto> GetPodWiseAllocationCount();
 
         IEnumerable<UtilizedDaysSummaryDto> GetUtilizedDaysSummary(string filterBy, string filterValue, string sortBy, string sortType);
 

@@ -228,6 +228,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         }
 
         // GET: Employe/Edit/5
+        [Authorize(Roles = "Human Resource, Super Admin, Admin")]
         public ActionResult Edit(int? id)
         {
             EmployeeModel empModel = new EmployeeModel();
@@ -299,7 +300,8 @@ namespace Agilisium.TalentManager.WebUI.Controllers
 
         // POST: Employe/Edit/5
         [HttpPost]
-        public ActionResult Edit(EmployeeModel employee)
+        [Authorize(Roles = "Human Resource, Super Admin, Admin")]
+        public ActionResult Edit(EmployeeModel employee, int? page)
         {
             try
             {
@@ -321,7 +323,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                     EmployeeDto employeeDto = Mapper.Map<EmployeeModel, EmployeeDto>(employee);
                     empService.Update(employeeDto);
                     DisplaySuccessMessage("Employee details have been Updated successfully");
-                    return RedirectToAction("List");
+                    return RedirectToAction("List", new { page });
                 }
             }
             catch (Exception exp)
@@ -332,24 +334,25 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         }
 
         // GET: Employe/Delete/5
-        public ActionResult Delete(int? id)
+        [Authorize(Roles = "Human Resource, Super Admin, Admin")]
+        public ActionResult Delete(int? id, int? page)
         {
             if (!id.HasValue)
             {
                 DisplayWarningMessage("Looks like, the employee ID is missing in your request");
-                return RedirectToAction("List");
+                return RedirectToAction("List", new { page });
             }
 
             try
             {
                 empService.Delete(new EmployeeDto { EmployeeEntryID = id.Value });
                 DisplaySuccessMessage("Employee details have been deleted successfully");
-                return RedirectToAction("List");
+                return RedirectToAction("List", new { page });
             }
             catch (Exception exp)
             {
                 DisplayDeleteErrorMessage(exp);
-                return RedirectToAction("List");
+                return RedirectToAction("List", new { page  });
             }
         }
 
@@ -383,61 +386,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             return Json(empService.GetEmailID(id));
         }
 
-        public ActionResult Certifications(string id)
-        {
-            EmpCertificationsViewModel viewModel = new EmpCertificationsViewModel();
-
-            try
-            {
-                int empID = -1;
-                List<CertificationDto> allCerts = certService.GetAll();
-                viewModel.AvailableCertifications = Mapper.Map<List<CertificationDto>, List<CertificationModel>>(allCerts);
-
-                if (!string.IsNullOrWhiteSpace(id))
-                {
-                    int.TryParse(id, out empID);
-                    List<EmpCertificationDto> aquiredCerts = empService.GetCertificationsByEmployeeID(empID);
-                    viewModel.AquiredCertifications = Mapper.Map<List<EmpCertificationDto>, List<EmpCertificationModel>>(aquiredCerts);
-                    foreach (EmpCertificationModel ac in viewModel.AquiredCertifications)
-                    {
-                        if (viewModel.AvailableCertifications.Any(c => c.CertificationID == ac.CertificationID))
-                        {
-                            viewModel.AvailableCertifications
-                                .FirstOrDefault(c => c.CertificationID == ac.CertificationID)
-                                .IsSelected = true;
-                        }
-                    }
-                }
-            }
-            catch (Exception exp)
-            {
-                DisplayLoadErrorMessage(exp);
-            }
-
-            return View(viewModel);
-        }
-
-        public ActionResult DeleteCertification(int? id, int eid)
-        {
-            if (!id.HasValue)
-            {
-                DisplayWarningMessage("Looks like, the Certification ID is missing in your request");
-                return RedirectToAction("Certifications", new { eid = eid });
-            }
-
-            try
-            {
-                empService.Delete(new EmployeeDto { EmployeeEntryID = id.Value });
-                DisplaySuccessMessage("Employee details have been deleted successfully");
-                return RedirectToAction("Certifications", new { eid = eid });
-            }
-            catch (Exception exp)
-            {
-                DisplayDeleteErrorMessage(exp);
-                return RedirectToAction("Certifications", new { eid = eid });
-            }
-        }
-
+        [Authorize(Roles = "Human Resource, Super Admin")]
         public FileStreamResult DownloadAllEmployees(string filterType, string filterValue)
         {
             StringBuilder recordString = new StringBuilder($"Employee ID,Employee Name,Employee Type,Business Unit,POD,Competency,Date of Join,Last Working Day,Primary Skills,Secondary Skills,Reporting Manager{Environment.NewLine}");
@@ -467,6 +416,106 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             byte[] byteArr = Encoding.ASCII.GetBytes(recordString.ToString());
             MemoryStream stream = new MemoryStream(byteArr);
             return File(stream, "application/vnd.ms-excel", $"Employees As On{DateTime.Now.Year - DateTime.Now.Month - DateTime.Now.Day}.csv");
+        }
+
+        public ActionResult AddCertification(int? cid, int? eid)
+        {
+            EmpCertificationModel certModel = new EmpCertificationModel();
+
+            try
+            {
+                if (!cid.HasValue)
+                {
+                    DisplayWarningMessage("Looks like, the Certification ID is invalid");
+                    return View(certModel);
+                }
+                certModel.CertificationID = cid.Value;
+                CertificationDto cert = certService.GetByID(certModel.CertificationID);
+                certModel.CertificationName = cert?.Name;
+                certModel.ShortName = cert?.ShortName;
+
+                if (!eid.HasValue)
+                {
+                    DisplayWarningMessage("Looks like, the Employee ID is invalid");
+                    return View(certModel);
+                }
+                certModel.EmployeeID = eid.Value;
+                EmployeeDto emp = empService.GetEmployee(eid.Value);
+                certModel.EmployeeName = $"{emp?.FirstName} {emp?.LastName}";
+            }
+            catch (Exception exp)
+            {
+                DisplayLoadErrorMessage(exp);
+            }
+
+            return View(certModel);
+        }
+
+        [HttpPost]
+        public ActionResult AddCertification(EmpCertificationModel certificationModel)
+        {
+            try
+            {
+                EmpCertificationDto certDto = Mapper.Map<EmpCertificationModel, EmpCertificationDto>(certificationModel);
+                empService.AddCertification(certDto);
+                DisplaySuccessMessage("Certification added successfully");
+            }
+            catch (Exception exp)
+            {
+                DisplayUpdateErrorMessage(exp);
+            }
+            return RedirectToAction("Certifications", new { eid = certificationModel.EmployeeID });
+        }
+
+        public ActionResult Certifications(string eid)
+        {
+            EmpCertificationsViewModel viewModel = new EmpCertificationsViewModel();
+
+            try
+            {
+                int empID = -1;
+                List<CertificationDto> allCerts = certService.GetAll();
+                viewModel.AvailableCertifications = Mapper.Map<List<CertificationDto>, List<CertificationModel>>(allCerts);
+
+                if (!string.IsNullOrWhiteSpace(eid))
+                {
+                    int.TryParse(eid, out empID);
+                    List<EmpCertificationDto> aquiredCerts = empService.GetCertificationsByEmployeeID(empID);
+                    viewModel.AquiredCertifications = Mapper.Map<List<EmpCertificationDto>, List<EmpCertificationModel>>(aquiredCerts);
+
+                    foreach (EmpCertificationModel ac in viewModel.AquiredCertifications)
+                    {
+                        viewModel.AvailableCertifications.RemoveAll(c => c.CertificationID == ac.CertificationID);
+                    }
+                }
+            }
+            catch (Exception exp)
+            {
+                DisplayLoadErrorMessage(exp);
+            }
+
+            return View(viewModel);
+        }
+
+        public ActionResult DeleteCertification(int? id, int? eid)
+        {
+            if (!id.HasValue)
+            {
+                DisplayWarningMessage("Looks like, the Certification ID is missing in your request");
+                return RedirectToAction("Certifications", new { eid = eid.Value });
+            }
+
+            try
+            {
+                empService.DeleteCertification(new EmpCertificationDto { EntryID = id.Value, EmployeeID = eid.Value });
+                DisplaySuccessMessage("Certifications have been removed for the employee successfully");
+                return RedirectToAction("Certifications", new { eid = eid.Value });
+            }
+            catch (Exception exp)
+            {
+                DisplayDeleteErrorMessage(exp);
+                return RedirectToAction("Certifications", new { eid = eid.Value });
+            }
         }
 
         private IEnumerable<EmployeeModel> GetEmployees(string searchText, int pageNo = 1)

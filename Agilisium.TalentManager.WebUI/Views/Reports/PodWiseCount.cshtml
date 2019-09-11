@@ -1,0 +1,92 @@
+﻿@model IEnumerable<Agilisium.TalentManager.WebUI.Models.PodWiseHeadCountModel>
+
+@{
+    ViewBag.Title = "Pod-Wise Employee Total/Allocation Count";
+}
+
+<div class="panel panel-default">
+    <div style="text-align:center" class="panel-heading">
+        <h3><b>Pod-Wise Employee Total/Allocation Count</b></h3> @Html.ActionLink("(Download as CSV Format)", "DownloadPodWiseCount")
+    </div>
+    <div class="panel-body">
+        <table style="width:90%" class="table table-striped table-condensed table-bordered">
+            <tr>
+                <th class="text-left">
+                    @Html.DisplayNameFor(model => model.PracticeName)
+                </th>
+                <th class="text-right">
+                    @Html.DisplayNameFor(model => model.TotalCount)
+                </th>
+                <th class="text-right">
+                    @Html.DisplayNameFor(model => model.BillableCount)
+                </th>
+                <th class="text-right">
+                    @Html.DisplayNameFor(model => model.ComBufferCount)
+                </th>
+                <th class="text-right">
+                    @Html.DisplayNameFor(model => model.NonComBufferCount)
+                </th>
+                <th class="text-right">
+                    @Html.DisplayNameFor(model => model.BenchAvailableCount)
+                </th>
+                <th class="text-right">
+                    @Html.DisplayNameFor(model => model.BenchEarmarkedCount)
+                </th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="text-left">
+                    @Html.DisplayFor(modelItem => item.PracticeName)
+                </td>
+                <td class="text-right">
+                    @Html.DisplayFor(modelItem => item.TotalCount)
+                </td>
+                <td class="text-right">
+                    @Html.DisplayFor(modelItem => item.BillableCount)
+                </td>
+                <td class="text-right">
+                    @Html.DisplayFor(modelItem => item.ComBufferCount)
+                </td>
+                <td class="text-right">
+                    @Html.DisplayFor(modelItem => item.NonComBufferCount)
+                </td>
+                <td class="text-right">
+                    @Html.DisplayFor(modelItem => item.BenchAvailableCount)
+                </td>
+                <td class="text-right">
+                    @Html.DisplayFor(modelItem => item.BenchEarmarkedCount)
+                </td>
+            </tr>
+            }
+            <tr>
+                <td class="text-left">
+                    <label>Total Count</label>
+                </td>
+                <td class="text-right">
+                    <label>@Model.Sum(p => p.TotalCount)</label>
+                </td>
+                <td class="text-right">
+                    <label>@Model.Sum(p => p.BillableCount)</label>
+                </td>
+                <td class="text-right">
+                    <label>@Model.Sum(p => p.ComBufferCount)</label>
+                </td>
+                <td class="text-right">
+                    <label>@Model.Sum(p => p.NonComBufferCount)</label>
+                </td>
+                <td class="text-right">
+                    <label>@Model.Sum(p => p.BenchAvailableCount)</label>
+                </td>
+                <td class="text-right">
+                    <label>@Model.Sum(p => p.BenchEarmarkedCount)</label>
+                </td>
+            </tr>
+
+        </table>
+    </div>
+    <div class="panel-footer">
+        @Html.ActionLink("Back to Reports Index", "Index", null, new { @class = "btn btn-default" })
+    </div>
+</div>

@@ -16,15 +16,13 @@ namespace Agilisium.TalentManager.Tools.WindowsServiceExecutor
         {
             try
             {
-                MyLogger.LogMessage("");
-                MyLogger.LogMessage("*********************************************************************************************");
                 MyLogger.LogMessage("Email Service has started processing");
 
                 MessageBox.Show(DateTime.Today.DayOfWeek.ToString());
 
                 AllocationsMessengerServiceProcessor processor = new AllocationsMessengerServiceProcessor();
                 MyLogger.LogMessage("Generating resource allocation report");
-                //processor.GenerateResourceAllocationReport();
+                processor.GenerateResourceAllocationReport(@"D:\OfficeApps\Temp");
                 MyLogger.LogMessage("Service execution complete.");
 
                 MessageBox.Show("Service execution complete.");
@@ -44,13 +42,11 @@ namespace Agilisium.TalentManager.Tools.WindowsServiceExecutor
         {
             try
             {
-                MyLogger.LogMessage("");
-                MyLogger.LogMessage("*********************************************************************************************");
                 MyLogger.LogMessage("Allocation Updator Service has initiated");
 
                 AllocationsUpdaterServiceProcessor processor = new AllocationsUpdaterServiceProcessor();
 
-                //processor.ProcessAllocations();
+                processor.ProcessAllocations();
                 MyLogger.LogMessage("Service execution complete.");
 
                 MessageBox.Show("Service execution complete.");
@@ -60,9 +56,19 @@ namespace Agilisium.TalentManager.Tools.WindowsServiceExecutor
                 MessageBox.Show(exp.Message);
                 MyLogger.LogMessage("Error while executing Allocation Updator service", exp);
             }
-            finally
+        }
+
+        private void btnMngtNotificationsService_Click(object sender, EventArgs e)
+        {
+            try
             {
-                MyLogger.LogMessage("*********************************************************************************************");
+                ManagementNotificationsProcessor processor = new ManagementNotificationsProcessor();
+                processor.GenerateManagementNotifications(@"D:\OfficeApps\Temp", 27);
+            }
+            catch (Exception exp)
+            {
+                MessageBox.Show(exp.Message);
+                MyLogger.LogMessage("Error while executing Allocation Updator service", exp);
             }
         }
     }

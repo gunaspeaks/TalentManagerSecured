@@ -18,7 +18,7 @@ namespace Agilisium.TalentManager.WebUI.Models
 
         public IEnumerable<EmpCertificationModel> AquiredCertifications { get; set; }
 
-        public IEnumerable<CertificationModel> AvailableCertifications { get; set; }
+        public List<CertificationModel> AvailableCertifications { get; set; }
 
     }
 }

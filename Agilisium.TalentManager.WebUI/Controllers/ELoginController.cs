@@ -1,14 +1,10 @@
 ﻿using Agilisium.TalentManager.Dto;
-using Agilisium.TalentManager.Model.Entities;
 using Agilisium.TalentManager.Service.Abstract;
 using Agilisium.TalentManager.WebUI.Helpers;
 using Agilisium.TalentManager.WebUI.Models;
 using AutoMapper;
-using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace Agilisium.TalentManager.WebUI.Controllers
@@ -27,7 +23,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         #region Public Methods
 
         // GET: Users
-        public ActionResult List(int page=1)
+        public ActionResult List(int page = 1)
         {
             EmployeeLoginMappingViewModel viewModel = new EmployeeLoginMappingViewModel();
 
@@ -55,6 +51,18 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             }
 
             return View(viewModel);
+        }
+
+        public ActionResult Edit(int? id)
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Super Admin")]
+        public ActionResult Edit(EmployeeLoginMappingModel model)
+        {
+            return View();
         }
 
         #endregion

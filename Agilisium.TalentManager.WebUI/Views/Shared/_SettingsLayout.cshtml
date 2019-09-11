@@ -15,9 +15,9 @@
     <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
     <script src="~/Scripts/Agilisium/content-updater.js"></script>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script>
         rootUrl = '@Url.Content("~")';
     </script>
@@ -37,9 +37,8 @@
                         </div>
                         <div class="navbar-collapse collapse">
                             <ul class="nav navbar-nav" style="color:darkblue; font-weight:bold;">
-                                @*@if (Request.IsAuthenticated)
-                                    {*@
-                                @{
+                                @if (Request.IsAuthenticated)
+                                {
                                     if (Request.Url.ToString().ToLower().Contains("home"))
                                     {
                                         <li>@Html.ActionLink("Home", "Index", "Home", new { @style = "color:GreenYellow" })</li>
@@ -98,28 +97,39 @@
                                         <li>@Html.ActionLink("Reports", "Index", "Reports")</li>
                                     }
                                 }
-                                @*if (User.IsInRole("Admin") || User.IsInRole("Super Admin"))
-                                    {*@
                                 @if (Request.Url.ToString().ToLower().Contains("category")
-                                            || Request.Url.ToString().ToLower().Contains("subcategory")
-                                            || Request.Url.ToString().ToLower().Contains("practice")
-                                            || Request.Url.ToString().ToLower().Contains("subpractice")
-                                            || Request.Url.ToString().ToLower().Contains("users")
-                                            || Request.Url.ToString().ToLower().Contains("roles")
-                                            || Request.Url.ToString().ToLower().Contains("elogin")
-                                            || Request.Url.ToString().ToLower().Contains("manage")
-                                            || Request.Url.ToString().ToLower().Contains("register")
-                                            || Request.Url.ToString().ToLower().Contains("certs")
-)
+                                || Request.Url.ToString().ToLower().Contains("subcategory")
+                                || Request.Url.ToString().ToLower().Contains("practice")
+                                || Request.Url.ToString().ToLower().Contains("subpractice")
+                                || Request.Url.ToString().ToLower().Contains("users")
+                                || Request.Url.ToString().ToLower().Contains("roles")
+                                || Request.Url.ToString().ToLower().Contains("elogin")
+                                || Request.Url.ToString().ToLower().Contains("manage")
+                                || Request.Url.ToString().ToLower().Contains("register")
+                                || Request.Url.ToString().ToLower().Contains("certs")
+                                || Request.Url.ToString().ToLower().Contains("changepassword")
+                                )
                                 {
-                                    <li>@Html.ActionLink("Administration", "List", "Category", new { @style = "color:GreenYellow" })</li>
+                                    if (User.IsInRole("Admin") || User.IsInRole("Super Admin"))
+                                    {
+                                        <li>@Html.ActionLink("Administration", "List", "Category", new { @style = "color:GreenYellow" })</li>
+                                    }
+                                    else
+                                    {
+                                        <li>@Html.ActionLink("Administration", "ChangePassword", "Manage", new { @style = "color:GreenYellow" })</li>
+                                    }
                                 }
                                 else
                                 {
-                                    <li>@Html.ActionLink("Administration", "List", "Category")</li>
+                                    if (User.IsInRole("Admin") || User.IsInRole("Super Admin"))
+                                    {
+                                        <li>@Html.ActionLink("Administration", "List", "Category")</li>
+                                    }
+                                    else
+                                    {
+                                        <li>@Html.ActionLink("Administration", "ChangePassword", "Manage")</li>
+                                    }
                                 }
-                                @*}*@
-                                @*}*@
                             </ul>
                             @Html.Partial("_LoginPartial")
                         </div>
@@ -134,9 +144,8 @@
                         <tr style="height:100%">
                             <td style="vertical-align:top; background-color:#222222; width:175px;">
                                 <ul class="nav navbar-nav" style="font-size:1em; font-weight:bold;">
-                                    @*@if (User.IsInRole("Admin") || User.IsInRole("Super Admin"))
-                                    {*@
-                                    @{
+                                    @if (User.IsInRole("Admin") || User.IsInRole("Super Admin"))
+                                    {
                                         if (Request.Url.ToString().ToLower().Contains("category") && !Request.Url.ToString().ToLower().Contains("subcategory"))
                                         {
                                             <li>@Html.ActionLink("Categories", "List", "Category", new { @style = "color:GreenYellow" })</li>
@@ -186,9 +195,8 @@
                                     {
                                         <li>@Html.ActionLink("Change Password", "ChangePassword", "Manage")</li>
                                     }
-                                    @*@if (User.IsInRole("Super Admin"))
-                                    {*@
-                                    @{ 
+                                    @if (User.IsInRole("Super Admin"))
+                                    {
                                         if (Request.Url.ToString().ToLower().Contains("roles"))
                                         {
                                             <li>@Html.ActionLink("User Roles", "List", "Roles", new { @style = "color:GreenYellow" })</li>
@@ -237,7 +245,7 @@
             </td>
         </tr>
     </table>
-    @Scripts.Render("~/bundles/jquery")
+    @*@Scripts.Render("~/bundles/jquery")*@
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 </body>

@@ -76,6 +76,7 @@
     <Compile Include="Entities\ServiceRequest.cs" />
     <Compile Include="Entities\SystemSetting.cs" />
     <Compile Include="Entities\Vendor.cs" />
+    <Compile Include="Entities\WindowsServiceSettings.cs" />
     <Compile Include="EntityBase.cs" />
     <Compile Include="Entities\Practice.cs" />
     <Compile Include="Entities\ProjectAllocation.cs" />

@@ -21,6 +21,12 @@ namespace Agilisium.TalentManager.WebUI
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
 
+            routes.MapRoute(
+                name: "AwsRoute2",
+                url: "rmt.agilisium.com/rmt/{controller}/{action}/{id}",
+                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+);
+
         }
     }
 }

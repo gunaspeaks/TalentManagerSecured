@@ -144,7 +144,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
 
         // POST: Project/Create
         [HttpPost]
-        public ActionResult Create(AllocationModel allocation)
+        public ActionResult Create(AllocationModel allocation, string filterType, string filterValue, string sortBy, string sortType, int? page)
         {
             try
             {
@@ -171,8 +171,8 @@ namespace Agilisium.TalentManager.WebUI.Controllers
 
                     ProjectAllocationDto projectDto = Mapper.Map<AllocationModel, ProjectAllocationDto>(allocation);
                     allocationService.Add(projectDto);
-                    DisplaySuccessMessage($"New project allocation has been created for {allocation.EmployeeName}");
-                    return RedirectToAction("List");
+                    DisplaySuccessMessage($"New project allocation has been created successfully");
+                    return RedirectToAction("List", new { filterType, filterValue, sortBy, sortType, page });
                 }
             }
             catch (Exception exp)
@@ -216,7 +216,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
 
         // POST: Project/Edit/5
         [HttpPost]
-        public ActionResult Edit(AllocationModel allocation)
+        public ActionResult Edit(AllocationModel allocation, string filterType, string filterValue, string sortBy, string sortType, int? page)
         {
             try
             {
@@ -237,8 +237,8 @@ namespace Agilisium.TalentManager.WebUI.Controllers
 
                     ProjectAllocationDto projectDto = Mapper.Map<AllocationModel, ProjectAllocationDto>(allocation);
                     allocationService.Update(projectDto);
-                    DisplaySuccessMessage($"Project allocation details have been updated.");
-                    return RedirectToAction("List");
+                    DisplaySuccessMessage($"Project allocation details have been updated successfully.");
+                    return RedirectToAction("List", new { filterType, filterValue, sortBy, sortType, page });
                 }
             }
             catch (Exception exp)
@@ -249,7 +249,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         }
 
         // GET: Project/Delete/5
-        public ActionResult Delete(int? id)
+        public ActionResult Delete(int? id, string filterType, string filterValue, string sortBy, string sortType, int? page)
         {
             if (!id.HasValue)
             {
@@ -261,14 +261,14 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             {
                 allocationService.Delete(new ProjectAllocationDto { AllocationEntryID = id.Value });
                 DisplaySuccessMessage("Allocation details have been removed successfully");
-                return RedirectToAction("List");
+                return RedirectToAction("List", new { filterType, filterValue, sortBy, sortType, page });
             }
             catch (Exception exp)
             {
                 DisplayDeleteErrorMessage(exp);
             }
 
-            return RedirectToAction("List");
+            return RedirectToAction("List", new { filterType, filterValue, sortBy, sortType, page });
         }
 
         // GET: Project/Delete/5
@@ -383,6 +383,18 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                                                      }).ToList();
 
             ViewBag.ProjectTypeListItems = projectTypeItems;
+
+            IEnumerable<DropDownSubCategoryDto> benchCategory = subCategoryService.GetSubCategories((int)CategoryType.BenchCategory);
+            List<SelectListItem> benchCategoryItems = (from c in benchCategory
+                                                       orderby c.SubCategoryName
+                                                       select new SelectListItem
+                                                       {
+                                                           Text = c.SubCategoryName,
+                                                           Value = c.SubCategoryID.ToString()
+                                                       }).ToList();
+
+            ViewBag.BenchCategoryListItems = benchCategoryItems;
+
         }
 
         private List<SelectListItem> GetEmployeesList()
@@ -417,6 +429,14 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         private bool IsValidAllocation(AllocationModel allocation)
         {
             ProjectDto project = projectService.GetByID(allocation.ProjectID);
+
+            if (allocation.AllocationTypeID == 4 &&
+                (project.ProjectName.ToLower().Contains("lab") || project.ProjectName.ToLower().Contains("management")))
+            {
+                DisplayWarningMessage("An employee can't be allocated with a billable position for the Management/Lab project");
+                return false;
+            }
+
             if (allocation.AllocationStartDate < project.StartDate)
             {
                 DisplayWarningMessage("Allocation Start Date should be equal to or above the Project Start Date");

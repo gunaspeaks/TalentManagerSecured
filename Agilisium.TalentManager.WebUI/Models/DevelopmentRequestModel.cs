@@ -41,6 +41,8 @@ namespace Agilisium.TalentManager.WebUI.Models
         public string Priority { get; set; }
 
         [DisplayName("Requested On")]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
+        [DataType(DataType.Date)]
         public DateTime RequestedOn { get; set; }
 
         [DisplayName("Request Status")]

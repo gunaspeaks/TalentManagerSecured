@@ -134,5 +134,10 @@ namespace Agilisium.TalentManager.Service.Concreate
         {
             return repository.GetUtilizedDaysSummary(filterBy, filterValue, sortBy, sortType).ToList();
         }
+
+        public List<PodWiseHeadCountDto> GetPodWiseAllocationCount()
+        {
+            return repository.GetPodWiseAllocationCount().ToList();
+        }
     }
 }

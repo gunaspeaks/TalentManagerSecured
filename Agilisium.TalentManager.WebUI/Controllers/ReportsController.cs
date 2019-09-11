@@ -234,6 +234,58 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             return View(entries);
         }
 
+        public ActionResult PodWiseCount()
+        {
+            List<PodWiseHeadCountModel> entries = new List<PodWiseHeadCountModel>();
+            try
+            {
+                List<PodWiseHeadCountDto> summaryDtos = allocationService.GetPodWiseAllocationCount();
+                entries = Mapper.Map<List<PodWiseHeadCountDto>, List<PodWiseHeadCountModel>>(summaryDtos);
+            }
+            catch (Exception exp)
+            {
+                DisplayLoadErrorMessage(exp);
+            }
+            return View(entries);
+        }
+
+        public FileStreamResult DownloadPodWiseCount(string filterType, string filterValue)
+        {
+            StringBuilder recordString = new StringBuilder($"POD Name,Total Count,Billable,Committed Buffer,Non-Committed Buffer,Bench Available,Bench Earmarked{Environment.NewLine}");
+            try
+            {
+                List<PodWiseHeadCountDto> summaryDtos = allocationService.GetPodWiseAllocationCount();
+                foreach (PodWiseHeadCountDto dto in summaryDtos)
+                {
+                    recordString.Append($"{dto.PracticeName},");
+                    recordString.Append($"{dto.TotalCount},");
+                    recordString.Append($"{dto.BillableCount},");
+                    recordString.Append($"{dto.ComBufferCount},");
+                    recordString.Append($"{dto.NonComBufferCount},");
+                    recordString.Append($"{dto.BenchAvailableCount},");
+                    recordString.Append($"{dto.BenchEarmarkedCount}{Environment.NewLine}");
+                }
+
+                recordString.Append("Total Count,");
+                recordString.Append($"{summaryDtos.Sum(p=>p.TotalCount)},");
+                recordString.Append($"{summaryDtos.Sum(p => p.BillableCount)},");
+                recordString.Append($"{summaryDtos.Sum(p => p.ComBufferCount)},");
+                recordString.Append($"{summaryDtos.Sum(p => p.NonComBufferCount)},");
+                recordString.Append($"{summaryDtos.Sum(p => p.BenchAvailableCount)},");
+                recordString.Append($"{summaryDtos.Sum(p => p.BenchEarmarkedCount)},");
+                recordString.Append($"{summaryDtos.Sum(p => p.BenchCount)}{Environment.NewLine}");
+
+
+            }
+            catch (Exception exp)
+            {
+                DisplayLoadErrorMessage(exp);
+            }
+            byte[] byteArr = Encoding.ASCII.GetBytes(recordString.ToString());
+            MemoryStream stream = new MemoryStream(byteArr);
+            return File(stream, "application/vnd.ms-excel", "Pod-Wise Resource Count.csv");
+        }
+
         #region Private Methods
 
         private List<SelectListItem> GetEmployeesList()
@@ -314,6 +366,18 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             {
                 Text = "Not Allocated Yet (BD/BO)",
                 Value = "-2",
+            });
+
+            projectTypeItems.Add(new SelectListItem
+            {
+                Text = "Bench (Available)",
+                Value = "-5",
+            });
+
+            projectTypeItems.Add(new SelectListItem
+            {
+                Text = "Bench (Earmarked)",
+                Value = "-6",
             });
 
             return projectTypeItems;

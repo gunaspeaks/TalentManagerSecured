@@ -4,7 +4,7 @@
     ViewBag.Title = "Create New Project Allocation";
 }
 <link href="~/Content/error-styles.css" rel="stylesheet" />
-<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script src="~/Scripts/Agilisium/content-updater.js"></script>
 
 <script>
@@ -46,18 +46,21 @@
 
     updateFieldsBasedOnProjectType = function () {
 
-        //$("#AllocationTypeID").removeAttr('disabled');
-        var pname = $("#ProjectID").text().toLowerCase();
+        $("#AllocationTypeID").removeAttr('disabled');
+        $("#BenchCategoryID").removeAttr('disabled');
+        var pname = $("#ProjectID option:selected").html().toLowerCase();
 
         if (($("#ProjectID").val() < 0) || $("#ProjectID").val().length == 0)
             return;
-
         if (pname.indexOf("lab") >= 0 || pname.indexOf("management") >= 0) {
             $("#AllocationTypeID").val(7);
-            //$("#AllocationTypeID").attr('disabled', 'disabled');
+            $("#BenchCategoryID").attr('disabled', 'disabled');
         } else if (pname.indexOf("bench") >= 0) {
-            $("#AllocationTypeID").val(6);
-            //$("#AllocationTypeID").attr('disabled', 'disabled');
+            $("#AllocationTypeID").val(5);
+            $("#AllocationTypeID").attr('disabled', 'disabled');
+        }
+        else {
+            $("#BenchCategoryID").attr('disabled', 'disabled');
         }
     }
 
@@ -71,6 +74,20 @@
     $(function () {
         $("#EmployeeID").change(function (evtn) {
             updateEmployeeAndProjectDetails();
+        });
+    });
+
+    $(function () {
+        $("#AllocationTypeID").change(function (evtn) {
+            
+            var allocationType = $("#AllocationTypeID option:selected").html().toLowerCase();
+
+            if (allocationType.indexOf('bench') >= 0) {
+                $("#BenchCategoryID").removeAttr('disabled');
+            }
+            else {
+                $("#BenchCategoryID").attr('disabled', 'disabled');
+            }
         });
     });
 
@@ -188,15 +205,33 @@
                             <div class="form-group">
                                 @Html.LabelFor(model => model.AllocationTypeID)
                                 @Html.DropDownListFor(model => model.AllocationTypeID, (IEnumerable<SelectListItem>)ViewBag.ProjectTypeListItems, "Please Select", new { @class = "form-control" })
-                                <br />
-                                @Html.LabelFor(model => model.PercentageOfAllocation)
-                                @Html.EditorFor(model => model.PercentageOfAllocation, new { htmlAttributes = new { @class = "form-control" } })
                             </div>
                         </td>
                         <td>
+                            <table style="width:90%">
+                                <tr>
+                                    <td>
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.BenchCategoryID)
+                                            @Html.DropDownListFor(model => model.BenchCategoryID, (IEnumerable<SelectListItem>)ViewBag.BenchCategoryListItems, "Please Select", new { @class = "form-control" })
+                                        </div>
+                                    </td>
+                                    <td width="5px"></td>
+                                    <td>
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.PercentageOfAllocation)
+                                            @Html.EditorFor(model => model.PercentageOfAllocation, new { htmlAttributes = new { @class = "form-control" } })
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
                             <div class="form-group">
                                 @Html.LabelFor(model => model.Remarks)
-                                @Html.TextAreaFor(model => model.Remarks, 5, 3, new { @class = "form-control" })
+                                @Html.TextAreaFor(model => model.Remarks, 5, 5, new { @class = "form-control" })
                             </div>
                         </td>
                     </tr>

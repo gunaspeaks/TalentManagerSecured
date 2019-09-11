@@ -13,24 +13,13 @@
                 <tr>
                     <td class="text-left">@item.Practice</td>
                     <td class="text-right">
-                        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Project Manager"))
-                        {
-                            @Html.ActionLink(item.HeadCount.ToString(), "UtilizationReportDetail", "Reports", new { filterType = "pod", filterValue = item.PracticeID }, new { @style = "color:navy;" })
-                        }
-                        else
-                        {
-                            @Html.DisplayTextFor(modelItem => item.HeadCount)
-                        }
-
+                        @Html.ActionLink(item.HeadCount.ToString(), "UtilizationReportDetail", "Reports", new { filterType = "pod", filterValue = item.PracticeID }, new { @style = "color:navy;" })
                     </td>
                 </tr>
             }
         </table>
         <text class="pull-right">
-            @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Project Manager"))
-            {
-                @Html.ActionLink("View All Grouped Count by POD & Competencies", "SubPracticeHeadCount", null, new { @style = "color:darkblue" })
-            }
-            </text>
+            @Html.ActionLink("View All Grouped Count by POD & Competencies", "SubPracticeHeadCount", null, new { @style = "color:darkblue" })
+        </text>
     </div>
 </div>

@@ -1,6 +1,7 @@
-﻿using Agilisium.TalentManager.Repository.Abstract;
-using Agilisium.TalentManager.Dto;
+﻿using Agilisium.TalentManager.Dto;
 using Agilisium.TalentManager.Model.Entities;
+using Agilisium.TalentManager.Repository.Abstract;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -61,6 +62,35 @@ namespace Agilisium.TalentManager.Repository.Repositories
         public void Update(SystemSettingDto entity)
         {
             throw new System.NotImplementedException();
+        }
+
+        public WindowsServiceSettingsDto GetServiceSettings(int serviceID)
+        {
+            return (from ws in DataContext.WindowsServiceSettingEntries
+                    where ws.ServiceID == serviceID
+                    select new WindowsServiceSettingsDto
+                    {
+                        ServiceID = ws.ServiceID,
+                        ExecutedDate = ws.ExecutedDate,
+                        ExecutionInterval = ws.ExecutionInterval,
+                        ExecutedTime = ws.ExecutedTime,
+                        ServiceName = ws.ServiceName,
+                    }).FirstOrDefault();
+        }
+
+        public void UpdateWindowsServiceStatus(WindowsServiceSettingsDto serviceSettings)
+        {
+            WindowsServiceSettings winService = DataContext.WindowsServiceSettingEntries.FirstOrDefault(w => w.ServiceID == serviceSettings.ServiceID);
+            winService.ExecutedDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+            winService.ExecutedTime = $"{DateTime.Now.Hour}:{DateTime.Now.Minute}";
+            winService.ExecutionInterval = serviceSettings.ExecutionInterval;
+            winService.ServiceName = serviceSettings.ServiceName;
+            winService.UpdateTimeStamp(serviceSettings.LoggedInUserName);
+
+            DataContext.WindowsServiceSettingEntries.Add(winService);
+            DataContext.Entry(winService).State = EntityState.Modified;
+            DataContext.SaveChanges();
+
         }
     }
 

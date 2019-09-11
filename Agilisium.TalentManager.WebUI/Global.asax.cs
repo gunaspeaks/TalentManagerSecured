@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using System.Web.Security;
 
 namespace Agilisium.TalentManager.WebUI
 {
@@ -28,6 +29,20 @@ namespace Agilisium.TalentManager.WebUI
             Application[UIConstants.CONFIG_ADMIN_USER_NAME] = ConfigurationManager.AppSettings[UIConstants.CONFIG_ADMIN_USER_NAME];
             Application[UIConstants.CONFIG_IGNORABLE_TEXT_IN_USER_NAME] = ConfigurationManager.AppSettings[UIConstants.CONFIG_IGNORABLE_TEXT_IN_USER_NAME];
             Application["LoggedUserName"] = "";
+        }
+
+        protected void Application_PostAuthenticateRequest()
+        {
+            var authCookie = HttpContext.Current.Request.Cookies[FormsAuthentication.FormsCookieName];
+            if (authCookie != null)
+            {
+                FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(authCookie.Value);
+                if (authTicket != null && !authTicket.Expired)
+                {
+                    var roles = authTicket.UserData.Split(',');
+                    HttpContext.Current.User = new System.Security.Principal.GenericPrincipal(new FormsIdentity(authTicket), roles);
+                }
+            }
         }
     }
 }

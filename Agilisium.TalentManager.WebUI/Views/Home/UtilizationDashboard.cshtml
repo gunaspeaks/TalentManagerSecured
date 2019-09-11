@@ -12,31 +12,10 @@
                     </td>
                     <td>:</td>
                     <td>
-                        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Project Manager"))
-                        {
-                            @Html.ActionLink(Model[i].NumberOfEmployees.ToString(), "UtilizationReportDetail", "Reports", new { filterType = "alt", filterValue = Model[i].AllocationTypeID }, new { @style = "color:navy;" })
-                        }
-                        else
-                        {
-                            @Html.DisplayTextFor(modelItem => Model[i].NumberOfEmployees)
-                        }
+                        @Html.ActionLink(Model[i].NumberOfEmployees.ToString(), "UtilizationReportDetail", "Reports", new { filterType = "alt", filterValue = Model[i].AllocationTypeID }, new { @style = "color:navy;" })
                     </td>
                 </tr>
             }
-            <tr>
-                <td>
-                    <b>Total Allocations</b>
-                </td>
-                <td>:</td>
-                <td>
-                    <b>@Model.Sum(ne => ne.NumberOfEmployees)</b>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="3">
-                    <text style="font-size:small; color:red;"><b>Note:</b> Mismatch with total resource count means one or more employees are allocated to multiple projects</text>
-                </td>
-            </tr>
         </table>
     </div>
 </div>

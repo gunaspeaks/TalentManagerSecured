@@ -47,6 +47,8 @@ namespace Agilisium.TalentManager.PostgresModel
         
         public DbSet<EmpCertification> EmpCertifications { get; set; }
 
+        public DbSet<WindowsServiceSettings> WindowsServiceSettingEntries { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Contractor>().ToTable("Contractor", "TalentManager");
@@ -65,6 +67,7 @@ namespace Agilisium.TalentManager.PostgresModel
             modelBuilder.Entity<EmployeeLoginMapping>().ToTable("EmployeeLoginMapping", "TalentManager");
             modelBuilder.Entity<Certification>().ToTable("Certification", "TalentManager");
             modelBuilder.Entity<EmpCertification>().ToTable("EmpCertification", "TalentManager");
+            modelBuilder.Entity<WindowsServiceSettings>().ToTable("WindowsServiceSettings", "TalentManager");
         }
     }
 }

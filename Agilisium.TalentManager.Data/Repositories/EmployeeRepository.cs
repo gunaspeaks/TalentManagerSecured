@@ -485,7 +485,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         public void DeleteCertification(EmpCertificationDto empCertification)
         {
-            EmpCertification empCert = DataContext.EmpCertifications.FirstOrDefault(ec => ec.CertificationID == empCertification.CertificationID);
+            EmpCertification empCert = DataContext.EmpCertifications.FirstOrDefault(ec => ec.EntryID == empCertification.EntryID);
 
             empCert.IsDeleted = true;
             empCert.UpdateTimeStamp(empCertification.LoggedInUserName);

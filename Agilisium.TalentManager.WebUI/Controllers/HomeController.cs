@@ -9,6 +9,7 @@ using System.Web.Mvc;
 
 namespace Agilisium.TalentManager.WebUI.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly IEmployeeService empService;

@@ -81,6 +81,13 @@ namespace Agilisium.TalentManager.WindowsServices
             logger.Info("");
             logger.Info("*********************************************************************************************");
             logger.Info("Service execution triggered");
+
+            if (ProcessorHelper.IsExecutionCompleted(ServiceProcessors.WindowsServices.DailyAllocationsUpdater))
+            {
+                logger.Info("Service execution completed already. It will not be processed again.");
+                return;
+            }
+
             try
             {
                 AllocationsUpdaterServiceProcessor processor = new AllocationsUpdaterServiceProcessor();

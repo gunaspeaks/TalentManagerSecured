@@ -127,6 +127,14 @@ namespace Agilisium.TalentManager.PostgresDbHelper
                 {
                     qry = PostgresSqlQueries.GET_ALLOCATION_DETAIL_FOR_ALL_NON_ALLOCATED_OTHER_BU_RESOURCES;
                 }
+                else if (allocationType == -5)
+                {
+                    qry = PostgresSqlQueries.GET_ALLOCATION_DETAIL_FOR_BENCH.Replace("__BENCH_CATEGORY__", "75");
+                }
+                else if (allocationType == -6)
+                {
+                    qry = PostgresSqlQueries.GET_ALLOCATION_DETAIL_FOR_BENCH.Replace("__BENCH_CATEGORY__", "74");
+                }
                 qry = qry.Replace("__CURRENT_DATE__", $"{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}");
                 qry = qry.Replace("__ALLOCATION_TYPE_ID__", allocationType.ToString());
 
@@ -259,6 +267,41 @@ namespace Agilisium.TalentManager.PostgresDbHelper
                 }
             }
             catch (Exception) { }
+            finally
+            {
+                con.Close();
+                con.Dispose();
+            }
+
+            return records;
+        }
+
+        public IEnumerable<PodWiseCountDto> GetPodWiseAllocationCount()
+        {
+            List<PodWiseCountDto> records = new List<PodWiseCountDto>();
+            Npgsql.NpgsqlConnection con = null;
+            try
+            {
+                con = new Npgsql.NpgsqlConnection(PostgresSqlQueries.CONNECTION_STRING);
+                con.Open();
+                string query= PostgresSqlQueries.POD_WISE_EMPLOYEE_COUNT.Replace("__CURRENT_DATE__", $"{ DateTime.Now.Year}-{ DateTime.Now.Month}-{ DateTime.Now.Day}");
+                Npgsql.NpgsqlCommand cmd = new Npgsql.NpgsqlCommand(query, con);
+                Npgsql.NpgsqlDataReader res = cmd.ExecuteReader();
+
+                if (res.HasRows)
+                {
+                    while (res.Read())
+                    {
+                        records.Add(new PodWiseCountDto
+                        {
+                            PracticeName = res.IsDBNull(0) == false ? res.GetString(0) : "",
+                            SubCategoryName = res.IsDBNull(1) == false ? res.GetString(1) : "",
+                            Count = res.IsDBNull(2) == false ? (int)res.GetInt64(2) : 0,
+                        });
+                    }
+                }
+            }
+            catch (Exception exp) { }
             finally
             {
                 con.Close();

@@ -41,14 +41,14 @@ namespace Agilisium.TalentManager.WebUI.Models
         public string ProjectTypeName { get; set; }
 
         [DisplayName("Start Date")]
-        //[DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
         [Required(ErrorMessage = "Project Start Date is required")]
         //[DataType(DataType.Date)]
         public DateTime StartDate { get; set; }
 
         [DisplayName("End Date")]
         [Required(ErrorMessage = "Project End Date is required")]
-        //[DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
         //[DataType(DataType.Date)]
         public DateTime EndDate { get; set; }
 
@@ -79,12 +79,12 @@ namespace Agilisium.TalentManager.WebUI.Models
         public bool IsSowAvailable { get; set; }
 
         [DisplayName("SoW Start Date")]
-        //[DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
         //[DataType(DataType.Date)]
         public DateTime? SowStartDate { get; set; }
 
         [DisplayName("SoW End Date")]
-        //[DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
         //[DataType(DataType.Date)]
         public DateTime? SowEndDate { get; set; }
 

@@ -3,9 +3,7 @@
 @model Agilisium.TalentManager.WebUI.Models.AllocationViewModel
 
 @{
-                /**/
-
-                ViewBag.Title = "Project Allocations";
+    ViewBag.Title = "Project Allocations";
 }
 
 <script>
@@ -317,7 +315,6 @@
                             </a>
                         }
                     </th>
-                    @*<th class="text-center">De-Allocate</th>*@
                     <th class="text-center">Actions</th>
                 </tr>
 
@@ -325,7 +322,7 @@
                 {
                     <tr>
                         <td>
-                            @Html.ActionLink(item.EmployeeName, "Edit", new { id = item.AllocationEntryID })
+                            @Html.ActionLink(item.EmployeeName, "Edit", new { id = item.AllocationEntryID, filterType=Request.QueryString["filterType"], filterValue = Request.QueryString["filterValue"], sortBy = Request.QueryString["sortBy"], sortType = Request.QueryString["sortType"], page = Request.QueryString["page"] })
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.ProjectName)
@@ -348,15 +345,8 @@
                         <td class="text-right">
                             <text>@item.AllocationEndDate.ToString("dd/MMM/yyy")</text>
                         </td>
-                        @*<td class="text-center">
-                                @using (Html.BeginForm("DeAllocate", "Allocation"))
-                                {
-                                    @Html.Hidden("id", item.AllocationEntryID)
-                                    <input type="submit" onclick="return confirm('Are you sure you about de-allocating this employee?');" class="btn btn-default btn-xs" value="De-Allocate" />
-                                }
-                            </td>*@
                         <td class="text-center">
-                            @using (Html.BeginForm("Delete", "Allocation"))
+                            @using (Html.BeginForm("Delete", "Allocation",new { filterType = Request.QueryString["filterType"], filterValue = Request.QueryString["filterValue"], sortBy = Request.QueryString["sortBy"], sortType = Request.QueryString["sortType"], page = Request.QueryString["page"] }))
                             {
                                 @Html.Hidden("id", item.AllocationEntryID)
                                 <input type="submit" onclick="return confirm('Are you sure you about deleting this Project Allocation?');" class="btn btn-default btn-xs" value="Delete" />

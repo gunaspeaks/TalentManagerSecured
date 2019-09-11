@@ -17,7 +17,14 @@
 
     public enum BenchCategory
     {
-        Available = 74,
-        Earmarked
+        Earmarked = 74,
+        Available
+    }
+
+    public enum WindowsServices
+    {
+        WeeklyAllocationsMailer = 1,
+        ManagementNotifications,
+        DailyAllocationsUpdater
     }
 }

@@ -61,7 +61,7 @@ namespace Agilisium.TalentManager.WindowsServices
         {
             try
             {
-                // ExecuteServiceLocally();
+                 //ExecuteServiceLocally();
 
                 logger.Info("Service has been started");
                 InitializeService();
@@ -84,6 +84,13 @@ namespace Agilisium.TalentManager.WindowsServices
             logger.Info("");
             logger.Info("*********************************************************************************************");
             logger.Info($"Service execution triggered on {DateTime.Now.DayOfWeek}");
+
+            if (ProcessorHelper.IsExecutionCompleted(ServiceProcessors.WindowsServices.WeeklyAllocationsMailer))
+            {
+                logger.Info("Service execution completed already. It will not be processed again.");
+                return;
+            }
+
             try
             {
                 if (dayOfWeek != (int)DateTime.Now.DayOfWeek)

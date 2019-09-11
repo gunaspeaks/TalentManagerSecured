@@ -94,7 +94,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
 
         // POST: Project/Create
         [HttpPost]
-        public ActionResult Create(ProjectModel project)
+        public ActionResult Create(ProjectModel project, string filterType, string filterValue, int? page)
         {
             try
             {
@@ -123,7 +123,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                     ProjectDto projectDto = Mapper.Map<ProjectModel, ProjectDto>(project);
                     projectService.Create(projectDto);
                     DisplaySuccessMessage("New Project details have been stored successfully");
-                    return RedirectToAction("List");
+                    return RedirectToAction("List", new { filterType, filterValue, page });
                 }
             }
             catch (Exception exp)
@@ -167,7 +167,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
 
         // POST: Project/Edit/5
         [HttpPost]
-        public ActionResult Edit(ProjectModel project)
+        public ActionResult Edit(ProjectModel project, string filterType, string filterValue, int? page)
         {
             try
             {
@@ -195,7 +195,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                     ProjectDto projectDto = Mapper.Map<ProjectModel, ProjectDto>(project);
                     projectService.Update(projectDto);
                     DisplaySuccessMessage("Project details have been updated successfully");
-                    return RedirectToAction("List");
+                    return RedirectToAction("List", new {  filterType,  filterValue, page  });
                 }
             }
             catch (Exception exp)
@@ -206,20 +206,20 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         }
 
         // GET: Project/Delete/5
-        public ActionResult Delete(int? id)
+        public ActionResult Delete(int? id, string filterType, string filterValue, int? page)
         {
             if (!id.HasValue)
             {
                 DisplayWarningMessage("Looks like, the Project ID is missing in your request");
-                return RedirectToAction("List");
+                return RedirectToAction("List", new { filterType, filterValue, page });
             }
 
             try
             {
-                if(projectService.IsReservedEntry(id.Value))
+                if (projectService.IsReservedEntry(id.Value))
                 {
                     DisplayWarningMessage("Hey, why do you want to delete a system or reserved project. Please check with the system administrator for your needs.");
-                    return RedirectToAction("List");
+                    return RedirectToAction("List", new { filterType, filterValue, page });
                 }
                 projectService.Delete(new ProjectDto { ProjectID = id.Value });
                 DisplaySuccessMessage("Project details have been deleted successfully");
@@ -229,7 +229,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                 DisplayDeleteErrorMessage(exp);
             }
 
-            return RedirectToAction("List");
+            return RedirectToAction("List", new { filterType, filterValue, page });
         }
 
         [HttpPost]

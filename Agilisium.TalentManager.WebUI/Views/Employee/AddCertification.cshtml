@@ -1,0 +1,100 @@
+﻿@model Agilisium.TalentManager.WebUI.Models.EmpCertificationModel
+
+@{
+    ViewBag.Title = "Add Certification";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/error-styles.css" rel="stylesheet" />
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        
+        $("#CertifiedOn").datepicker({
+
+            dateFormat: "mm-dd-yy",
+            changeMonth: true,
+            changeYear: true,
+            showAnim: "fadeIn",
+        });
+
+        $("#ValidUpto").datepicker({
+
+            dateFormat: "mm-dd-yy",
+            changeMonth: true,
+            changeYear: true,
+            showAnim: "fadeIn",
+        });
+
+    });
+
+</script>
+
+<div class="panel panel-default">
+    <div style="text-align:center" class="panel-heading">
+        <h3><b>Add Certification</b></h3>
+    </div>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="panel-body">
+            @Html.ValidationSummary(false, "Please correct the below Validation Errors to save the data")
+            <div>
+                <table style="width:86%;" cellpadding="5" cellspacing="5px">
+                    <tr>
+                        <td width="20%">
+                            <div class="form-group">
+                                @Html.HiddenFor(model => model.EmployeeID, new { id = "eid" })
+                                @Html.HiddenFor(model => model.CertificationID, new { id = "cid" })
+                                @Html.LabelFor(model => model.EmployeeName)
+                                @Html.ValueFor(model => model.EmployeeName)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="20%">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.CertificationName)
+                                @Html.ValueFor(model => model.CertificationName)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="20%">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ShortName)
+                                @Html.ValueFor(model => model.ShortName)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="20%">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.CertifiedOn)
+                                @Html.EditorFor(model => model.CertifiedOn, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="20%">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ValidUpto)
+                                @Html.EditorFor(model => model.ValidUpto, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="panel-footer">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                @Html.ActionLink("Cancel and Go Back", "List", new { page = Request.QueryString["page"] }, new { @class = "btn btn-default" })
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

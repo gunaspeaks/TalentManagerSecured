@@ -6,57 +6,43 @@
 
 <div class="panel panel-default">
     <div style="text-align:center" class="panel-heading">
-        <h3>
-            <b>
-                @if (Model.AquiredCertifications.FirstOrDefault() != null)
-                {
-                    @Model.AquiredCertifications.FirstOrDefault().EmployeeName <label>'s </label>
-                }
-                else
-                {
-                    <label>Employee</label>
-                }
-                Certifications
-            </b>
-        </h3>
+        <h3><b>Employee Certifications</b></h3>
     </div>
 
 
-    @using (Html.BeginForm())
-    {
-        @Html.AntiForgeryToken()
+    @Html.AntiForgeryToken()
 
-        <div class="form-horizontal">
-            <div class="panel-body">
-                <h4><b><u>Certifications Aquired</u></b></h4>
-                <table style="width:75%" class="table table-striped table-condensed table-bordered">
-                    <tr>
-                        <th width="25%" class="text-left">
-                            @Html.DisplayNameFor(model => model.AquiredCertifications.FirstOrDefault().CertificationName)
-                        </th>
-                        <th width="15%" class="text-left">
-                            @Html.DisplayNameFor(model => model.AquiredCertifications.FirstOrDefault().ShortName)
-                        </th>
-                        <th class="text-right">
-                            @Html.DisplayNameFor(model => model.AquiredCertifications.FirstOrDefault().CertifiedOn)
-                        </th>
-                        <th class="text-right">
-                            @Html.DisplayNameFor(model => model.AquiredCertifications.FirstOrDefault().ValidUpto)
-                        </th>
-                        <th width="10%" class="text-center">Actions</th>
-                    </tr>
-                    @if (Model.AquiredCertifications.Count() == 0)
-                    {
+    <div class="form-horizontal">
+        <div class="panel-body">
+            <h4><b><u>Certifications Aquired</u></b></h4>
+            <table style="width:75%" class="table table-striped table-condensed table-bordered">
+                <tr>
+                    <th width="25%" class="text-left">
+                        @Html.DisplayNameFor(model => model.AquiredCertifications.FirstOrDefault().CertificationName)
+                    </th>
+                    <th width="15%" class="text-left">
+                        @Html.DisplayNameFor(model => model.AquiredCertifications.FirstOrDefault().ShortName)
+                    </th>
+                    <th class="text-right">
+                        @Html.DisplayNameFor(model => model.AquiredCertifications.FirstOrDefault().CertifiedOn)
+                    </th>
+                    <th class="text-right">
+                        @Html.DisplayNameFor(model => model.AquiredCertifications.FirstOrDefault().ValidUpto)
+                    </th>
+                    <th width="10%" class="text-center">Actions</th>
+                </tr>
+                @if (Model.AquiredCertifications.Count() == 0)
+                {
                     <tr>
                         <td colspan="5">
                             No records found
                         </td>
                     </tr>
-                    }
-                    else
+                }
+                else
+                {
+                    foreach (var item in Model.AquiredCertifications)
                     {
-                        foreach (var item in Model.AquiredCertifications)
-                        {
                         <tr>
                             <td>
                                 @Html.DisplayTextFor(model => item.CertificationName)
@@ -85,57 +71,55 @@
                                 }
                             </td>
                             <td class="text-center">
-                                @using (Html.BeginForm("DeleteCertification", "Employee", new { eid=Request.QueryString["eid"]}))
+                                @using (Html.BeginForm("DeleteCertification", "Employee", new { eid = Request.QueryString["eid"], action = "delete" }))
                                 {
                                     @Html.Hidden("id", item.EntryID)
                                     <input type="submit" onclick="return confirm('Are you sure you about deleting this Certification from @item.EmployeeName?');" class="btn btn-default btn-xs" value="Delete" />
                                 }
                             </td>
                         </tr>
-                        }
                     }
-                </table>
-                <br />
+                }
+            </table>
+            <br />
 
-                <h4><b><u>Certifications Master</u></b></h4>
-                <table style="width:75%" class="table table-striped table-condensed table-bordered">
+            <h4><b><u>Certifications Master</u></b></h4>
+            <table style="width:75%" class="table table-striped table-condensed table-bordered">
+                <tr>
+                    <th width="25%" class="text-left">
+                        @Html.DisplayNameFor(model => model.AvailableCertifications.FirstOrDefault().Name)
+                    </th>
+                    <th width="15%" class="text-left">
+                        @Html.DisplayNameFor(model => model.AvailableCertifications.FirstOrDefault().ShortName)
+                    </th>
+                    <th class="text-left">
+                        @Html.DisplayNameFor(model => model.AvailableCertifications.FirstOrDefault().TechnologyArea)
+                    </th>
+                    <th width="10%" class="text-center">Actions</th>
+                </tr>
+                @foreach (var item in Model.AvailableCertifications)
+                {
                     <tr>
-                        <th width="25%" class="text-left">
-                            @Html.DisplayNameFor(model => model.AvailableCertifications.FirstOrDefault().Name)
-                        </th>
-                        <th width="15%" class="text-left">
-                            @Html.DisplayNameFor(model => model.AvailableCertifications.FirstOrDefault().ShortName)
-                        </th>
-                        <th class="text-left">
-                            @Html.DisplayNameFor(model => model.AvailableCertifications.FirstOrDefault().TechnologyArea)
-                        </th>
-                        <th width="10%" class="text-center">Actions</th>
+                        <td>
+                            @Html.DisplayTextFor(model => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayTextFor(model => item.ShortName)
+                        </td>
+                        <td>
+                            @Html.DisplayTextFor(model => item.TechnologyArea)
+                        </td>
+                        <td class="text-center">
+                            @Html.ActionLink("Add", "AddCertification", new { cid = item.CertificationID, eid = Request.QueryString["eid"] })
+                        </td>
                     </tr>
-                    @foreach (var item in Model.AvailableCertifications)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayTextFor(model => item.Name)
-                            </td>
-                            <td>
-                                @Html.DisplayTextFor(model => item.ShortName)
-                            </td>
-                            <td>
-                                @Html.DisplayTextFor(model => item.TechnologyArea)
-                            </td>
-                            <td class="text-center">
-                                @Html.ActionLink("Add", "AddCertification", new { cid = item.CertificationID, eid = Request.QueryString["eid"] })
-                            </td>
-                        </tr>
-                    }
-                </table>
+                }
+            </table>
 
-                @Html.ActionLink("Back to Employees List", "List", new { page = Request.QueryString["page"] }, new { @class = "btn btn-default btn-primary" })
-            </div>
-
+            @Html.ActionLink("Back to Employees List", "List", new { page = Request.QueryString["page"] }, new { @class = "btn btn-default btn-primary" })
         </div>
-    }
 
+    </div>
 
     @section Scripts {
         @Scripts.Render("~/bundles/jqueryval")

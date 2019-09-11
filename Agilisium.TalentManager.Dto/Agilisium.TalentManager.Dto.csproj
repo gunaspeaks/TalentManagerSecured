@@ -57,7 +57,9 @@
     <Compile Include="EmployeeLoginMappingDto.cs" />
     <Compile Include="EmployeeVisaDto.cs" />
     <Compile Include="NotificationsTrackerDto.cs" />
+    <Compile Include="PodWiseCountDto.cs" />
     <Compile Include="PodWiseEmployeeDto.cs" />
+    <Compile Include="PodWiseHeadCountDto.cs" />
     <Compile Include="ResourceCountDto.cs" />
     <Compile Include="ManagerWiseAllocationDto.cs" />
     <Compile Include="PracticeDto.cs" />
@@ -78,6 +80,7 @@
     <Compile Include="VendorSearchResultDto.cs" />
     <Compile Include="VendorSpecializedPartnerWto.cs" />
     <Compile Include="VisaHoldingEmployeeDto.cs" />
+    <Compile Include="WindowsServiceSettingsDto.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

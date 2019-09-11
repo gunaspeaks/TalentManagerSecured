@@ -1,4 +1,5 @@
 ﻿using Agilisium.TalentManager.Dto;
+using Agilisium.TalentManager.Repository.Abstract;
 using Agilisium.TalentManager.Repository.Repositories;
 using Agilisium.TalentManager.ServerUtilities;
 using log4net;
@@ -17,6 +18,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
         private readonly EmployeeRepository empService;
         private readonly ProjectRepository projectRepository;
         private readonly PracticeRepository practiceRepository;
+        private readonly SystemSettingRepository settingRepository;
         private readonly string dmEmailID = "satish.srinivasan @agilisium.com";
 
         private readonly ILog logger;
@@ -27,6 +29,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
             empService = new EmployeeRepository();
             projectRepository = new ProjectRepository();
             practiceRepository = new PracticeRepository();
+            settingRepository = new SystemSettingRepository();
 
             logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             log4net.Config.XmlConfigurator.Configure();
@@ -42,13 +45,24 @@ namespace Agilisium.TalentManager.ServiceProcessors
             string outlookPwd = ProcessorHelper.GetSettingsValue(ProcessorHelper.EMAIL_OWNERS_PASSWORD);
             string emailSubject = "RMT Alert - Please Confirm, Employees Under your POD";
 
-            EmailHandler emailHandler = new EmailHandler(ownerEmailID, outlookPwd);
+            try
+            {
+                logger.Info("Deleting old files");
+                FilesHandler.RemoveAllFilesFromDirectory(appTempDirectory);
+            }
+            catch (Exception exp)
+            {
+                logger.Error(exp);
+            }
 
             List<PracticeDto> pods = practiceRepository.GetAll().ToList();
             logger.Info($"There are {pods.Count} PODs");
             foreach (PracticeDto pod in pods)
             {
+                logger.Info("Generating CSV file");
                 string attachmentFilePath = CreateFileAttachment(appTempDirectory, pod.PracticeID);
+
+                logger.Info("Generating email content");
                 string emailContent = GenerateEmailBody(templateFilePath, pod.PracticeID, pod.PracticeName, pod.ManagerName, reportingDay);
                 string managerEmailID = null;
                 if (pod.ManagerID.HasValue)
@@ -63,7 +77,16 @@ namespace Agilisium.TalentManager.ServiceProcessors
                 toEmailID = managerEmailID;
 
                 logger.Info("Sending email with attachment to " + pod.ManagerName);
+                EmailHandler emailHandler = new EmailHandler(ownerEmailID, outlookPwd);
                 emailHandler.SendEmail(emailClientIP, toEmailID, emailSubject, emailContent, dmEmailID, attachmentFilePath, System.Net.Mail.MailPriority.High);
+
+                WindowsServiceSettingsDto windowsService = new WindowsServiceSettingsDto
+                {
+                    ExecutionInterval = "Monthly",
+                    ServiceID = (int)WindowsServices.ManagementNotifications,
+                    ServiceName = WindowsServices.ManagementNotifications.ToString(),
+                };
+                settingRepository.UpdateWindowsServiceStatus(windowsService);
             }
         }
 
@@ -90,9 +113,9 @@ namespace Agilisium.TalentManager.ServiceProcessors
             try
             {
                 logger.Info($"Retrieve employess for the POD ID {podID}");
-                var emps = empService.GetAllByPractice(podID);
+                IEnumerable<EmployeeDto> emps = empService.GetAllByPractice(podID);
                 string podName = "";
-                foreach (var emp in emps)
+                foreach (EmployeeDto emp in emps)
                 {
                     recordString.Append($"{emp.EmployeeID},");
                     recordString.Append($"{emp.FirstName} {emp.LastName},");

@@ -20,6 +20,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
         private readonly NotificationsTrackerRepository trackerRepo;
         private readonly ProjectRepository projectRepo;
         private readonly PracticeRepository practiceRepository;
+        private readonly SystemSettingRepository settingRepository;
         private readonly string dmEmailID = "satish.srinivasan @agilisium.com";
 
         private readonly string emailClientIP;
@@ -36,6 +37,8 @@ namespace Agilisium.TalentManager.ServiceProcessors
             projectRepo = new ProjectRepository();
             trackerRepo = new NotificationsTrackerRepository();
             practiceRepository = new PracticeRepository();
+            settingRepository = new SystemSettingRepository();
+
             emailClientIP = ProcessorHelper.GetSettingsValue(ProcessorHelper.EMAIL_PROXY_SERVER);
             ownerEmailID = ProcessorHelper.GetSettingsValue(ProcessorHelper.CONTRACTOR_REQ_EMAIL_OWNER);
             outlookPwd = ProcessorHelper.GetSettingsValue(ProcessorHelper.EMAIL_OWNERS_PASSWORD);
@@ -82,6 +85,14 @@ namespace Agilisium.TalentManager.ServiceProcessors
                         logger.Info("No Alerts will be sent today (only on 30, 15, 5, 1) ");
                         continue;
                     }
+
+                    WindowsServiceSettingsDto windowsService = new WindowsServiceSettingsDto
+                    {
+                        ExecutionInterval = "Daily",
+                        ServiceID = (int)WindowsServices.DailyAllocationsUpdater,
+                        ServiceName = WindowsServices.DailyAllocationsUpdater.ToString(),
+                    };
+                    settingRepository.UpdateWindowsServiceStatus(windowsService);
                 }
             }
             catch (Exception exp)

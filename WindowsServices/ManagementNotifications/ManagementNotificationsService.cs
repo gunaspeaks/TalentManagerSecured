@@ -60,6 +60,13 @@ namespace Agilisium.TalentManager.WindowsServices.ManagementNotifications
         {
             logger.Info("*********************************************************************************************");
             logger.Info("Service execution triggered");
+
+            if (ProcessorHelper.IsExecutionCompleted(ServiceProcessors.WindowsServices.ManagementNotifications))
+            {
+                logger.Info("Service execution completed already. It will not be processed again.");
+                return;
+            }
+
             try
             {
                 if (dayOfExecution != DateTime.Now.Day)
@@ -69,20 +76,18 @@ namespace Agilisium.TalentManager.WindowsServices.ManagementNotifications
                 }
 
                 int reportingDay = 27;
-                if (DateTime.Now.Day == dayOfExecution)
+                if (DateTime.Now.DayOfWeek == DayOfWeek.Thursday)
                 {
-                    if (DateTime.Now.DayOfWeek == DayOfWeek.Thursday)
-                    {
-                        reportingDay += 1;
-                    }
-                    else if (DateTime.Now.DayOfWeek == DayOfWeek.Friday)
-                    {
-                        reportingDay += 2;
-                    }
+                    reportingDay += 1;
+                }
+                else if (DateTime.Now.DayOfWeek == DayOfWeek.Friday)
+                {
+                    reportingDay += 2;
                 }
 
                 ManagementNotificationsProcessor processor = new ManagementNotificationsProcessor();
                 processor.GenerateManagementNotifications(appTempDirectory, reportingDay);
+                
             }
             catch (Exception exp)
             {
