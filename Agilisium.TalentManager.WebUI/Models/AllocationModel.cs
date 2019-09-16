@@ -21,13 +21,13 @@ namespace Agilisium.TalentManager.WebUI.Models
         [Required(ErrorMessage = "Allocation Start Date is required")]
         [DisplayName("Allocated From")]
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
-        //[DataType(DataType.Date)]
+        [DataType(DataType.Date)]
         public DateTime AllocationStartDate { get; set; }
 
         [Required(ErrorMessage = "Allocation End Date is required")]
         [DisplayName("Allocated Upto")]
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
-        //[DataType(DataType.Date)]
+        [DataType(DataType.Date)]
         public DateTime AllocationEndDate { get; set; }
 
         [Required(ErrorMessage = "Please select a Allocation Type")]

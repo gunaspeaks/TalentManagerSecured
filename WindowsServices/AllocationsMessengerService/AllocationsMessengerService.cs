@@ -61,7 +61,7 @@ namespace Agilisium.TalentManager.WindowsServices
         {
             try
             {
-                 //ExecuteServiceLocally();
+                // ExecuteServiceActions();
 
                 logger.Info("Service has been started");
                 InitializeService();
@@ -73,13 +73,7 @@ namespace Agilisium.TalentManager.WindowsServices
             }
         }
 
-        private void ExecuteServiceLocally()
-        {
-            AllocationsMessengerServiceProcessor processor = new AllocationsMessengerServiceProcessor();
-            processor.GenerateResourceAllocationReport(appTempDirectory);
-        }
-
-        private void ServiceTimer_Elapsed(object sender, ElapsedEventArgs e)
+        private void ExecuteServiceActions()
         {
             logger.Info("");
             logger.Info("*********************************************************************************************");
@@ -112,6 +106,12 @@ namespace Agilisium.TalentManager.WindowsServices
                 logger.Info("Execution completed");
                 logger.Info("*********************************************************************************************");
             }
+
+        }
+
+        private void ServiceTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            ExecuteServiceActions();
         }
 
         protected override void OnStop()

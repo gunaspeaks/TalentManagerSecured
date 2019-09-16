@@ -380,8 +380,13 @@ namespace Agilisium.TalentManager.Repository.Repositories
         {
             ResourceCountDto dto = new ResourceCountDto
             {
-                TotalCount = Entities.Count(e => e.IsDeleted == false
-                    && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now))),
+
+                TotalCount = (from e in Entities
+                              join p in DataContext.Practices on e.PracticeID equals p.PracticeID into po
+                              from pd in po.DefaultIfEmpty()
+                              where e.IsDeleted == false && pd.IsDeleted == false
+                                 && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue && e.LastWorkingDay.Value >= DateTime.Now))
+                              select e).Count(),
                 DeliveryCount = GetEmployeesCountByBU(BusinessUnit.Delivery),
                 BoCount = GetEmployeesCountByBU(BusinessUnit.BusinessOperations),
                 BdCount = GetEmployeesCountByBU(BusinessUnit.BusinessDevelopment),
@@ -649,9 +654,13 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         private int GetEmployeesCountByBU(BusinessUnit bu)
         {
-            return Entities.Count(e => e.IsDeleted == false
-                && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now))
-                && e.BusinessUnitID == (int)bu);
+            return (from e in Entities
+                    join p in DataContext.Practices on e.PracticeID equals p.PracticeID into po
+                    from pd in po.DefaultIfEmpty()
+                    where e.IsDeleted == false && pd.IsDeleted == false
+                   && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now))
+                   && e.BusinessUnitID == (int)bu
+                    select e).Count();
         }
 
         #endregion

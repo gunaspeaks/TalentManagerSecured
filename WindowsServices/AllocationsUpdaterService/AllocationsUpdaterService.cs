@@ -48,7 +48,7 @@ namespace Agilisium.TalentManager.WindowsServices
         {
             try
             {
-                 //ExecuteServiceLocally();
+                // ExecuteServiceActions();
 
                 logger.Info("Service has been started");
                 InitializeTimer();
@@ -60,23 +60,7 @@ namespace Agilisium.TalentManager.WindowsServices
             }
         }
 
-        private void ExecuteServiceLocally()
-        {
-            AllocationsUpdaterServiceProcessor processor = new AllocationsUpdaterServiceProcessor();
-            logger.Info("Identifying new allocation entries for notification");
-            int newEntries = processor.ProcessAllocations();
-            logger.Info($"There are {newEntries} entries added for notification");
-            processor.ProcessExpiredAllocations();
-        }
-
-        protected override void OnStop()
-        {
-            logger.Info("Service has been stopped");
-            serviceTimer.Stop();
-            serviceTimer.Dispose();
-        }
-
-        private void ServiceTimer_Elapsed(object sender, ElapsedEventArgs e)
+        private void ExecuteServiceActions()
         {
             logger.Info("");
             logger.Info("*********************************************************************************************");
@@ -106,6 +90,19 @@ namespace Agilisium.TalentManager.WindowsServices
                 logger.Info("Execution completed");
                 logger.Info("*********************************************************************************************");
             }
+
+        }
+
+        protected override void OnStop()
+        {
+            logger.Info("Service has been stopped");
+            serviceTimer.Stop();
+            serviceTimer.Dispose();
+        }
+
+        private void ServiceTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            ExecuteServiceActions();
         }
     }
 }

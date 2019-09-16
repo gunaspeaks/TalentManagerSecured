@@ -9,7 +9,7 @@ namespace Agilisium.TalentManager.WebUI.Models
         [DisplayName("POD Name")]
         public string PracticeName { get; set; }
 
-        [DisplayName("Total Count")]
+        [DisplayName("Employees Count")]
         public int TotalCount { get; set; }
 
         [DisplayName("Billable")]

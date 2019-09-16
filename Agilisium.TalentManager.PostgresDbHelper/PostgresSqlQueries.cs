@@ -126,7 +126,7 @@ namespace Agilisium.TalentManager.PostgresDbHelper
                     + "LEFT OUTER JOIN \"TalentManager\".\"ProjectAllocation\" AS \"PA\" ON \"E\".\"EmployeeEntryID\"=\"PA\".\"EmployeeID\" "
                     + "LEFT OUTER JOIN \"TalentManager\".\"DropDownSubCategory\" AS \"SC\" ON \"SC\".\"SubCategoryID\"=\"PA\".\"AllocationTypeID\" "
                     + "LEFT OUTER JOIN \"TalentManager\".\"Practice\" AS \"PR\" ON \"PR\".\"PracticeID\"=\"E\".\"PracticeID\" "
-                    + "WHERE \"E\".\"IsDeleted\"=FALSE AND \"PR\".\"IsDeleted\"=FALSE AND \"SC\".\"IsDeleted\"=FALSE "
+                    + "WHERE \"E\".\"IsDeleted\"=FALSE AND \"PR\".\"IsDeleted\"=FALSE AND \"SC\".\"IsDeleted\"=FALSE AND \"PA\".\"IsDeleted\"=FALSE "
                     + "AND(\"E\".\"LastWorkingDay\" IS NULL OR (\"E\".\"LastWorkingDay\" IS NOT NULL AND \"E\".\"LastWorkingDay\" > '__CURRENT_DATE__')) "
                     + "AND \"PA\".\"AllocationEndDate\" >= '__CURRENT_DATE__' "
                     + "GROUP BY \"PR\".\"PracticeName\",\"SC\".\"SubCategoryName\"";

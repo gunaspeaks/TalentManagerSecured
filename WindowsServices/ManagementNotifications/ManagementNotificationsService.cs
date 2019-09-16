@@ -58,6 +58,36 @@ namespace Agilisium.TalentManager.WindowsServices.ManagementNotifications
 
         private void ServiceTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
+            ExecuteServiceActions();
+        }
+
+        protected override void OnStart(string[] args)
+        {
+            try
+            {
+                // ExecuteServiceActions();
+
+                logger.Info("Service has been started");
+                InitializeTimer();
+            }
+            catch (Exception exp)
+            {
+                logger.Error("Error while starting the service");
+                logger.Error(exp);
+            }
+        }
+
+        protected override void OnStop()
+        {
+            logger.Info("Service has been stopped");
+            logger.Info("");
+            serviceTimer.Enabled = false;
+            serviceTimer.Stop();
+            serviceTimer.Dispose();
+        }
+
+        private void ExecuteServiceActions()
+        {
             logger.Info("*********************************************************************************************");
             logger.Info("Service execution triggered");
 
@@ -87,7 +117,7 @@ namespace Agilisium.TalentManager.WindowsServices.ManagementNotifications
 
                 ManagementNotificationsProcessor processor = new ManagementNotificationsProcessor();
                 processor.GenerateManagementNotifications(appTempDirectory, reportingDay);
-                
+
             }
             catch (Exception exp)
             {
@@ -99,37 +129,6 @@ namespace Agilisium.TalentManager.WindowsServices.ManagementNotifications
                 logger.Info("Service execution completed");
                 logger.Info("*********************************************************************************************");
             }
-        }
-
-        protected override void OnStart(string[] args)
-        {
-            try
-            {
-                //ExecuteServiceLocally();
-
-                logger.Info("Service has been started");
-                InitializeTimer();
-            }
-            catch (Exception exp)
-            {
-                logger.Error("Error while starting the service");
-                logger.Error(exp);
-            }
-        }
-
-        protected override void OnStop()
-        {
-            logger.Info("Service has been stopped");
-            logger.Info("");
-            serviceTimer.Enabled = false;
-            serviceTimer.Stop();
-            serviceTimer.Dispose();
-        }
-
-        private void ExecuteServiceLocally()
-        {
-            ManagementNotificationsProcessor processor = new ManagementNotificationsProcessor();
-            processor.GenerateManagementNotifications(appTempDirectory, 27);
         }
     }
 }

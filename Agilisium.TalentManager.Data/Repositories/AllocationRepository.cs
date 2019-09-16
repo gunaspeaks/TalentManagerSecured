@@ -323,15 +323,15 @@ namespace Agilisium.TalentManager.Repository.Repositories
                     from pmd in pme.DefaultIfEmpty()
                     join dm in DataContext.Employees on pd.ProjectManagerID equals dm.EmployeeEntryID into dme
                     from dmd in dme.DefaultIfEmpty()
-                    where a.EmployeeID == employeeID && a.AllocationEndDate >= DateTime.Now
+                    where a.EmployeeID == employeeID && a.AllocationEndDate >= DateTime.Now && a.IsDeleted == false
                     select new CustomAllocationDto
                     {
                         AllocatedPercentage = a.PercentageOfAllocation,
-                        EndDate = pd.EndDate,
+                        EndDate = a.AllocationEndDate,
                         ProjectCode = pd.ProjectCode,
                         ProjectManager = string.IsNullOrEmpty(pmd.FirstName) ? "" : pmd.LastName + ", " + pmd.FirstName,
                         ProjectName = pd.ProjectName,
-                        StartDate = pd.StartDate,
+                        StartDate = a.AllocationStartDate,
                         UtilizatinType = scd.SubCategoryName,
                         BusinessUnit = bud.SubCategoryName,
                         Practice = prd.PracticeName,
@@ -798,7 +798,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                     BillableCount = podCount.Any(a => a.SubCategoryName == "Billable") ? podCount.FirstOrDefault(a => a.SubCategoryName == "Billable").Count : 0,
                     ComBufferCount = podCount.Any(a => a.SubCategoryName == "Committed Buffer") ? podCount.FirstOrDefault(a => a.SubCategoryName == "Committed Buffer").Count : 0,
                     NonComBufferCount = podCount.Any(a => a.SubCategoryName == "Non-Committed Buffer") ? podCount.FirstOrDefault(a => a.SubCategoryName == "Non-Committed Buffer").Count : 0,
-                    TotalCount = DataContext.Employees.Count(e => e.IsDeleted == false && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue && e.LastWorkingDay > DateTime.Now)) && e.PracticeID == pod.PracticeID),
+                    TotalCount = DataContext.Employees.Count(e => e.IsDeleted == false && e.PracticeID == pod.PracticeID && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue && e.LastWorkingDay >= DateTime.Now))),
                     BenchAvailableCount = ba,
                     BenchEarmarkedCount = be,
                 });

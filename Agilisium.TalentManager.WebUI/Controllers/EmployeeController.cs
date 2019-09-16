@@ -172,6 +172,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         }
 
         // GET: Employe/Create
+        [Authorize(Roles = "Human Resource, Super Admin, Admin")]
         public ActionResult Create()
         {
             EmployeeModel emp = new EmployeeModel()
@@ -194,6 +195,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
 
         // POST: Employe/Create
         [HttpPost]
+        [Authorize(Roles = "Human Resource, Super Admin, Admin")]
         public ActionResult Create(EmployeeModel employee)
         {
             try

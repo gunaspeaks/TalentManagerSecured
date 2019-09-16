@@ -37,7 +37,8 @@ namespace Agilisium.TalentManager.ServiceProcessors
 
             if (serviceSettings.ExecutionInterval == "Daily")
             {
-                return serviceSettings.ExecutedDate.Value == DateTime.Now;
+                DateTime executedDate = serviceSettings.ExecutedDate.Value;
+                return executedDate.Day == DateTime.Now.Day && executedDate.Month == DateTime.Now.Month && executedDate.Year == DateTime.Now.Year;
             }
 
             if (serviceSettings.ExecutionInterval == "Weekly")
@@ -47,30 +48,30 @@ namespace Agilisium.TalentManager.ServiceProcessors
                 {
                     case DayOfWeek.Sunday:
                         startDate = DateTime.Now;
-                        endDate.AddDays(6);
+                        endDate = DateTime.Now.AddDays(6);
                         break;
                     case DayOfWeek.Monday:
-                        startDate.AddDays(-1);
-                        endDate.AddDays(5);
+                        startDate = DateTime.Now.AddDays(-1);
+                        endDate = DateTime.Now.AddDays(5);
                         break;
                     case DayOfWeek.Tuesday:
-                        startDate.AddDays(-2);
-                        endDate.AddDays(4);
+                        startDate = DateTime.Now.AddDays(-2);
+                        endDate = DateTime.Now.AddDays(4);
                         break;
                     case DayOfWeek.Wednesday:
-                        startDate.AddDays(-3);
-                        endDate.AddDays(3);
+                        startDate = DateTime.Now.AddDays(-3);
+                        endDate = DateTime.Now.AddDays(3);
                         break;
                     case DayOfWeek.Thursday:
-                        startDate.AddDays(-4);
-                        endDate.AddDays(2);
+                        startDate = DateTime.Now.AddDays(-4);
+                        endDate = DateTime.Now.AddDays(2);
                         break;
                     case DayOfWeek.Friday:
-                        startDate.AddDays(-5);
-                        endDate.AddDays(1);
+                        startDate = DateTime.Now.AddDays(-5);
+                        endDate = DateTime.Now.AddDays(1);
                         break;
                     case DayOfWeek.Saturday:
-                        startDate.AddDays(-6);
+                        DateTime.Now.AddDays(-6);
                         endDate = DateTime.Now;
                         break;
                 }

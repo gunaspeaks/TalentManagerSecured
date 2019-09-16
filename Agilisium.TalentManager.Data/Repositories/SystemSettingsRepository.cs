@@ -12,7 +12,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
     {
         public void Add(SystemSettingDto entity)
         {
-            throw new System.NotImplementedException();
         }
 
         public void Delete(SystemSettingDto entity)
@@ -61,7 +60,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         public void Update(SystemSettingDto entity)
         {
-            throw new System.NotImplementedException();
         }
 
         public WindowsServiceSettingsDto GetServiceSettings(int serviceID)
