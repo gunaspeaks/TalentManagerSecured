@@ -27,4 +27,10 @@
         ManagementNotifications,
         DailyAllocationsUpdater
     }
+
+    public enum ProjectType
+    {
+        Lab=10,
+
+    }
 }

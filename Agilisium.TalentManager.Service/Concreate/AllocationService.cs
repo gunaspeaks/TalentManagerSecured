@@ -139,5 +139,10 @@ namespace Agilisium.TalentManager.Service.Concreate
         {
             return repository.GetPodWiseAllocationCount().ToList();
         }
+
+        public List<int> GetCommittedBufferUnderSpecificProjects()
+        {
+            return repository.GetCommittedBufferUnderSpecificProjects();
+        }
     }
 }

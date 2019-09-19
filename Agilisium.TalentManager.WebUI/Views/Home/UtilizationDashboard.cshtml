@@ -1,20 +1,41 @@
-﻿@model List<Agilisium.TalentManager.WebUI.Models.BillabilityWiseAllocationSummaryModel>
+﻿@model Agilisium.TalentManager.WebUI.Models.UtilizationDashboardViewModel
 
 <div class="dashboardItem">
     <div class="dashboardItemHeader">Utilization Summary</div>
     <div class="dashboardItemBody">
         <table class="tbl">
-            @for (int i = 0; i < Model.Count; i++)
+            @for (int i = 0; i < Model.AllocationSummary.Count; i++)
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => Model[i].AllocationType)
+                        @Html.DisplayFor(modelItem => Model.AllocationSummary[i].AllocationType)
                     </td>
                     <td>:</td>
                     <td>
-                        @Html.ActionLink(Model[i].NumberOfEmployees.ToString(), "UtilizationReportDetail", "Reports", new { filterType = "alt", filterValue = Model[i].AllocationTypeID }, new { @style = "color:navy;" })
+                        @Html.ActionLink(Model.AllocationSummary[i].NumberOfEmployees.ToString(), "UtilizationReportDetail", "Reports", new { filterType = "alt", filterValue = Model.AllocationSummary[i].AllocationTypeID }, new { @style = "color:navy;" })
                     </td>
                 </tr>
+                if (Model.AllocationSummary[i].AllocationTypeID == 7)
+                {
+                    <tr>
+                        <td>
+                            &nbsp;&nbsp;&nbsp;&nbsp;Under Management Projects
+                        </td>
+                        <td>:</td>
+                        <td>
+                            @Model.CommittedManagementCount
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            &nbsp;&nbsp;&nbsp;&nbsp;Under Lab Projects
+                        </td>
+                        <td>:</td>
+                        <td>
+                            @Model.CommittedLabCount
+                        </td>
+                    </tr>
+                }
             }
         </table>
     </div>

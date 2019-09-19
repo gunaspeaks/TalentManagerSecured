@@ -58,5 +58,7 @@ namespace Agilisium.TalentManager.Service.Abstract
         List<UtilizedDaysSummaryDto> GetUtilizedDaysSummary(string filterBy, string filterValue, string sortBy="ename", string sortType="asc");
 
         List<PodWiseHeadCountDto> GetPodWiseAllocationCount();
+
+        List<int> GetCommittedBufferUnderSpecificProjects();
     }
 }

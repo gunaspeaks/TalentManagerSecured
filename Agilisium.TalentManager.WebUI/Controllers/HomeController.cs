@@ -43,22 +43,25 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                 ResourceCountDto dto = empService.GetEmployeesCountSummary();
                 model = Mapper.Map<ResourceCountDto, ResourceCountModel>(dto);
             }
-            catch (Exception exp) { }
+            catch (Exception) { }
             return PartialView(model);
         }
 
         [ChildActionOnly]
         public ActionResult UtilizationDashboard()
         {
-            List<BillabilityWiseAllocationSummaryModel> model = new List<BillabilityWiseAllocationSummaryModel>();
+            UtilizationDashboardViewModel viewModel = new UtilizationDashboardViewModel();
 
             try
             {
                 List<BillabilityWiseAllocationSummaryDto> dto = allocationService.GetBillabilityWiseAllocationSummary();
-                model = Mapper.Map<List<BillabilityWiseAllocationSummaryDto>, List<BillabilityWiseAllocationSummaryModel>>(dto);
+                viewModel.AllocationSummary = Mapper.Map<List<BillabilityWiseAllocationSummaryDto>, List<BillabilityWiseAllocationSummaryModel>>(dto);
+                List<int> projectWiseCount = allocationService.GetCommittedBufferUnderSpecificProjects();
+                viewModel.CommittedLabCount = projectWiseCount[1];
+                viewModel.CommittedManagementCount = projectWiseCount[0];
             }
-            catch (Exception exp) { }
-            return PartialView(model);
+            catch (Exception) { }
+            return PartialView(viewModel);
         }
 
         [ChildActionOnly]

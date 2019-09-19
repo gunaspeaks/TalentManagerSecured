@@ -807,6 +807,37 @@ namespace Agilisium.TalentManager.Repository.Repositories
             return podWiseCountResult;
         }
 
+        public List<int> GetCommittedBufferUnderSpecificProjects()
+        {
+            List<int> results = new List<int>();
+            int allocationType = (int)AllocationType.CommittedBuffer;
+            int labProjectTypeID = (int)ProjectType.Lab;
+
+            int mngtCount = (from e in DataContext.Employees
+                             join a in Entities on e.EmployeeEntryID equals a.EmployeeID
+                             join p in DataContext.Projects on a.ProjectID equals p.ProjectID
+                             where a.AllocationTypeID == allocationType
+                             && p.ProjectName.ToLower().Contains("management")
+                             && e.IsDeleted == false && a.IsDeleted == false
+                             && a.AllocationEndDate >= DateTime.Now
+                             && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now))
+                             select a.EmployeeID).Count();
+            results.Add(mngtCount);
+
+            int labCount = (from e in DataContext.Employees
+                             join a in Entities on e.EmployeeEntryID equals a.EmployeeID
+                             join p in DataContext.Projects on a.ProjectID equals p.ProjectID
+                             where a.AllocationTypeID == allocationType
+                             && p.ProjectTypeID == labProjectTypeID
+                             && e.IsDeleted == false && a.IsDeleted == false
+                             && a.AllocationEndDate >= DateTime.Now
+                             && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now))
+                             select a.EmployeeID).Count();
+            results.Add(labCount);
+
+            return results;
+        }
+
         #endregion
 
         #region Private Methods
@@ -1188,5 +1219,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
         IEnumerable<UtilizedDaysSummaryDto> GetUtilizedDaysSummary(string filterBy, string filterValue, string sortBy, string sortType);
 
         bool AnyOtherActiveAllocation(int allocationID, int employeeID, DateTime allocationEndDate);
+
+        List<int> GetCommittedBufferUnderSpecificProjects();
     }
 }
