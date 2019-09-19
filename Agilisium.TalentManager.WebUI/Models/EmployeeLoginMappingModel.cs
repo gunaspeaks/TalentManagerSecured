@@ -22,10 +22,11 @@ namespace Agilisium.TalentManager.WebUI.Models
         [Required(ErrorMessage = "Please select an Portal User")]
         public string LoginUserID { get; set; }
 
-        [DisplayName("Portal User Email")]
+        [DisplayName("Email ID")]
         public string LoginUserEmail { get; set; }
 
         [DisplayName("Role Name")]
+        [Required(ErrorMessage = "Please select a Role")]
         public string RoleID { get; set; }
 
         [DisplayName("Role Name")]

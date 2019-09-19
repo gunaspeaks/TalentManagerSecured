@@ -29,14 +29,15 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         public void Update(EmployeeLoginMappingDto entity)
         {
-            Delete(entity);
-
-            EmployeeLoginMapping user = CreateBusinessEntity(entity, true);
+            EmployeeLoginMapping user = Entities.FirstOrDefault(e => e.MappingID == entity.MappingID);
+            user.IsBlocked = entity.IsBlocked;
+            user.RoleID = entity.RoleID;
+            user.UpdateTimeStamp(entity.LoggedInUserName);
             Entities.Add(user);
-            DataContext.Entry(user).State = EntityState.Added;
+            DataContext.Entry(user).State = EntityState.Modified;
             DataContext.SaveChanges();
 
-            postgresSqlProcessor.CreateMappingEntryForUserAndRole(user.LoginUserID, user.RoleID);
+            postgresSqlProcessor.UpdateMappingEntryForUserAndRole(user.LoginUserID, user.RoleID);
         }
 
         public void Delete(EmployeeLoginMappingDto entity)

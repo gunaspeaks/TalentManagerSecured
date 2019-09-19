@@ -242,6 +242,29 @@ namespace Agilisium.TalentManager.PostgresDbHelper
             return res;
         }
 
+        public int UpdateMappingEntryForUserAndRole(string userID, string roleID)
+        {
+            Npgsql.NpgsqlConnection con = null;
+            int res = 0;
+            try
+            {
+                con = new Npgsql.NpgsqlConnection(PostgresSqlQueries.SECURITY_DB_CONNECTION_STRING);
+                con.Open();
+                string qry = PostgresSqlQueries.UPDATE_USER_AND_ROLE_MAPPING_QUERY.Replace("__USER_ID__", userID).Replace("__ROLE_ID__", roleID);
+                Npgsql.NpgsqlCommand cmd = new Npgsql.NpgsqlCommand(qry, con);
+                res = cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception) { }
+            finally
+            {
+                con.Close();
+                con.Dispose();
+            }
+
+            return res;
+        }
+
         public IEnumerable<EmployeeLoginDto> GetUserAndRoleMapEntries()
         {
             List<EmployeeLoginDto> records = new List<EmployeeLoginDto>();

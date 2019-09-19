@@ -337,6 +337,7 @@
     <Compile Include="Models\SubPracticeHeadCountModel.cs" />
     <Compile Include="Models\SubPracticeModel.cs" />
     <Compile Include="Models\SubPracticeViewModel.cs" />
+    <Compile Include="Models\UtilizationDashboardViewModel.cs" />
     <Compile Include="Models\UtilizationReportDetailViewModel.cs" />
     <Compile Include="Models\UtilizedDaysSummaryModel.cs" />
     <Compile Include="Models\UtilizedDaysViewModel.cs" />
@@ -543,6 +544,7 @@
     <Content Include="Views\Employee\Certifications.cshtml" />
     <Content Include="Views\Employee\AddCertification.cshtml" />
     <Content Include="Views\Reports\PodWiseCount.cshtml" />
+    <Content Include="Views\ELogin\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

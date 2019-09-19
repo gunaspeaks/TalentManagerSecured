@@ -247,7 +247,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
 
                 if (!empService.Exists(id.Value))
                 {
-                    DisplayWarningMessage($"Sorry, we couldn't find the Employee with ID: {id.Value}");
+                    DisplayWarningMessage($"Sorry, we couldn't find the Employee details for the given ID: {id.Value}");
                     return View(empModel);
                 }
 

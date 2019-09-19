@@ -1,0 +1,64 @@
+﻿@model Agilisium.TalentManager.WebUI.Models.EmployeeLoginMappingModel
+
+@{
+    ViewBag.Title = "Edit Login Account Details";
+    Layout = "~/Views/Shared/_SettingsLayout.cshtml";
+}
+
+<div class="panel panel-default">
+    <div style="text-align:center" class="panel-heading">
+        <h3><b>Edit Login Account Details</b></h3>
+    </div>
+    <br />
+
+    @using (Html.BeginForm())
+    {
+        Html.AntiForgeryToken();
+    <div class="panel-body">
+        @Html.ValidationSummary(false, "Please correct the below Validation Errors to save the data")
+        <div>
+            <table style="width:100%; border:1px;border-color:red; padding-left:10px;">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.EmployeeName):
+                            @Html.ValueFor(model => model.EmployeeName)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.LoginUserEmail):
+                            @Html.ValueFor(model => model.LoginUserEmail)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.RoleID)
+                            @Html.DropDownListFor(model => model.RoleID, (IEnumerable<SelectListItem>)ViewBag.UserRoleListItems, "Please Select", new { @class = "form-control" })
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.IsBlocked)
+                            @Html.EditorFor(model => model.IsBlocked, new { @class = "form-control" })
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="panel-footer">
+            @Html.HiddenFor(model => model.EmployeeID)
+            @Html.HiddenFor(model => model.LoginUserID)
+            @Html.HiddenFor(model => model.MappingID)
+            <input type="submit" value="Save" class="btn btn-primary" />
+            @Html.ActionLink("Cancel and Go Back", "List", new { page = Request.QueryString["page"] }, new { @class = "btn btn-default" })
+        </div>
+    </div>
+    }
+</div>

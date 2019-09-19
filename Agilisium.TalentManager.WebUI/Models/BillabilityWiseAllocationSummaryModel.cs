@@ -16,4 +16,6 @@ namespace Agilisium.TalentManager.WebUI.Models
         [Display(Name = "Number of Employees")]
         public int NumberOfEmployees { get; set; }
     }
+
+
 }

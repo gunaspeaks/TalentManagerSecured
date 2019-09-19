@@ -10,7 +10,7 @@
                 @{
                     char[] splitChar = new char[] { '.' };
                 }
-                @Html.ActionLink("Hello " + User.Identity.GetUserName().Split(splitChar)[0].ToUpper() + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })
+                @Html.ActionLink("Hello " + User.Identity.GetUserName().Split(splitChar)[0].ToUpper() + " !", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage", @style = "color:GreenYellow" })
             </li>
             <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
         </ul>

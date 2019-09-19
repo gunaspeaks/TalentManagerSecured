@@ -19,7 +19,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
         private readonly ProjectRepository projectRepository;
         private readonly PracticeRepository practiceRepository;
         private readonly SystemSettingRepository settingRepository;
-        private readonly string dmEmailID = "satish.srinivasan @agilisium.com";
+        private readonly string dmEmailID = "rmg@agilisium.com";
 
         private readonly ILog logger;
 

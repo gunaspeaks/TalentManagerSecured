@@ -94,6 +94,7 @@ namespace Agilisium.TalentManager.PostgresDbHelper
                     + " WHERE \"EmployeeID\"=__EMPLOYEE_ID__";
 
         public static string INSERT_USER_AND_ROLE_MAPPING_QUERY = "INSERT INTO \"dbo\".\"AspNetUserRoles\"(\"UserId\", \"RoleId\") VALUES ('__USER_ID__', '__ROLE_ID__')";
+        public static string UPDATE_USER_AND_ROLE_MAPPING_QUERY = "UPDATE \"dbo\".\"AspNetUserRoles\" SET \"RoleId\"='__ROLE_ID__' WHERE \"UserId\"='__USER_ID__'";
 
         public static string GET_USER_LOGIN_ROLE_ENTRIES = "SELECT \"U\".\"Id\", \"U\".\"Email\", \"R\".\"Name\""
                     + " FROM \"dbo\".\"AspNetUsers\" AS \"U\" "
