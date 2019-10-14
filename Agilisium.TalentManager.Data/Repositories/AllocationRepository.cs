@@ -825,14 +825,14 @@ namespace Agilisium.TalentManager.Repository.Repositories
             results.Add(mngtCount);
 
             int labCount = (from e in DataContext.Employees
-                             join a in Entities on e.EmployeeEntryID equals a.EmployeeID
-                             join p in DataContext.Projects on a.ProjectID equals p.ProjectID
-                             where a.AllocationTypeID == allocationType
-                             && p.ProjectTypeID == labProjectTypeID
-                             && e.IsDeleted == false && a.IsDeleted == false
-                             && a.AllocationEndDate >= DateTime.Now
-                             && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now))
-                             select a.EmployeeID).Count();
+                            join a in Entities on e.EmployeeEntryID equals a.EmployeeID
+                            join p in DataContext.Projects on a.ProjectID equals p.ProjectID
+                            where a.AllocationTypeID == allocationType
+                            && p.ProjectTypeID == labProjectTypeID
+                            && e.IsDeleted == false && a.IsDeleted == false
+                            && a.AllocationEndDate >= DateTime.Now
+                            && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now))
+                            select a.EmployeeID).Count();
             results.Add(labCount);
 
             return results;
@@ -970,6 +970,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                         where a.IsDeleted == false && e.IsDeleted == false
                         && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue && e.LastWorkingDay > DateTime.Now))
                         && a.AllocationEndDate > DateTime.Now && a.BenchCategoryID == (int)benchCategory
+                        && a.AllocationStartDate <= DateTime.Now 
                         select a).Distinct().Count();
             }
             else
@@ -979,8 +980,9 @@ namespace Agilisium.TalentManager.Repository.Repositories
                         where a.AllocationTypeID == (int)allocationType
                         && e.IsDeleted == false && a.IsDeleted == false
                         && a.AllocationEndDate >= DateTime.Now
+                        && a.AllocationStartDate <= DateTime.Now
                         && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now))
-                        select a.EmployeeID).Distinct().Count();
+                        select a.EmployeeID).Count();
             }
         }
 
@@ -1159,19 +1161,19 @@ namespace Agilisium.TalentManager.Repository.Repositories
             if (forDeliveryBU)
             {
                 emps = DataContext.Employees.Where(e => e.IsDeleted == false
-                  && e.BusinessUnitID == 3 && e.LastWorkingDay.HasValue == false
-                  || (e.LastWorkingDay.HasValue && e.LastWorkingDay.Value > DateTime.Now)).ToList();
+                  && e.BusinessUnitID == 3 && (e.LastWorkingDay.HasValue == false
+                  || (e.LastWorkingDay.HasValue && e.LastWorkingDay.Value > DateTime.Now))).ToList();
             }
             else
             {
                 emps = DataContext.Employees.Where(e => e.IsDeleted == false
-                    && e.BusinessUnitID != 3 && e.LastWorkingDay.HasValue == false
-                    || (e.LastWorkingDay.HasValue && e.LastWorkingDay.Value > DateTime.Now)).ToList();
+                    && e.BusinessUnitID != 3 && (e.LastWorkingDay.HasValue == false
+                    || (e.LastWorkingDay.HasValue && e.LastWorkingDay.Value > DateTime.Now))).ToList();
             }
 
             foreach (Employee emp in emps)
             {
-                if (Entities.Count(a => a.IsDeleted == false && a.EmployeeID == emp.EmployeeEntryID && a.AllocationEndDate > DateTime.Now) == 0)
+                if (Entities.Count(a => a.IsDeleted == false && a.EmployeeID == emp.EmployeeEntryID && a.AllocationEndDate > DateTime.Now && a.AllocationStartDate <= DateTime.Now) == 0)
                 {
                     count++;
                 }

@@ -11,21 +11,22 @@
 <script>
 
     $(document).ready(function () {
+    
         $("#AllocationStartDate").datepicker({
 
-            dateFormat: "mm-dd-yy",
+            dateFormat: "mm/dd/yy",
             changeMonth: true,
             changeYear: true,
             showAnim: "fadeIn",
         });
         $("#AllocationEndDate").datepicker({
 
-            dateFormat: "mm-dd-yy",
+            dateFormat: "mm/dd/yy",
             changeMonth: true,
             changeYear: true,
             showAnim: "fadeIn",
         });
-
+        
         updateEmployeeAndProjectDetails();
         updateFieldsBasedOnProjectType();
     });
@@ -203,6 +204,7 @@
                     <tr>
                         <td>
                             <div class="form-group">
+                                @Html.HiddenFor(model => model.AllocationTypeID)
                                 @Html.LabelFor(model => model.AllocationTypeID)
                                 @Html.DropDownListFor(model => model.AllocationTypeID, (IEnumerable<SelectListItem>)ViewBag.ProjectTypeListItems, "Please Select", new { @class = "form-control" })
                             </div>

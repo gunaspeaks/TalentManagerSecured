@@ -25,12 +25,12 @@ namespace Agilisium.TalentManager.WebUI.Models
 
         [DisplayName("Valid Upto")]
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
-        [DataType(DataType.Date)]
+        //[DataType(DataType.Date)]
         public DateTime? ValidUpto { get; set; }
 
         [DisplayName("Certified On")]
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
-        [DataType(DataType.Date)]
+        //[DataType(DataType.Date)]
         public DateTime? CertifiedOn { get; set; }
     }
 }

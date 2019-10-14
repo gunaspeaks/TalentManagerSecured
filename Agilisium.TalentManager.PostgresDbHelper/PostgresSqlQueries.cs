@@ -22,10 +22,10 @@ namespace Agilisium.TalentManager.PostgresDbHelper
                     + " LEFT OUTER JOIN \"TalentManager\".\"DropDownSubCategory\" AS \"DS\" ON \"DS\".\"SubCategoryID\" = \"PA\".\"AllocationTypeID\""
                     + " LEFT OUTER JOIN \"TalentManager\".\"DropDownSubCategory\" AS \"BU\" ON \"BU\".\"SubCategoryID\" = \"P\".\"BusinessUnitID\""
                     + " LEFT OUTER JOIN \"TalentManager\".\"Practice\" AS \"POD\" ON \"POD\".\"PracticeID\" = \"E\".\"PracticeID\""
-                    + " WHERE \"E\".\"IsDeleted\" = False AND \"PA\".\"IsDeleted\" = False AND \"E\".\"LastWorkingDay\" IS NULL"
-                    + " AND \"PA\".\"AllocationTypeID\" = __ALLOCATION_TYPE_ID__ AND \"PA\".\"AllocationEndDate\" > '__CURRENT_DATE__'"
-                    + " OR (\"E\".\"LastWorkingDay\" IS NOT NULL AND \"E\".\"LastWorkingDay\" > '__CURRENT_DATE__')"
-                    + " ORDER BY 3";
+                    + " WHERE \"E\".\"IsDeleted\" = False AND \"PA\".\"IsDeleted\" = False "
+                    + " AND \"PA\".\"AllocationTypeID\" = __ALLOCATION_TYPE_ID__ AND \"PA\".\"AllocationStartDate\" <= '__CURRENT_DATE__' AND \"PA\".\"AllocationEndDate\" > '__CURRENT_DATE__'"
+                    + " AND (\"E\".\"LastWorkingDay\" IS NULL OR (\"E\".\"LastWorkingDay\" IS NOT NULL AND \"E\".\"LastWorkingDay\" > '__CURRENT_DATE__')) ORDER BY 3";
+
         public static string GET_ALLOCATION_DETAIL_FOR_ALL_NON_ALLOCATED_DELIVERY_BU_RESOURCES = "SELECT DISTINCT \"E\".\"EmployeeEntryID\", \"E\".\"EmployeeID\", CONCAT(\"E\".\"FirstName\",' ', \"E\".\"LastName\") AS \"EmployeeName\","
                     + "\"E\".\"PrimarySkills\", \"E\".\"SecondarySkills\", -1 AS \"AllocationTypeID\", 'Not Allocated Yet (Delivery)' AS \"AllocationType\","
                     + "\"E\".\"BusinessUnitID\", \"BU\".\"SubCategoryName\" AS \"BusinessUnit\","
@@ -34,11 +34,11 @@ namespace Agilisium.TalentManager.PostgresDbHelper
                     + "NUll AS \"ProjectManagerID\", NUll AS \"ProjectManager\", ' ' AS \"Comments\""
                     + " FROM \"TalentManager\".\"Employee\" AS \"E\""
                     + " LEFT OUTER JOIN \"TalentManager\".\"Employee\" AS \"PM\" ON \"PM\".\"EmployeeEntryID\" = \"E\".\"ReportingManagerID\""
-                    + " LEFT OUTER JOIN \"TalentManager\".\"DropDownSubCategory\" AS \"BU\" ON \"BU\".\"SubCategoryID\" = 3"
+                    + " LEFT OUTER JOIN \"TalentManager\".\"DropDownSubCategory\" AS \"BU\" ON \"BU\".\"SubCategoryID\" = \"E\".\"BusinessUnitID\""
                     + " LEFT OUTER JOIN \"TalentManager\".\"Practice\" AS \"POD\" ON \"POD\".\"PracticeID\" = \"E\".\"PracticeID\" "
-                    + " WHERE \"E\".\"IsDeleted\" = False AND \"E\".\"BusinessUnitID\" = 3 AND \"E\".\"LastWorkingDay\" IS NULL"
-                    + " AND(SELECT COUNT(1) FROM \"TalentManager\".\"ProjectAllocation\" WHERE \"EmployeeID\" = \"E\".\"EmployeeEntryID\" AND \"IsDeleted\"=False AND \"AllocationEndDate\" > '__CURRENT_DATE__') = 0"
-                    + " AND \"E\".\"LastWorkingDay\" IS NULL OR (\"E\".\"LastWorkingDay\" IS NOT NULL AND \"E\".\"LastWorkingDay\" > '__CURRENT_DATE__')"
+                    + " WHERE \"E\".\"IsDeleted\" = False AND \"E\".\"BusinessUnitID\" = 3 "
+                    + " AND(SELECT COUNT(1) FROM \"TalentManager\".\"ProjectAllocation\" WHERE \"EmployeeID\" = \"E\".\"EmployeeEntryID\" AND \"IsDeleted\"=False AND \"AllocationEndDate\" > '__CURRENT_DATE__' AND \"AllocationStartDate\" <= '__CURRENT_DATE__') = 0"
+                    + " AND (\"E\".\"LastWorkingDay\" IS NULL OR (\"E\".\"LastWorkingDay\" IS NOT NULL AND \"E\".\"LastWorkingDay\" > '__CURRENT_DATE__'))"
                     + " ORDER BY 3";
         public static string GET_ALLOCATION_DETAIL_FOR_ALL_NON_ALLOCATED_OTHER_BU_RESOURCES = "SELECT DISTINCT \"E\".\"EmployeeEntryID\", \"E\".\"EmployeeID\", CONCAT(\"E\".\"FirstName\",' ', \"E\".\"LastName\") AS \"EmployeeName\","
                     + "\"E\".\"PrimarySkills\", \"E\".\"SecondarySkills\", -2 AS \"AllocationTypeID\", 'Not Allocated Yet (BO/BD)' AS \"AllocationType\","
@@ -48,11 +48,11 @@ namespace Agilisium.TalentManager.PostgresDbHelper
                     + "NUll AS \"ProjectManagerID\", NUll AS \"ProjectManager\", ' ' AS \"Comments\""
                     + " FROM \"TalentManager\".\"Employee\" AS \"E\""
                     + " LEFT OUTER JOIN \"TalentManager\".\"Employee\" AS \"PM\" ON \"PM\".\"EmployeeEntryID\" = \"E\".\"ReportingManagerID\""
-                    + " LEFT OUTER JOIN \"TalentManager\".\"DropDownSubCategory\" AS \"BU\" ON \"BU\".\"SubCategoryID\" = 3"
+                    + " LEFT OUTER JOIN \"TalentManager\".\"DropDownSubCategory\" AS \"BU\" ON \"BU\".\"SubCategoryID\" = \"E\".\"BusinessUnitID\""
                     + " LEFT OUTER JOIN \"TalentManager\".\"Practice\" AS \"POD\" ON \"POD\".\"PracticeID\" = \"E\".\"PracticeID\""
-                    + " WHERE \"E\".\"IsDeleted\" = False AND \"E\".\"BusinessUnitID\" != 3 AND \"E\".\"LastWorkingDay\" IS NULL"
+                    + " WHERE \"E\".\"IsDeleted\" = False AND \"E\".\"BusinessUnitID\" != 3 "
                     + " AND (SELECT COUNT(1) FROM \"TalentManager\".\"ProjectAllocation\" WHERE \"EmployeeID\" = \"E\".\"EmployeeEntryID\" AND \"IsDeleted\"=False AND \"AllocationEndDate\" > '__CURRENT_DATE__') = 0"
-                    + " OR (\"E\".\"LastWorkingDay\" IS NOT NULL AND \"E\".\"LastWorkingDay\" > '__CURRENT_DATE__')"
+                    + " AND (\"E\".\"LastWorkingDay\" IS NULL OR (\"E\".\"LastWorkingDay\" IS NOT NULL AND \"E\".\"LastWorkingDay\" > '__CURRENT_DATE__'))"
                     + " ORDER BY 3";
         public static string GET_COUNT_OF_NON_ALLOCATED_EMPLOYEES_FROM_DELIVERY = "SELECT COUNT(1)"
                     + " FROM \"TalentManager\".\"Employee\" AS \"E\""
@@ -118,9 +118,9 @@ namespace Agilisium.TalentManager.PostgresDbHelper
                     + "  LEFT OUTER JOIN \"TalentManager\".\"DropDownSubCategory\" AS \"BU\" ON \"BU\".\"SubCategoryID\" = \"P\".\"BusinessUnitID\" "
                     + "  LEFT OUTER JOIN \"TalentManager\".\"Practice\" AS \"POD\" ON \"POD\".\"PracticeID\" = \"E\".\"PracticeID\" "
                     + "  WHERE \"E\".\"IsDeleted\" = False AND \"PA\".\"IsDeleted\" = False AND \"E\".\"LastWorkingDay\" IS NULL "
-                    + "  AND \"PA\".\"AllocationTypeID\" = 5 AND \"PA\".\"AllocationEndDate\" > '__CURRENT_DATE__' "
+                    + "  AND \"PA\".\"AllocationTypeID\" = 5 AND \"PA\".\"AllocationEndDate\" > '__CURRENT_DATE__' AND \"PA\".\"AllocationStartDate\" <= '__CURRENT_DATE__' "
                     + "  AND \"PA\".\"BenchCategoryID\"=__BENCH_CATEGORY__"
-                    + "  OR(\"E\".\"LastWorkingDay\" IS NOT NULL AND \"E\".\"LastWorkingDay\" > '__CURRENT_DATE__') "
+                    + "  AND (\"E\".\"LastWorkingDay\" IS NULL OR (\"E\".\"LastWorkingDay\" IS NOT NULL AND \"E\".\"LastWorkingDay\" > '__CURRENT_DATE__')) "
                     + "  ORDER BY 3";
 
         public static string POD_WISE_EMPLOYEE_COUNT = "SELECT \"PR\".\"PracticeName\",\"SC\".\"SubCategoryName\", COUNT(\"E\".\"EmployeeID\") AS \"Count\" FROM \"TalentManager\".\"Employee\" AS \"E\" "

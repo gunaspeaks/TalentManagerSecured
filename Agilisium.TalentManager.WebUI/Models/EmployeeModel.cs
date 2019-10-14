@@ -57,13 +57,13 @@ namespace Agilisium.TalentManager.WebUI.Models
 
         [DisplayName("Date of Join")]
         [Required(ErrorMessage = "Date of Join is required")]
-        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
-        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = false)]
+        //[DataType(DataType.Date)]
         public DateTime DateOfJoin { get; set; }
 
         [DisplayName("Last Working Day")]
-        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", NullDisplayText = "", ApplyFormatInEditMode =true)]
-        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", NullDisplayText = "", ApplyFormatInEditMode =false)]
+        //[DataType(DataType.Date)]
         public DateTime? LastWorkingDay { get; set; }
 
         [DisplayName("Primary Skills")]
@@ -107,8 +107,8 @@ namespace Agilisium.TalentManager.WebUI.Models
         public string VisaCategory { get; set; }
 
         [DisplayName("Visa Validity Upto")]
-        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
-        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = false)]
+        //[DataType(DataType.Date)]
         public DateTime? VisaValidUpto { get; set; }
 
         [DisplayName("Technical Rank")]
@@ -121,8 +121,8 @@ namespace Agilisium.TalentManager.WebUI.Models
         public string PassportNo { get; set; }
 
         [DisplayName("Passport Validity Upto")]
-        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
-        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = false)]
+        //[DataType(DataType.Date)]
         public DateTime? PassportValidUpto { get; set; }
 
         [DisplayName("Travelled Countries")]
