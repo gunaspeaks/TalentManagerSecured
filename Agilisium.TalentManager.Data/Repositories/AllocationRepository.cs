@@ -511,9 +511,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                        PercentageOfAllocation = p.PercentageOfAllocation,
                        AccountName = acd.AccountName
                    };
-
-
-
         }
 
         private IQueryable<ProjectAllocationDto> GetAllAllocationHistoryByManagerID(int managerID)
@@ -610,24 +607,24 @@ namespace Agilisium.TalentManager.Repository.Repositories
             return count;
         }
 
-        public bool AnyActiveBillableAllocations(int employeeID, int allocationID)
+        public bool AnyActiveBillableAllocations(int employeeID, int allocationID, DateTime startDate)
         {
             return (from a in Entities
                     join p in DataContext.Projects on a.ProjectID equals p.ProjectID
-                    where a.IsDeleted == false && a.AllocationEndDate >= DateTime.Now
+                    where a.IsDeleted == false && a.AllocationEndDate <= startDate
                         && p.ProjectName.ToLower() != "bench"
                         && a.EmployeeID == employeeID
                         && a.AllocationEntryID != allocationID
                     select a).Any();
         }
 
-        public bool AnyActiveAllocationInBenchProject(int employeeID)
+        public bool AnyActiveAllocationInBenchProject(int employeeID, DateTime startDate)
         {
             return (from a in Entities
                     join p in DataContext.Projects on a.ProjectID equals p.ProjectID
                     where a.IsDeleted == false
                         && p.ProjectName.ToLower().Contains("bench")
-                        && a.EmployeeID == employeeID && a.AllocationEndDate >= DateTime.Now
+                        && a.EmployeeID == employeeID && a.AllocationEndDate <= DateTime.Now
                     select a).Any();
         }
 
@@ -838,6 +835,45 @@ namespace Agilisium.TalentManager.Repository.Repositories
             return results;
         }
 
+        public IEnumerable<BillabilityWiseAllocationDetailDto> GetAllocationsForDates(DateTime fromDate, DateTime uptoDate)
+        {
+            return from p in Entities
+                   join em in DataContext.Employees on p.EmployeeID equals em.EmployeeEntryID into eme
+                   from emd in eme.DefaultIfEmpty()
+                   join sc in DataContext.DropDownSubCategories on p.AllocationTypeID equals sc.SubCategoryID into sce
+                   from scd in sce.DefaultIfEmpty()
+                   join po in DataContext.Practices on emd.PracticeID equals po.PracticeID into poe
+                   from pod in poe.DefaultIfEmpty()
+                   join pr in DataContext.Projects on p.ProjectID equals pr.ProjectID into pre
+                   from prd in pre.DefaultIfEmpty()
+                   join pm in DataContext.Employees on prd.ProjectManagerID equals pm.EmployeeEntryID into pme
+                   from pmd in pme.DefaultIfEmpty()
+                   join rm in DataContext.Employees on emd.ReportingManagerID equals rm.EmployeeEntryID into rme
+                   from rmd in rme.DefaultIfEmpty()
+                   where p.IsDeleted == false && p.AllocationTypeID == (int)AllocationType.Billable && 
+                   ((p.AllocationStartDate >= fromDate && p.AllocationStartDate <= uptoDate)
+                   || (p.AllocationEndDate >= fromDate && p.AllocationEndDate <= uptoDate))
+                   orderby p.AllocationEntryID
+                   select new BillabilityWiseAllocationDetailDto
+                   {
+                       AllocationEntryID = p.AllocationEntryID,
+                       AllocationEndDate = p.AllocationEndDate,
+                       AllocationStartDate = p.AllocationStartDate,
+                       AllocationType = scd.SubCategoryName,
+                       AllocationTypeID = p.AllocationTypeID,
+                       EmployeeEntryID = p.EmployeeID,
+                       EmployeeID = emd.EmployeeID,
+                       EmployeeName = emd.FirstName + " " + emd.LastName,
+                       POD = pod.PracticeName,
+                       PracticeID = pod.PracticeID,
+                       ProjectID = p.ProjectID,
+                       ProjectManager = pmd.FirstName + " " + pmd.LastName,
+                       ProjectManagerID = pmd.EmployeeEntryID,
+                       ProjectName = prd.ProjectName,
+                       ReportingManager = rmd.FirstName + " " + rmd.LastName,
+                   };
+        }
+
         #endregion
 
         #region Private Methods
@@ -970,7 +1006,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                         where a.IsDeleted == false && e.IsDeleted == false
                         && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue && e.LastWorkingDay > DateTime.Now))
                         && a.AllocationEndDate > DateTime.Now && a.BenchCategoryID == (int)benchCategory
-                        && a.AllocationStartDate <= DateTime.Now 
+                        && a.AllocationStartDate <= DateTime.Now
                         select a).Distinct().Count();
             }
             else
@@ -1204,9 +1240,9 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         int TotalRecordsCount(string filterType, int filterValueID);
 
-        bool AnyActiveBillableAllocations(int employeeID, int allocationID);
+        bool AnyActiveBillableAllocations(int employeeID, int allocationID, DateTime startDate);
 
-        bool AnyActiveAllocationInBenchProject(int employeeID);
+        bool AnyActiveAllocationInBenchProject(int employeeID, DateTime startDate);
 
         void EndAllocation(int allocationID);
 
@@ -1223,5 +1259,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
         bool AnyOtherActiveAllocation(int allocationID, int employeeID, DateTime allocationEndDate);
 
         List<int> GetCommittedBufferUnderSpecificProjects();
+
+        IEnumerable<BillabilityWiseAllocationDetailDto> GetAllocationsForDates(DateTime from, DateTime upto);
     }
 }

@@ -1,0 +1,47 @@
+﻿@model Agilisium.TalentManager.WebUI.Models.EmployeeSkillModel
+
+@{
+    ViewBag.Title = "Add your technology skill";
+    Layout = "~/Views/Shared/_OpenLayout.cshtml";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <br />
+<h4><b>Please select your proficiency</b></h4>
+        <hr />
+        <div class="form-group">
+            @Html.LabelFor(model => model.TechSkill, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.HiddenFor(model => model.EntryID)
+                @Html.HiddenFor(model => model.EmployeeID)
+                @Html.HiddenFor(model => model.SkillCategoryID)
+                @Html.HiddenFor(model => model.TechSkillID)
+                @Html.HiddenFor(model => model.LogonID)
+                @Html.DisplayTextFor(model => model.TechSkill)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Rating, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.RatingID, (IEnumerable<SelectListItem>)ViewBag.RatingsListItems, "Please Select", new { @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                @Html.ActionLink("Cancel and Go Back", "UpdateEmpSkills", new { eeid = Model.EmployeeID }, new { @class = "btn btn-default" })
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

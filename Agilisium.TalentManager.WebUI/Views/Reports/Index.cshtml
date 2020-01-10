@@ -46,6 +46,14 @@
                     @Html.ActionLink("POD-Wise Total/Billability Head Count", "PodWiseCount", null, new { @class = "btn btn-primary" })
                 </td>
             </tr>
+            <tr>
+                <td height="5px"></td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.ActionLink("Billable Allocations for Finance", "BillableAllocations", new { @from = DateTime.Now, @upto = DateTime.Now }, new { @class = "btn btn-primary" })
+                </td>
+            </tr>
             <tr style="background-color:red; height:5px; visibility:collapse;">
                 <td></td>
             </tr>

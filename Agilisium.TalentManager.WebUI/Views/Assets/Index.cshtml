@@ -1,0 +1,89 @@
+﻿@model Agilisium.TalentManager.WebUI.Models.EmpAssetDetailModel
+
+@{
+    ViewBag.Title = "Assets Management";
+    Layout = "~/Views/Shared/_OpenLayout.cshtml";
+}
+
+@using (Html.BeginForm("Index", "Assets", new { eeid = Model.EmployeeEntryID }))
+{
+
+    <div class="panel panel-default">
+        <div style="text-align:left" class="panel-heading">
+            <h3><b>Employee Skill Matrix</b></h3>
+        </div>
+
+        @Html.AntiForgeryToken()
+        <div class="panel-body">
+            @Html.ValidationSummary(false, "Please correct the below Validation Errors to save the data")
+            <div>
+                <table style="width:86%;" cellpadding="5" cellspacing="5px">
+                    <tr>
+                        <td width="20%">
+                            <div class="form-group">
+                                <b>Logon Name/ID</b><br />
+                                @Html.DisplayTextFor(model => model.LogonID)
+                                @Html.HiddenFor(model => model.LogonID, new { id = "logonID" })
+                            </div>
+                        </td>
+                        <td width="2%"></td>
+                        <td width="20%">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.EmployeeID)
+                                @Html.EditorFor(model => model.EmployeeID, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+                        <td width="2%"></td>
+                        <td width="20%">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Designation)
+                                @Html.EditorFor(model => model.Designation, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+                        <td width="2%"></td>
+                        <td width="20%">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.OverallExperience)
+                                @Html.EditorFor(model => model.OverallExperience, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="20%">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.LocationID)
+                                @Html.DropDownListFor(model => model.LocationID, (IEnumerable<SelectListItem>)ViewBag.LocationsListItems, "Please Select", new { @class = "form-control" })
+                            </div>
+                        </td>
+                        <td width="2%"></td>
+                        <td width="20%">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.VisaStatusID)
+                                @Html.DropDownListFor(model => model.VisaStatusID, (IEnumerable<SelectListItem>)ViewBag.VisaTypeListItems, "Please Select", new { @class = "form-control" })
+                            </div>
+                        </td>
+                        <td width="2%"></td>
+                        <td width="20%">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.PrimarySkills)
+                                @Html.EditorFor(model => model.PrimarySkills, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+                        <td width="2%"></td>
+                        <td>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.SecondarySkills)
+                                @Html.EditorFor(model => model.SecondarySkills, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <p>
+        <div class="panel-footer">
+            <input type="submit" value="Proceed to update your Skills" class="btn btn-primary" />
+        </div>
+    </p>
+}

@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
 namespace Agilisium.TalentManager.WebUI.Models
@@ -7,6 +10,8 @@ namespace Agilisium.TalentManager.WebUI.Models
     {
         public UtilizationReportDetailViewModel()
         {
+            From = DateTime.Now;
+            Upto = DateTime.Now;
             Allocations = new List<BillabilityWiseAllocationDetailModel>();
 
             FilterTypeListItems = new List<SelectListItem>
@@ -55,5 +60,15 @@ namespace Agilisium.TalentManager.WebUI.Models
         public string FilterType { get; set; }
 
         public string FilterValue { get; set; }
+
+        [DisplayName("From")]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = false)]
+        [Required(ErrorMessage = "Please select the From date")]
+        public DateTime From { get; set; }
+
+        [DisplayName("Upto")]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = false)]
+        [Required(ErrorMessage = "Please select the Upto date")]
+        public DateTime Upto { get; set; }
     }
 }

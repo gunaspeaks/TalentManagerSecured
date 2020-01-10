@@ -37,6 +37,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllocationsUpdaterService",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagementNotifications", "WindowsServices\ManagementNotifications\ManagementNotifications.csproj", "{C5FD7BF7-64AC-4C52-8E55-E2365B07A745}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agilisium.TalentManager.WindowsUI", "Agilisium.TalentManager.WindowsUI\Agilisium.TalentManager.WindowsUI.csproj", "{A3C974A4-E4A7-450B-8448-0E4A52EDB481}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agilisium.TalentManager.WebApi", "Agilisium.TalentManager.WebApi\Agilisium.TalentManager.WebApi.csproj", "{09DA5B78-D02F-49FF-916B-B336A0D17DFE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -103,6 +107,14 @@ Global
 		{C5FD7BF7-64AC-4C52-8E55-E2365B07A745}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5FD7BF7-64AC-4C52-8E55-E2365B07A745}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5FD7BF7-64AC-4C52-8E55-E2365B07A745}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3C974A4-E4A7-450B-8448-0E4A52EDB481}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3C974A4-E4A7-450B-8448-0E4A52EDB481}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3C974A4-E4A7-450B-8448-0E4A52EDB481}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3C974A4-E4A7-450B-8448-0E4A52EDB481}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09DA5B78-D02F-49FF-916B-B336A0D17DFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09DA5B78-D02F-49FF-916B-B336A0D17DFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09DA5B78-D02F-49FF-916B-B336A0D17DFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09DA5B78-D02F-49FF-916B-B336A0D17DFE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

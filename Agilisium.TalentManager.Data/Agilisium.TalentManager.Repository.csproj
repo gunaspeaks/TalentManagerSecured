@@ -82,6 +82,7 @@
     <Compile Include="Repositories\DropDownCategoryRepository.cs" />
     <Compile Include="Repositories\DropDownSubCategoryRepository.cs" />
     <Compile Include="Repositories\ServiceRequestRepository.cs" />
+    <Compile Include="Repositories\EmployeeTechRepository.cs" />
     <Compile Include="Repositories\VendorRepository.cs" />
     <Compile Include="Repositories\EmployeeRepository.cs" />
     <Compile Include="Repositories\PracticeRepository.cs" />

@@ -55,6 +55,8 @@
     <Compile Include="EmployeeDto.cs" />
     <Compile Include="EmployeeLoginDto.cs" />
     <Compile Include="EmployeeLoginMappingDto.cs" />
+    <Compile Include="TechSkill\EmpAssetDetailDto.cs" />
+    <Compile Include="TechSkill\EmployeeSkillDto.cs" />
     <Compile Include="EmployeeVisaDto.cs" />
     <Compile Include="NotificationsTrackerDto.cs" />
     <Compile Include="PodWiseCountDto.cs" />
@@ -72,6 +74,7 @@
     <Compile Include="SubPracticeDto.cs" />
     <Compile Include="SubPracticeHeadCountDto.cs" />
     <Compile Include="SystemSettingDto.cs" />
+    <Compile Include="TechSkill\TechSkillCategoryDto.cs" />
     <Compile Include="UserRoleDto.cs" />
     <Compile Include="UtilizedDaysDetailDto.cs" />
     <Compile Include="UtilizedDaysSummaryDto.cs" />

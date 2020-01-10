@@ -60,5 +60,11 @@ namespace Agilisium.TalentManager.Dto
         public string ProjectManager { get; set; }
 
         public string Comments { get; set; }
+
+        public int? ReportingManagerID { get; set; }
+
+        public string ReportingManager { get; set; }
+
+        public int AllocationEntryID { get; set; }
     }
 }

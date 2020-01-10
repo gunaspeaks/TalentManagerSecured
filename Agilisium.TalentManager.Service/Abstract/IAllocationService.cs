@@ -41,9 +41,9 @@ namespace Agilisium.TalentManager.Service.Abstract
 
         List<ProjectAllocationDto> GetAll(string filterType, int filterValueID, string sortBy, string sortType, int pageSize = -1, int pageNo = -1);
 
-        bool AnyActiveBillableAllocations(int employeeID, int allocationID);
+        bool AnyActiveBillableAllocations(int employeeID, int allocationID, DateTime startDate);
 
-        bool AnyActiveAllocationInBenchProject(int employeeID);
+        bool AnyActiveAllocationInBenchProject(int employeeID, DateTime startDate);
 
         void EndAllocation(int allocationID);
 
@@ -60,5 +60,7 @@ namespace Agilisium.TalentManager.Service.Abstract
         List<PodWiseHeadCountDto> GetPodWiseAllocationCount();
 
         List<int> GetCommittedBufferUnderSpecificProjects();
+
+        List<BillabilityWiseAllocationDetailDto> GetAllocationsForDates(DateTime fromDate, DateTime uptoDate);
     }
 }

@@ -268,6 +268,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AccountsController.cs" />
     <Compile Include="Controllers\AllocationController.cs" />
+    <Compile Include="Controllers\AssetsController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\DevReqController.cs" />
@@ -295,14 +296,17 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AllocationModel.cs" />
     <Compile Include="Models\AllocationViewModel.cs" />
+    <Compile Include="Models\Assets\EmployeeSkillModel.cs" />
     <Compile Include="Models\BillabilityWiseAllocationDetailModel.cs" />
     <Compile Include="Models\BillabilityWiseAllocationSummaryModel.cs" />
     <Compile Include="Models\BillabilityWiseResourceCountModel.cs" />
     <Compile Include="Models\CategoryModel.cs" />
     <Compile Include="Models\CertificationViewModel.cs" />
     <Compile Include="Models\CertificationModel.cs" />
+    <Compile Include="Models\Assets\EmpAssetDetailViewModel.cs" />
     <Compile Include="Models\EmpCertificationModel.cs" />
     <Compile Include="Models\EmpCertificationsViewModel.cs" />
+    <Compile Include="Models\Assets\EmpAssetDetailModel.cs" />
     <Compile Include="Models\EmployeeLoginMappingViewModel.cs" />
     <Compile Include="Models\CategoryViewModel.cs" />
     <Compile Include="Models\ContractorViewModel.cs" />
@@ -545,6 +549,13 @@
     <Content Include="Views\Employee\AddCertification.cshtml" />
     <Content Include="Views\Reports\PodWiseCount.cshtml" />
     <Content Include="Views\ELogin\Edit.cshtml" />
+    <Content Include="Views\Reports\BillableAllocations.cshtml" />
+    <Content Include="Views\Shared\_OpenLayout.cshtml" />
+    <Content Include="Views\Assets\Index.cshtml" />
+    <Content Include="Views\Assets\LoadEmpTechDetails.cshtml" />
+    <Content Include="Views\Assets\UpdateEmpSkills.cshtml" />
+    <Content Include="Views\Assets\AddEmpSkill.cshtml" />
+    <Content Include="Views\Assets\ModifyEmpSkill.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

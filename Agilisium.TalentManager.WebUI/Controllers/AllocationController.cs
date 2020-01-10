@@ -163,7 +163,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                         return View(allocation);
                     }
 
-                    if (allocationService.AnyActiveAllocationInBenchProject(allocation.EmployeeID))
+                    if (allocationService.AnyActiveAllocationInBenchProject(allocation.EmployeeID, allocation.AllocationStartDate))
                     {
                         DisplayWarningMessage("There is an active allocation in Bench project for this employee. Please end the allocation for that project.");
                         return View(allocation);

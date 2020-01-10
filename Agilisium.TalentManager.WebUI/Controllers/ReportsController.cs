@@ -95,7 +95,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                 model.Allocations = Mapper.Map<List<BillabilityWiseAllocationDetailDto>, List<BillabilityWiseAllocationDetailModel>>(summaryDtos);
                 model.FilterValueListItems = GetFilterValueListItems(filterType);
                 //LoadFilterValueListItems(filterType);
-                if(model.Allocations.Count()==0)
+                if (model.Allocations.Count() == 0)
                 {
                     DisplayWarningMessage("No records found. Please try with different filter conditions");
                 }
@@ -267,7 +267,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                 }
 
                 recordString.Append("Total Count,");
-                recordString.Append($"{summaryDtos.Sum(p=>p.TotalCount)},");
+                recordString.Append($"{summaryDtos.Sum(p => p.TotalCount)},");
                 recordString.Append($"{summaryDtos.Sum(p => p.BillableCount)},");
                 recordString.Append($"{summaryDtos.Sum(p => p.ComBufferCount)},");
                 recordString.Append($"{summaryDtos.Sum(p => p.NonComBufferCount)},");
@@ -284,6 +284,66 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             byte[] byteArr = Encoding.ASCII.GetBytes(recordString.ToString());
             MemoryStream stream = new MemoryStream(byteArr);
             return File(stream, "application/vnd.ms-excel", "Pod-Wise Resource Count.csv");
+        }
+
+        public ActionResult BillableAllocations(DateTime? from, DateTime? upto)
+        {
+            UtilizationReportDetailViewModel model = new UtilizationReportDetailViewModel();
+            try
+            {
+                if (from.HasValue == false && upto.HasValue == false)
+                {
+                    DisplayWarningMessage("No records found. Please try with different dates");
+                }
+                else
+                {
+                    List<BillabilityWiseAllocationDetailDto> summaryDtos = allocationService.GetAllocationsForDates(from.Value, upto.Value);
+                    model.From = from.Value;
+                    model.Upto = upto.Value;
+                    model.Allocations = Mapper.Map<List<BillabilityWiseAllocationDetailDto>, List<BillabilityWiseAllocationDetailModel>>(summaryDtos);
+                    if (model.Allocations.Count() == 0)
+                    {
+                        DisplayWarningMessage("No records found. Please try with different dates");
+                    }
+                }
+            }
+            catch (Exception exp)
+            {
+                DisplayLoadErrorMessage(exp);
+            }
+            return View(model);
+        }
+
+        public FileStreamResult DownloadBillableAllocations(DateTime? from, DateTime? upto)
+        {
+            StringBuilder recordString = new StringBuilder($"Employee ID,Employee Name,Primary Skills,Secondary Skills,Business Unit,POD,Project Name,Account Name,Allocation Type,Allocation Start Date,Allocation End Date,Project Manager,Comments{Environment.NewLine}");
+            try
+            {
+                List<BillabilityWiseAllocationDetailDto> detailsDtos = allocationService.GetAllocationsForDates(from.Value, upto.Value);
+                foreach (BillabilityWiseAllocationDetailDto dto in detailsDtos)
+                {
+                    recordString.Append($"{dto.EmployeeID},");
+                    recordString.Append($"{dto.EmployeeName},");
+                    recordString.Append($"{dto.PrimarySkills?.Replace(",", "")},");
+                    recordString.Append($"{dto.SecondarySkills?.Replace(",", "")},");
+                    recordString.Append($"{dto.BusinessUnit},");
+                    recordString.Append($"{dto.POD},");
+                    recordString.Append($"{dto.ProjectName},");
+                    recordString.Append($"{dto.AccountName},");
+                    recordString.Append($"{dto.AllocationType},");
+                    recordString.Append($"{dto.AllocationStartDate?.ToString("dd/MMM/yyyy")},");
+                    recordString.Append($"{dto.AllocationEndDate?.ToString("dd/MMM/yyyy")},");
+                    recordString.Append($"{dto.ProjectManager},");
+                    recordString.Append($"{dto.Comments}{Environment.NewLine}");
+                }
+            }
+            catch (Exception exp)
+            {
+                DisplayLoadErrorMessage(exp);
+            }
+            byte[] byteArr = Encoding.ASCII.GetBytes(recordString.ToString());
+            MemoryStream stream = new MemoryStream(byteArr);
+            return File(stream, "application/vnd.ms-excel", "Billable Allocations Report.csv");
         }
 
         #region Private Methods

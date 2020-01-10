@@ -1,6 +1,7 @@
 ﻿using Agilisium.TalentManager.Dto;
 using Agilisium.TalentManager.Repository.Repositories;
 using Agilisium.TalentManager.Service.Abstract;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -95,14 +96,14 @@ namespace Agilisium.TalentManager.Service.Concreate
             return repository.TotalRecordsCount(filterType, filterValueID);
         }
 
-        public bool AnyActiveBillableAllocations(int employeeID, int allocationID)
+        public bool AnyActiveBillableAllocations(int employeeID, int allocationID, DateTime startDate)
         {
-            return repository.AnyActiveBillableAllocations(employeeID, allocationID);
+            return repository.AnyActiveBillableAllocations(employeeID, allocationID, startDate);
         }
 
-        public bool AnyActiveAllocationInBenchProject(int employeeID)
+        public bool AnyActiveAllocationInBenchProject(int employeeID, DateTime startDate)
         {
-            return repository.AnyActiveAllocationInBenchProject(employeeID);
+            return repository.AnyActiveAllocationInBenchProject(employeeID, startDate);
         }
 
         public void EndAllocation(int allocationID)
@@ -143,6 +144,11 @@ namespace Agilisium.TalentManager.Service.Concreate
         public List<int> GetCommittedBufferUnderSpecificProjects()
         {
             return repository.GetCommittedBufferUnderSpecificProjects();
+        }
+
+        public List<BillabilityWiseAllocationDetailDto> GetAllocationsForDates(DateTime fromDate, DateTime uptoDate)
+        {
+            return repository.GetAllocationsForDates(fromDate, uptoDate).ToList();
         }
     }
 }

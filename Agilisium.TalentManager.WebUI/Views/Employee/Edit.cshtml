@@ -225,7 +225,7 @@
                     <tr>
                         <td width="20%">
                             <div class="form-group">
-                                @Html.LabelFor(model => model.Certifications) (@Html.ActionLink("Modify", "ModifyCertifications", new { empID = -1 }))
+                                @Html.LabelFor(model => model.Certifications) (@Html.ActionLink("Modify", "Certifications", new { eid=Model.EmployeeEntryID }))
                                 @Html.EditorFor(model => model.Certifications, new { htmlAttributes = new { @class = "form-control" } })
                             </div>
                         </td>

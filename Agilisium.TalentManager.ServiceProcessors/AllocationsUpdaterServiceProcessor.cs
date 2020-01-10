@@ -114,7 +114,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
                     if (!allocation.EmployeeEntryID.HasValue) continue;
 
                     logger.Info($"Processing Employee ID {allocation.EmployeeEntryID}");
-                    if (allocationRepo.AnyActiveAllocationInBenchProject(allocation.EmployeeEntryID.Value))
+                    if (allocationRepo.AnyActiveAllocationInBenchProject(allocation.EmployeeEntryID.Value, DateTime.Now))
                     {
                         logger.Info("found another allocation in bench project. This employee will not be moved to a new bench project");
                         // found another allocation with the extended date. igore this allocation

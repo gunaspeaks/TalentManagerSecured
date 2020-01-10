@@ -61,5 +61,13 @@ namespace Agilisium.TalentManager.WebUI.Models
 
         [Display(Name = "Comments")]
         public string Comments { get; set; }
+
+        [Display(Name = "Reporting Manager")]
+        public string ReportingManager { get; set; }
+
+        public int? ReportingManagerID { get; set; }
+
+        [Display(Name ="Allocation ID")]
+        public int AllocationEntryID { get; set; }
     }
 }

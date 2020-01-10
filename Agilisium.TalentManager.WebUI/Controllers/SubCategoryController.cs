@@ -28,7 +28,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
 
             try
             {
-                model.CategoryListItems = (IEnumerable<SelectListItem>)Session["CategoryListItems"] ?? GetCategoriesDropDownList();
+                model.CategoryListItems = GetCategoriesDropDownList();
                 if(model.CategoryListItems.Count()==0)
                 {
                     DisplayWarningMessage("There are no Categories configured yet. You will not be able to configure Sub-Categories");
@@ -90,7 +90,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         {
             try
             {
-                ViewBag.CategoryListItems = (IEnumerable<SelectListItem>)Session["CategoryListItems"] ?? GetCategoriesDropDownList();
+                ViewBag.CategoryListItems =  GetCategoriesDropDownList();
             }
             catch (Exception exp)
             {
@@ -105,7 +105,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         {
             try
             {
-                ViewBag.CategoryListItems = (IEnumerable<SelectListItem>)Session["CategoryListItems"] ?? GetCategoriesDropDownList();
+                ViewBag.CategoryListItems =  GetCategoriesDropDownList();
 
                 if (ModelState.IsValid)
                 {
@@ -148,7 +148,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                     return RedirectToAction("List");
                 }
 
-                ViewBag.CategoryListItems = (IEnumerable<SelectListItem>)Session["CategoryListItems"] ?? GetCategoriesDropDownList();
+                ViewBag.CategoryListItems =  GetCategoriesDropDownList();
 
                 DropDownSubCategoryDto category = subCategoryService.GetSubCategory(id.Value);
                 uiCategory = Mapper.Map<DropDownSubCategoryDto, SubCategoryModel>(category);
@@ -167,7 +167,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         {
             try
             {
-                ViewBag.CategoryListItems = (IEnumerable<SelectListItem>)Session["CategoryListItems"] ?? GetCategoriesDropDownList();
+                ViewBag.CategoryListItems = GetCategoriesDropDownList();
 
                 // || (!ModelState.IsValid && ModelState.Values.Count(p => p.Errors.Count > 0) == 1)
                 if (ModelState.IsValid)
@@ -237,7 +237,6 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                                                        Value = $"{cat.CategoryID}"
                                                    }).ToList();
 
-            Session["CategoryListItems"] = categoriesList;
             return categoriesList;
         }
 

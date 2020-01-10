@@ -62,6 +62,8 @@
     <Compile Include="Configuration\SubPracticeEntityConfiguration.cs" />
     <Compile Include="Configuration\SystemSettingTypeConfiguration.cs" />
     <Compile Include="Configuration\VendorEntityConfiguration.cs" />
+    <Compile Include="Entities\TechSkill\EmployeeSkill.cs" />
+    <Compile Include="Entities\TechSkill\TechSkillCategory.cs" />
     <Compile Include="Entities\Certification.cs" />
     <Compile Include="Entities\Contractor.cs" />
     <Compile Include="Entities\CustomAllocation.cs" />
@@ -70,8 +72,10 @@
     <Compile Include="Entities\DropDownSubCategory.cs" />
     <Compile Include="Entities\EmpCertification.cs" />
     <Compile Include="Entities\Employee.cs" />
+    <Compile Include="Entities\TechSkill\EmpAssetDetail.cs" />
     <Compile Include="Entities\EmployeeIDTracker.cs" />
     <Compile Include="Entities\EmployeeLoginMapping.cs" />
+    <Compile Include="Entities\TechSkill\TechSkill.cs" />
     <Compile Include="Entities\ProjectAccount.cs" />
     <Compile Include="Entities\ServiceRequest.cs" />
     <Compile Include="Entities\SystemSetting.cs" />

@@ -1,0 +1,85 @@
+﻿@using Agilisium.TalentManager.WebUI.Models
+@model Agilisium.TalentManager.WebUI.Models.EmpAssetDetailViewModel
+
+@{
+    ViewBag.Title = "UpdateEmpSkills";
+    Layout = "~/Views/Shared/_OpenLayout.cshtml";
+}
+
+<h2>Update Technology Skills</h2>
+
+<table style="width:80%" class="table table-striped table-condensed table-bordered">
+    <tr>
+        <th>
+            Your Skills
+        </th>
+        <th>
+            Available Skills
+        </th>
+    </tr>
+    @foreach (var category in Model.SkillCategories)
+    {
+        <tr>
+            <td colspan="2">
+                <h4>@Html.DisplayTextFor(model => category.CategoryName)</h4>
+                @Html.HiddenFor(model => category.CategoryID)
+            </td>
+        </tr>
+        <tr>
+            <td style="width:60%">
+                <table class="table table-striped table-condensed table-bordered">
+                    @{
+                        List<EmployeeSkillModel> employeeSkills = Model.EmployeeSkills.Where(e => e.SkillCategoryID == category.CategoryID).ToList();
+                        <tr>
+                            <th> @Html.DisplayNameFor(model => employeeSkills.FirstOrDefault().TechSkill)</th>
+                            <th> @Html.DisplayNameFor(model => employeeSkills.FirstOrDefault().Rating)</th>
+                            <th> Modify</th>
+                            <th> Remove</th>
+                        </tr>
+                        foreach (var item in employeeSkills)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayTextFor(model => item.TechSkill)
+                                    @Html.HiddenFor(model => item.TechSkillID)
+                                </td>
+                                <td>
+                                    @Html.DisplayTextFor(model => item.Rating)
+                                    @Html.HiddenFor(model => item.RatingID)
+                                </td>
+                                <td>
+                                    @Html.ActionLink("Modify", "ModifyEmpSkill", new { id = item.EmployeeSkillID, eeid = item.EmployeeID })
+                                </td>
+                                <td>
+                                    @Html.ActionLink("Remove", "RemoveEmpSkill", new { sid = item.EmployeeSkillID, eeid = item.EmployeeID })
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
+            </td>
+            <td>
+                <table class="table table-striped table-condensed table-bordered">
+                    @{
+                        List<TechSkillModel> availableSkills = Model.AvailableSkills.Where(e => e.TechSkillCategoryID == category.CategoryID).ToList();
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => availableSkills.FirstOrDefault().TechSkillName)</th>
+                        </tr>
+                        foreach (var item in availableSkills)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayTextFor(model => item.TechSkillName)
+                                    @Html.HiddenFor(model => item.TechSkillID)
+                                </td>
+                                <td>
+                                    @Html.ActionLink("Add", "AddEmpSkill", new { logonID = Model.LogonID, sid = item.TechSkillID, cid = item.TechSkillCategoryID, eeid = Model.EmployeeEntryID })
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
+            </td>
+        </tr>
+    }
+</table>

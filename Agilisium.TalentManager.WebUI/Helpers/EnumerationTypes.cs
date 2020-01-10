@@ -21,6 +21,8 @@ namespace Agilisium.TalentManager.WebUI.Helpers
         VisaCategory,
         BenchCategory,
         TechnologyArea,
+        WorkLocation,
+        TechnologyRating
     }
 
     public enum PracticeType
