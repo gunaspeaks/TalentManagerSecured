@@ -26,8 +26,10 @@ namespace Agilisium.TalentManager.Dto
 
         public string Designation { get; set; }
 
-        public string LogonID { get; set; }
-
         public int EmployeeEntryID { get; set; }
+
+        public string ReportingTo { get; set; }
+
+        public string EmailID { get; set; }
     }
 }

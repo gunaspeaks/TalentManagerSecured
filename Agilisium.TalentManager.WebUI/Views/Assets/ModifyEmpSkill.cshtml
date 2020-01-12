@@ -19,12 +19,11 @@
         <div class="form-group">
             @Html.LabelFor(model => model.TechSkill, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="form-group">
-                @Html.HiddenFor(model => model.EntryID)
+                @Html.HiddenFor(model => model.EmployeeEntryID)
+                @Html.HiddenFor(model => model.EmployeeID)
                 @Html.HiddenFor(model => model.SkillCategoryID)
                 @Html.HiddenFor(model => model.EmployeeSkillID)
-                @Html.HiddenFor(model => model.EmployeeID)
                 @Html.HiddenFor(model => model.TechSkillID)
-                @Html.HiddenFor(model => model.LogonID)
                 @Html.DisplayTextFor(model => model.TechSkill)
             </div>
         </div>
@@ -39,12 +38,8 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-primary" />
-                @Html.ActionLink("Cancel and Go Back", "UpdateEmpSkills", new { eeid = Model.EmployeeID }, new { @class = "btn btn-default" })
+                @Html.ActionLink("Cancel and Go Back", "UpdateEmpSkills", new { eeid = Model.EmployeeEntryID, eid = Model.EmployeeID }, new { @class = "btn btn-default" })
             </div>
         </div>
     </div>
 }
-
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>

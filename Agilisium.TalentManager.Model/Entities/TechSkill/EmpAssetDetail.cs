@@ -22,6 +22,6 @@ namespace Agilisium.TalentManager.Model.Entities
 
         public string Designation { get; set; }
 
-        public string LogonID { get; set; }
+        public int EmployeeEntryID { get; set; }
     }
 }

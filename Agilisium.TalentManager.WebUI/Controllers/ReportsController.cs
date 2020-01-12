@@ -169,8 +169,8 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                 {
                     recordString.Append($"{dto.EmployeeID},");
                     recordString.Append($"{dto.EmployeeName},");
-                    recordString.Append($"{dto.PrimarySkills?.Replace(",", "")},");
-                    recordString.Append($"{dto.SecondarySkills?.Replace(",", "")},");
+                    recordString.Append($"{dto.PrimarySkills?.Replace(",", ";")},");
+                    recordString.Append($"{dto.SecondarySkills?.Replace(",", ";")},");
                     recordString.Append($"{dto.BusinessUnit},");
                     recordString.Append($"{dto.POD},");
                     recordString.Append($"{dto.ProjectName},");
@@ -324,8 +324,8 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                 {
                     recordString.Append($"{dto.EmployeeID},");
                     recordString.Append($"{dto.EmployeeName},");
-                    recordString.Append($"{dto.PrimarySkills?.Replace(",", "")},");
-                    recordString.Append($"{dto.SecondarySkills?.Replace(",", "")},");
+                    recordString.Append($"{dto.PrimarySkills?.Replace(",", ";")},");
+                    recordString.Append($"{dto.SecondarySkills?.Replace(",", ";")},");
                     recordString.Append($"{dto.BusinessUnit},");
                     recordString.Append($"{dto.POD},");
                     recordString.Append($"{dto.ProjectName},");

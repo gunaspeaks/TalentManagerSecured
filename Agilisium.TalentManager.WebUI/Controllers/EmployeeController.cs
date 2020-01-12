@@ -215,7 +215,8 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                         DisplayWarningMessage("This Employee ID is already exists");
                         return View(employee);
                     }
-
+                    employee.PrimarySkills = employee.PrimarySkills?.Replace(",", ";");
+                    employee.SecondarySkills = employee.SecondarySkills?.Replace(",", ";");
                     EmployeeDto employeeDto = Mapper.Map<EmployeeModel, EmployeeDto>(employee);
                     empService.Create(employeeDto);
                     DisplaySuccessMessage("New Employee details have been stored successfully");
@@ -322,6 +323,8 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                         return View(employee);
                     }
 
+                    employee.PrimarySkills = employee.PrimarySkills?.Replace(",", ";");
+                    employee.SecondarySkills = employee.SecondarySkills?.Replace(",", ";");
                     EmployeeDto employeeDto = Mapper.Map<EmployeeModel, EmployeeDto>(employee);
                     empService.Update(employeeDto);
                     DisplaySuccessMessage("Employee details have been Updated successfully");
@@ -354,7 +357,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             catch (Exception exp)
             {
                 DisplayDeleteErrorMessage(exp);
-                return RedirectToAction("List", new { page  });
+                return RedirectToAction("List", new { page });
             }
         }
 
@@ -405,8 +408,8 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                     recordString.Append($"{dto.SubPracticeName},");
                     recordString.Append($"{dto.DateOfJoin.ToString("dd/MMM/yyyy")},");
                     recordString.Append($"{dto.LastWorkingDay?.ToString("dd/MMM/yyyy")},");
-                    recordString.Append($"{dto.PrimarySkills},");
-                    recordString.Append($"{dto.SecondarySkills},");
+                    recordString.Append($"{dto.PrimarySkills?.Replace(",", ";")},");
+                    recordString.Append($"{dto.SecondarySkills?.Replace(",", ";")},");
                     recordString.Append($"{dto.ReportingManagerName}{Environment.NewLine}");
                 }
 

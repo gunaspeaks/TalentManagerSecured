@@ -1,9 +1,6 @@
-﻿using Agilisium.TalentManager.WebUI.App_Start;
-using Agilisium.TalentManager.WebUI.Helpers;
+﻿using Agilisium.TalentManager.WebUI.Helpers;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -33,13 +30,13 @@ namespace Agilisium.TalentManager.WebUI
 
         protected void Application_PostAuthenticateRequest()
         {
-            var authCookie = HttpContext.Current.Request.Cookies[FormsAuthentication.FormsCookieName];
+            HttpCookie authCookie = HttpContext.Current.Request.Cookies[FormsAuthentication.FormsCookieName];
             if (authCookie != null)
             {
                 FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(authCookie.Value);
                 if (authTicket != null && !authTicket.Expired)
                 {
-                    var roles = authTicket.UserData.Split(',');
+                    string[] roles = authTicket.UserData.Split(',');
                     HttpContext.Current.User = new System.Security.Principal.GenericPrincipal(new FormsIdentity(authTicket), roles);
                 }
             }

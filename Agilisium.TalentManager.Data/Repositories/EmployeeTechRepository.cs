@@ -39,7 +39,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         public bool Exists(string itemName)
         {
-            throw new NotImplementedException();
+            return Entities.Any(e => e.EmployeeID == itemName);
         }
 
         public bool Exists(int id)
@@ -75,7 +75,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                            PrimarySkills = a.PrimarySkills,
                            SecondarySkills = a.SecondarySkills,
                            VisaStatusID = a.VisaStatusID,
-                           LogonID = a.LogonID,
                            EmployeeEntryID = e.EmployeeEntryID
                        }).FirstOrDefault();
             }
@@ -85,44 +84,104 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         public EmpAssetDetailDto GetByEmployeeID(string eid)
         {
-            return (from a in Entities
-                    join e in DataContext.Employees on a.EmployeeID equals e.EmployeeID
-                    where a.EmployeeID == eid && a.IsDeleted == false
-                    select new EmpAssetDetailDto
-                    {
-                        Designation = a.Designation,
-                        EmpAssetDetailID = a.EmpAssetDetailID,
-                        EmployeeID = a.EmployeeID,
-                        EmployeeName = e.FirstName + " " + e.LastName,
-                        LocationID = a.LocationID,
-                        OverallExperience = a.OverallExperience,
-                        PrimarySkills = a.PrimarySkills,
-                        SecondarySkills = a.SecondarySkills,
-                        VisaStatusID = a.VisaStatusID,
-                        LogonID = a.LogonID,
-                        EmployeeEntryID = e.EmployeeEntryID
-                    }).FirstOrDefault();
+            if (Entities.Any(e => e.EmployeeID == eid))
+            {
+                return (from a in Entities
+                        join e in DataContext.Employees on a.EmployeeID equals e.EmployeeID
+                        join r in DataContext.Employees on e.ReportingManagerID equals r.EmployeeEntryID into re
+                        from rd in re.DefaultIfEmpty()
+                        where a.EmployeeID == eid && a.IsDeleted == false
+                        select new EmpAssetDetailDto
+                        {
+                            Designation = a.Designation,
+                            EmpAssetDetailID = a.EmpAssetDetailID,
+                            EmployeeID = a.EmployeeID,
+                            EmployeeName = e.FirstName + " " + e.LastName,
+                            LocationID = a.LocationID,
+                            OverallExperience = a.OverallExperience,
+                            PrimarySkills = a.PrimarySkills,
+                            SecondarySkills = a.SecondarySkills,
+                            VisaStatusID = a.VisaStatusID,
+                            EmployeeEntryID = e.EmployeeEntryID,
+                            EmailID = e.EmailID,
+                            ReportingTo = rd.FirstName + " " + rd.LastName,
+                        }).FirstOrDefault();
+            }
+            else
+            {
+                Employee emp = DataContext.Employees.FirstOrDefault(e => e.EmployeeID == eid && e.IsDeleted == false);
+                if (emp == null)
+                {
+                    throw new InvalidOperationException("Employee data does not exist. Please contact Satish Srinivasan.");
+                }
+                Employee rm = DataContext.Employees.FirstOrDefault(e => e.EmployeeEntryID == emp.ReportingManagerID && e.IsDeleted == false);
+                string reportingManager = "";
+                if (rm != null)
+                {
+                    reportingManager = rm.FirstName + " " + rm.LastName;
+                }
+
+                return new EmpAssetDetailDto
+                {
+                    EmployeeEntryID = emp.EmployeeEntryID,
+                    EmployeeID = emp.EmployeeID,
+                    EmployeeName = emp.FirstName + " " + emp.LastName,
+                    EmailID = emp.EmailID,
+                    ReportingTo = reportingManager,
+                };
+            }
         }
 
-        public EmpAssetDetailDto GetByLogonID(string logonID)
+        public EmpAssetDetailDto GetByEmployeeEntryID(int empEntryID)
         {
-            return (from a in Entities
-                    join e in DataContext.Employees on a.EmployeeID equals e.EmployeeID
-                    where a.LogonID == logonID && a.IsDeleted == false
-                    select new EmpAssetDetailDto
-                    {
-                        Designation = a.Designation,
-                        EmpAssetDetailID = a.EmpAssetDetailID,
-                        EmployeeID = a.EmployeeID,
-                        EmployeeName = e.FirstName + " " + e.LastName,
-                        LocationID = a.LocationID,
-                        OverallExperience = a.OverallExperience,
-                        PrimarySkills = a.PrimarySkills,
-                        SecondarySkills = a.SecondarySkills,
-                        VisaStatusID = a.VisaStatusID,
-                        LogonID = a.LogonID,
-                        EmployeeEntryID = e.EmployeeEntryID
-                    }).FirstOrDefault();
+            if (Entities.Any(e => e.EmployeeEntryID == empEntryID))
+            {
+                return (from a in Entities
+                        join e in DataContext.Employees on a.EmployeeID equals e.EmployeeID
+                        join r in DataContext.Employees on e.ReportingManagerID equals r.EmployeeEntryID into re
+                        from rd in re.DefaultIfEmpty()
+                        where a.EmployeeEntryID == empEntryID && a.IsDeleted == false
+                        select new EmpAssetDetailDto
+                        {
+                            Designation = a.Designation,
+                            EmpAssetDetailID = a.EmpAssetDetailID,
+                            EmployeeID = a.EmployeeID,
+                            EmployeeName = e.FirstName + " " + e.LastName,
+                            LocationID = a.LocationID,
+                            OverallExperience = a.OverallExperience,
+                            PrimarySkills = a.PrimarySkills,
+                            SecondarySkills = a.SecondarySkills,
+                            VisaStatusID = a.VisaStatusID,
+                            EmployeeEntryID = e.EmployeeEntryID,
+                            EmailID = e.EmailID,
+                            ReportingTo = rd.FirstName + " " + rd.LastName,
+                        }).FirstOrDefault();
+            }
+            else
+            {
+
+                Employee emp = DataContext.Employees.FirstOrDefault(e => e.EmployeeEntryID == empEntryID && e.IsDeleted == false);
+                if (emp == null)
+                {
+                    throw new InvalidOperationException("Employee data does not exist. Please contact Satish Srinivasan.");
+                }
+
+                Employee rm = DataContext.Employees.FirstOrDefault(e => e.EmployeeEntryID == emp.ReportingManagerID && e.IsDeleted == false);
+                string reportingManager = "";
+                if (rm != null)
+                {
+                    reportingManager = rm.FirstName + " " + rm.LastName;
+                }
+
+                return new EmpAssetDetailDto
+                {
+                    EmployeeEntryID = emp.EmployeeEntryID,
+                    EmployeeID = emp.EmployeeID,
+                    EmployeeName = emp.FirstName + " " + emp.LastName,
+                    EmailID = emp.EmailID,
+                    ReportingTo = reportingManager,
+                };
+            }
         }
 
         public void Update(EmpAssetDetailDto entity)
@@ -181,10 +240,10 @@ namespace Agilisium.TalentManager.Repository.Repositories
                                              from scd in sce.DefaultIfEmpty()
                                              join ts in DataContext.TechSkills on t.TechSkillID equals ts.TechSkillID into tse
                                              from tsd in tse.DefaultIfEmpty()
-                                             where t.IsDeleted == false && t.EmployeeID == employeeID
+                                             where t.IsDeleted == false && t.EmployeeEntryID == employeeID
                                              select new EmployeeSkillDto
                                              {
-                                                 EmployeeID = t.EmployeeID,
+                                                 EmployeeEntryID = t.EmployeeEntryID,
                                                  EmployeeSkillID = t.EmployeeSkillID,
                                                  RatingID = t.RatingID,
                                                  SkillCategoryID = t.SkillCategoryID,
@@ -199,9 +258,17 @@ namespace Agilisium.TalentManager.Repository.Repositories
         public void UpdateEmployeeDetails(EmpAssetDetailDto empDetails)
         {
             EmpAssetDetail assetEntity = new EmpAssetDetail();
-            if (Entities.Any(e => e.LogonID == empDetails.LogonID && e.IsDeleted == false))
+            empDetails.PrimarySkills = empDetails.PrimarySkills?.Replace(",", ";");
+            empDetails.SecondarySkills = empDetails.SecondarySkills?.Replace(",", ";");
+            Employee emp = DataContext.Employees.FirstOrDefault(e => e.EmployeeID == empDetails.EmployeeID && e.IsDeleted == false);
+            if (emp == null)
             {
-                assetEntity = Entities.FirstOrDefault(e => e.LogonID == empDetails.LogonID && e.IsDeleted == false);
+                throw new InvalidOperationException("We couldn't find the underlying employee data");
+            }
+
+            if (Entities.Any(e => e.EmployeeEntryID == empDetails.EmployeeEntryID && e.IsDeleted == false))
+            {
+                assetEntity = Entities.FirstOrDefault(e => e.EmployeeEntryID == empDetails.EmployeeEntryID && e.IsDeleted == false);
                 MigrateEntity(empDetails, assetEntity);
                 Entities.Add(assetEntity);
                 DataContext.Entry(assetEntity).State = EntityState.Modified;
@@ -209,9 +276,15 @@ namespace Agilisium.TalentManager.Repository.Repositories
             else
             {
                 assetEntity = CreateBusinessEntity(empDetails);
+                assetEntity.EmployeeEntryID = emp.EmployeeEntryID;
                 Entities.Add(assetEntity);
                 DataContext.Entry(assetEntity).State = EntityState.Added;
             }
+
+            emp.EmailID = empDetails.EmailID;
+            DataContext.Employees.Add(emp);
+            DataContext.Entry(emp).State = EntityState.Modified;
+
             DataContext.SaveChanges();
         }
 
@@ -223,9 +296,8 @@ namespace Agilisium.TalentManager.Repository.Repositories
                     where skill.EmployeeSkillID == id && skill.IsDeleted == false
                     select new EmployeeSkillDto
                     {
-                        EmployeeID = skill.EmployeeID,
+                        EmployeeEntryID = skill.EmployeeEntryID,
                         EmployeeSkillID = skill.EmployeeSkillID,
-                        EntryID = skill.EmployeeID,
                         RatingID = skill.RatingID,
                         SkillCategoryID = skill.SkillCategoryID,
                         TechSkillID = skill.TechSkillID,
@@ -235,15 +307,14 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         public void AddEmpSkill(EmployeeSkillDto skill)
         {
-            if (skill.EmployeeID <= 0)
+            if (skill.EmployeeEntryID <= 0)
             {
-                string empID = Entities.FirstOrDefault(e => e.LogonID == skill.LogonID)?.EmployeeID;
-                skill.EmployeeID = DataContext.Employees.FirstOrDefault(e => e.EmployeeID == empID).EmployeeEntryID;
+                throw new InvalidOperationException("Invalid employee record. Please start from the Assets home page");
             }
 
             EmployeeSkill entity = new EmployeeSkill
             {
-                EmployeeID = skill.EntryID,
+                EmployeeEntryID = skill.EmployeeEntryID,
                 RatingID = skill.RatingID,
                 TechSkillID = skill.TechSkillID,
                 SkillCategoryID = skill.SkillCategoryID
@@ -255,16 +326,15 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         public void UpdateEmpSkill(EmployeeSkillDto skill)
         {
-            if (skill.EmployeeID <= 0)
+            if (skill.EmployeeEntryID <= 0)
             {
-                string empID = Entities.FirstOrDefault(e => e.LogonID == skill.LogonID)?.EmployeeID;
-                skill.EmployeeID = DataContext.Employees.FirstOrDefault(e => e.EmployeeID == empID).EmployeeEntryID;
+                throw new InvalidOperationException("Invalid employee record. Please start from the Assets home page");
             }
 
             EmployeeSkill empSkillEntity = DataContext.EmployeeSkills.FirstOrDefault(e => e.EmployeeSkillID == skill.EmployeeSkillID && e.IsDeleted == false);
             if (empSkillEntity != null)
             {
-                empSkillEntity.EmployeeID = skill.EmployeeID;
+                empSkillEntity.EmployeeEntryID = skill.EmployeeEntryID;
                 empSkillEntity.RatingID = skill.RatingID;
                 empSkillEntity.SkillCategoryID = skill.SkillCategoryID;
                 empSkillEntity.TechSkillID = skill.TechSkillID;
@@ -297,7 +367,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                 PrimarySkills = assetDto.PrimarySkills,
                 SecondarySkills = assetDto.SecondarySkills,
                 VisaStatusID = assetDto.VisaStatusID,
-                LogonID = assetDto.LogonID,
+                EmployeeEntryID = assetDto.EmployeeEntryID,
                 EmpAssetDetailID = assetDto.EmpAssetDetailID,
             };
 
@@ -314,7 +384,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
             targetEntity.PrimarySkills = sourceEntity.PrimarySkills;
             targetEntity.SecondarySkills = sourceEntity.SecondarySkills;
             targetEntity.VisaStatusID = sourceEntity.VisaStatusID;
-            targetEntity.LogonID = sourceEntity.LogonID;
+            targetEntity.EmployeeEntryID = sourceEntity.EmployeeEntryID;
 
             targetEntity.UpdateTimeStamp(sourceEntity.LoggedInUserName);
         }
@@ -336,7 +406,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         void UpdateEmployeeDetails(EmpAssetDetailDto empDetails);
 
-        EmpAssetDetailDto GetByLogonID(string logonID);
+        EmpAssetDetailDto GetByEmployeeEntryID(int empEntryID);
 
         void AddEmpSkill(EmployeeSkillDto skill);
 

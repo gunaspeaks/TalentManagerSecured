@@ -2,11 +2,9 @@
 {
     public class EmployeeSkillDto : DtoBase
     {
-        public int EntryID { get; set; }
-
         public int EmployeeSkillID { get; set; }
 
-        public int EmployeeID { get; set; }
+        public int EmployeeEntryID { get; set; }
 
         public int TechSkillID { get; set; }
 
@@ -20,6 +18,6 @@
 
         public int RatingID { get; set; }
 
-        public string LogonID { get; set; }
+        public string EmployeeID { get; set; }
     }
 }

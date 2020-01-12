@@ -10,8 +10,8 @@ namespace Agilisium.TalentManager.WebUI.Models
 
         public List<EmployeeSkillModel> EmployeeSkills { get; set; }
 
-        public string LogonID { get; set; }
-
         public int EmployeeEntryID { get; set; }
+
+        public string EmployeeID { get; set; }
     }
 }

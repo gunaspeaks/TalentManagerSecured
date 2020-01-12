@@ -552,10 +552,10 @@
     <Content Include="Views\Reports\BillableAllocations.cshtml" />
     <Content Include="Views\Shared\_OpenLayout.cshtml" />
     <Content Include="Views\Assets\Index.cshtml" />
-    <Content Include="Views\Assets\LoadEmpTechDetails.cshtml" />
     <Content Include="Views\Assets\UpdateEmpSkills.cshtml" />
     <Content Include="Views\Assets\AddEmpSkill.cshtml" />
     <Content Include="Views\Assets\ModifyEmpSkill.cshtml" />
+    <Content Include="Views\Assets\Start.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

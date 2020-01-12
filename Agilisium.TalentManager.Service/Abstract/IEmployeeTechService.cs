@@ -23,7 +23,7 @@ namespace Agilisium.TalentManager.Service.Abstract
 
         void UpdateEmployeeDetails(EmpAssetDetailDto empDetails);
 
-        EmpAssetDetailDto GetByLogonID(string logonID);
+        EmpAssetDetailDto GetByEmployeeEntryID(int empEntryID);
 
         TechSkillDto GetTechSkillByID(int skillID);
 
@@ -36,5 +36,7 @@ namespace Agilisium.TalentManager.Service.Abstract
         bool DoesEmployeeSkillExist(int id);
 
         void UpdateEmpSkill(EmployeeSkillDto skill);
+
+        bool Exists(string itemName);
     }
 }

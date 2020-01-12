@@ -1,16 +1,24 @@
 ﻿@model Agilisium.TalentManager.WebUI.Models.EmpAssetDetailModel
 
 @{
-    ViewBag.Title = "Assets Management";
+    ViewBag.Title = "Employee Basic Details";
     Layout = "~/Views/Shared/_OpenLayout.cshtml";
 }
 
-@using (Html.BeginForm("Index", "Assets", new { eeid = Model.EmployeeEntryID }))
+@using (Html.BeginForm())
 {
+    <p>
+        <ul>
+            <h4><b><u>POINTS to NOTE</u></b></h4>
+            <li>If "Reporting Manager" field is empty, please inform to your respective Manager who can update the same</li>
+            <li>For "Designation" field, please enter the name as you see in your Outlook</li>
+            <li>Please use SemiColon(;) to seperate each skill in "Primary Skills" and "Secondary Skills" fields, and do not use Comma(,)</li>
+        </ul>
+    </p>
 
     <div class="panel panel-default">
         <div style="text-align:left" class="panel-heading">
-            <h3><b>Employee Skill Matrix</b></h3>
+            <h3><b>Employee Basic Details for @Html.DisplayTextFor(model => model.EmployeeName)</b></h3>
         </div>
 
         @Html.AntiForgeryToken()
@@ -21,19 +29,28 @@
                     <tr>
                         <td width="20%">
                             <div class="form-group">
-                                <b>Logon Name/ID</b><br />
-                                @Html.DisplayTextFor(model => model.LogonID)
-                                @Html.HiddenFor(model => model.LogonID, new { id = "logonID" })
+                                @Html.HiddenFor(model => model.EmployeeEntryID)
+                                @Html.HiddenFor(model => model.EmployeeID)
+                                @Html.LabelFor(model => model.EmployeeName)
+                                @Html.EditorFor(model => model.EmployeeName, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })
                             </div>
                         </td>
                         <td width="2%"></td>
                         <td width="20%">
                             <div class="form-group">
-                                @Html.LabelFor(model => model.EmployeeID)
-                                @Html.EditorFor(model => model.EmployeeID, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.LabelFor(model => model.ReportingTo)
+                                @Html.EditorFor(model => model.ReportingTo, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })
                             </div>
                         </td>
                         <td width="2%"></td>
+                        <td width="20%">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.EmailID)
+                                @Html.EditorFor(model => model.EmailID, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
                         <td width="20%">
                             <div class="form-group">
                                 @Html.LabelFor(model => model.Designation)
@@ -47,15 +64,15 @@
                                 @Html.EditorFor(model => model.OverallExperience, new { htmlAttributes = new { @class = "form-control" } })
                             </div>
                         </td>
-                    </tr>
-                    <tr>
+                        <td width="2%"></td>
                         <td width="20%">
                             <div class="form-group">
                                 @Html.LabelFor(model => model.LocationID)
                                 @Html.DropDownListFor(model => model.LocationID, (IEnumerable<SelectListItem>)ViewBag.LocationsListItems, "Please Select", new { @class = "form-control" })
                             </div>
                         </td>
-                        <td width="2%"></td>
+                    </tr>
+                    <tr>
                         <td width="20%">
                             <div class="form-group">
                                 @Html.LabelFor(model => model.VisaStatusID)
@@ -83,7 +100,7 @@
     </div>
     <p>
         <div class="panel-footer">
-            <input type="submit" value="Proceed to update your Skills" class="btn btn-primary" />
+            <input type="submit" value="Proceed to Update Your Skills" class="btn btn-primary" />
         </div>
     </p>
 }

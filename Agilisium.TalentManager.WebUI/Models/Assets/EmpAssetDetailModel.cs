@@ -43,10 +43,16 @@ namespace Agilisium.TalentManager.WebUI.Models
         [DisplayName("Designation")]
         public string Designation { get; set; }
 
-        [DisplayName("Logon ID")]
-        public string LogonID { get; set; }
-
         public int EmployeeEntryID { get; set; }
+
+        [DisplayName("Reporting To")]
+        public string ReportingTo { get; set; }
+
+        [DisplayName("Official Email ID")]
+        [Required]
+        [DataType(DataType.EmailAddress)]
+        [EmailAddress]
+        public string EmailID { get; set; }
     }
 
     public class TechSkillCategoryModel
@@ -60,7 +66,7 @@ namespace Agilisium.TalentManager.WebUI.Models
     {
         public int TechSkillID { get; set; }
 
-        [DisplayName("Techology")]
+        [DisplayName("Techology Name")]
         public string TechSkillName { get; set; }
 
         public int TechSkillCategoryID { get; set; }

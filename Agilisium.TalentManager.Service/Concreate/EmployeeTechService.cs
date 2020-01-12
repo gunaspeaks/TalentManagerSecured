@@ -53,9 +53,9 @@ namespace Agilisium.TalentManager.Service.Concreate
             repository.UpdateEmployeeDetails(empDetails);
         }
 
-        public EmpAssetDetailDto GetByLogonID(string logonID)
+        public EmpAssetDetailDto GetByEmployeeEntryID(int empEntryID)
         {
-            return repository.GetByLogonID(logonID);
+            return repository.GetByEmployeeEntryID(empEntryID);
         }
 
         public TechSkillDto GetTechSkillByID(int skillID)
@@ -86,6 +86,11 @@ namespace Agilisium.TalentManager.Service.Concreate
         public void UpdateEmpSkill(EmployeeSkillDto skill)
         {
             repository.UpdateEmpSkill(skill);
+        }
+
+        public bool Exists(string itemName)
+        {
+            return repository.Exists(itemName);
         }
     }
 }

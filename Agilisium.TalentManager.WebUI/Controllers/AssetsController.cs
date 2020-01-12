@@ -21,17 +21,24 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             this.techService = techService;
         }
 
+        public ActionResult Start()
+        {
+            return View();
+        }
+
         public ActionResult Index(string eid = "")
         {
-            EmpAssetDetailModel assetViewModel = new EmpAssetDetailModel
-            {
-                LogonID = System.Security.Principal.WindowsIdentity.GetCurrent().Name
-            };
+            EmpAssetDetailModel assetViewModel = new EmpAssetDetailModel();
 
             try
             {
-                assetViewModel = GetEmployeeDetail();
+                if (string.IsNullOrWhiteSpace(eid))
+                {
+                    TempData["WarningMessage"] = "We need your Employee ID to start with.";
+                    return RedirectToAction("Start");
+                }
                 LoadDropDownItems();
+                assetViewModel = GetEmployeeDetail(eid);
             }
             catch (Exception exp)
             {
@@ -41,7 +48,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         }
 
         [HttpPost]
-        public ActionResult Index(EmpAssetDetailModel model, int eeid)
+        public ActionResult Index(EmpAssetDetailModel model)
         {
             try
             {
@@ -52,10 +59,10 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             {
                 TempData["ErrorMessage"] = exp.Message;
             }
-            return RedirectToAction("UpdateEmpSkills", new { eeid = eeid });
+            return RedirectToAction("UpdateEmpSkills", new { eeid = model.EmployeeEntryID, eid = model.EmployeeID });
         }
 
-        public ActionResult UpdateEmpSkills(int eeid)
+        public ActionResult UpdateEmpSkills(int eeid, string eid = "")
         {
             EmpAssetDetailViewModel assetViewModel = new EmpAssetDetailViewModel();
             try
@@ -63,6 +70,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
 
                 LoadDropDownItems();
                 assetViewModel.EmployeeEntryID = eeid;
+                assetViewModel.EmployeeID = eid;
                 assetViewModel.EmployeeSkills = LoadEmployeeSkills(eeid);
                 assetViewModel.AvailableSkills = LoadTechSkills(assetViewModel.EmployeeSkills);
                 assetViewModel.SkillCategories = LoadSkillCategories();
@@ -74,16 +82,15 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             return View(assetViewModel);
         }
 
-        public ActionResult AddEmpSkill(string logonID, string sid, string cid, int eeid)
+        public ActionResult AddEmpSkill(string sid, string eid, int eeid)
         {
             EmployeeSkillModel skillModel = new EmployeeSkillModel();
 
             try
             {
                 LoadDropDownItems();
-                skillModel.EntryID = eeid;
-                skillModel.EmployeeID = eeid;
-                skillModel.LogonID = logonID;
+                skillModel.EmployeeEntryID = eeid;
+                skillModel.EmployeeID = eid;
                 int.TryParse(sid, out int skillID);
                 TechSkillDto techSkill = techService.GetTechSkillByID(skillID);
                 if (techSkill == null)
@@ -92,7 +99,6 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                 }
                 else
                 {
-                    skillModel.EntryID = eeid;
                     skillModel.SkillCategoryID = techSkill.TechSkillCategoryID;
                     skillModel.TechSkillID = techSkill.TechSkillID;
                     skillModel.TechSkill = techSkill.TechSkillName;
@@ -110,10 +116,6 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(skillModel.LogonID))
-                {
-                    skillModel.LogonID = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-                }
                 EmployeeSkillDto skillDto = Mapper.Map<EmployeeSkillModel, EmployeeSkillDto>(skillModel);
                 techService.AddEmpSkill(skillDto);
             }
@@ -121,25 +123,24 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             {
                 TempData["ErrorMessage"] = "Sorry for the inconvience. We couldn't retrieve the technology details.";
             }
-            return RedirectToAction("UpdateEmpSkills", new { eeid = skillModel.EmployeeID });
+            return RedirectToAction("UpdateEmpSkills", new { eeid = skillModel.EmployeeEntryID, eid = skillModel.EmployeeID });
         }
 
-        public ActionResult ModifyEmpSkill(int id, int eeid)
+        public ActionResult ModifyEmpSkill(int id, int eeid, string eid = "")
         {
             EmployeeSkillModel skillModel = new EmployeeSkillModel();
-
+            skillModel.EmployeeID = eid;
             try
             {
                 if (techService.DoesEmployeeSkillExist(id) == false)
                 {
                     TempData["ErrorMessage"] = "We couldn't find the employee skill details";
-                    return RedirectToAction("UpdateEmpSkills", new { eeid });
+                    return RedirectToAction("UpdateEmpSkills", new { eeid, eid });
                 }
 
                 EmployeeSkillDto skillDto = techService.GetEmployeeSkillByID(id);
                 skillModel = Mapper.Map<EmployeeSkillDto, EmployeeSkillModel>(skillDto);
                 LoadDropDownItems();
-                skillModel.LogonID = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
             }
             catch (Exception)
             {
@@ -149,14 +150,10 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         }
 
         [HttpPost]
-        public ActionResult ModifyEmpSkill(EmployeeSkillModel skillModel)
+        public ActionResult ModifyEmpSkill(EmployeeSkillModel skillModel, string eid = "")
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(skillModel.LogonID))
-                {
-                    skillModel.LogonID = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-                }
                 EmployeeSkillDto skillDto = Mapper.Map<EmployeeSkillModel, EmployeeSkillDto>(skillModel);
                 techService.UpdateEmpSkill(skillDto);
             }
@@ -164,10 +161,10 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             {
                 TempData["ErrorMessage"] = "Error has occured while updating the technology skills";
             }
-            return RedirectToAction("UpdateEmpSkills", new { eeid = skillModel.EmployeeID });
+            return RedirectToAction("UpdateEmpSkills", new { eeid = skillModel.EmployeeEntryID, eid });
         }
 
-        public ActionResult RemoveEmpSkill(int sid, int eeid)
+        public ActionResult RemoveEmpSkill(int sid, int eeid, string eid = "")
         {
             try
             {
@@ -178,7 +175,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             {
                 TempData["ErrorMessage"] = "Sorry for the inconvience. We couldn't retrieve the technology details.";
             }
-            return RedirectToAction("UpdateEmpSkills", new { eeid });
+            return RedirectToAction("UpdateEmpSkills", new { eeid, eid });
         }
 
         private void LoadDropDownItems()
@@ -219,9 +216,9 @@ namespace Agilisium.TalentManager.WebUI.Controllers
 
         }
 
-        private EmpAssetDetailModel GetEmployeeDetail()
+        private EmpAssetDetailModel GetEmployeeDetail(string eid)
         {
-            EmpAssetDetailDto empAssetDto = techService.GetByLogonID(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
+            EmpAssetDetailDto empAssetDto = techService.GetByEmployeeID(eid);
             return Mapper.Map<EmpAssetDetailDto, EmpAssetDetailModel>(empAssetDto);
         }
 
@@ -273,5 +270,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             categoriesModel = (List<TechSkillCategoryModel>)Session["AllTechSkillCategories"];
             return categoriesModel;
         }
+
+
     }
 }

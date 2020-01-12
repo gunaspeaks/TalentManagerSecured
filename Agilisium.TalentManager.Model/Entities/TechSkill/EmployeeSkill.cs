@@ -7,7 +7,7 @@ namespace Agilisium.TalentManager.Model.Entities
         [Key]
         public int EmployeeSkillID { get; set; }
 
-        public int EmployeeID { get; set; }
+        public int EmployeeEntryID { get; set; }
 
         public int RatingID { get; set; }
 

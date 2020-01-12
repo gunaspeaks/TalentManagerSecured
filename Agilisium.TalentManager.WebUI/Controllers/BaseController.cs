@@ -19,6 +19,21 @@ namespace Agilisium.TalentManager.WebUI.Helpers
         {
             CacheHelper.SetContext(HttpContext);
             logger = log4net.LogManager.GetLogger(typeof(BaseController));
+
+        }
+
+        protected override void OnException(ExceptionContext filterContext)
+        {
+            //base.OnException(filterContext);
+            if (filterContext.Exception != null)
+            {
+                logger.Debug(filterContext.Exception);
+            }
+
+            if (filterContext.Exception.InnerException != null)
+            {
+                logger.Debug(filterContext.Exception.InnerException);
+            }
         }
 
         public virtual void DisplayWarningMessage(string message)
