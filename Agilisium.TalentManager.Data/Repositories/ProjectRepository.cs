@@ -157,6 +157,11 @@ namespace Agilisium.TalentManager.Repository.Repositories
             return projects.Skip((pageNo - 1) * pageSize).Take(pageSize);
         }
 
+        public List<ProjectDto> GetAllByProjectAccount(int accountID)
+        {
+            return GetAllByAccount(accountID).ToList();
+        }
+
         private IQueryable<ProjectDto> GetAllByProjectType(int projectType)
         {
             IQueryable<ProjectDto> projects = from p in Entities
@@ -542,5 +547,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
         IEnumerable<ProjectDto> GetAllByManagerID(int managerID);
 
         ProjectDto GetBenchProjectByPractice(int practiceID);
+
+        List<ProjectDto> GetAllByProjectAccount(int accountID);
     }
 }

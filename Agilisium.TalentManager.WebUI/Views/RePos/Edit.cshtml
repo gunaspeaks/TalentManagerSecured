@@ -1,0 +1,197 @@
+﻿@model Agilisium.TalentManager.WebUI.Models.RecruitmentRequestModel
+
+@{
+    ViewBag.Title = "Update Recruitment Request";
+    //Layout = "~/Views/Shared/_RecruitmentLayout.cshtml";
+}
+
+<link href="~/Content/error-styles.css" rel="stylesheet" />
+<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="~/Scripts/Agilisium/content-updater.js"></script>
+
+<script>
+
+    $(document).ready(function () {
+        var buID = 1;
+
+        $("#RequestedDate").datepicker({
+
+            dateFormat: "mm/dd/yy",
+            changeMonth: true,
+            changeYear: true,
+            showAnim: "fadeIn",
+        });
+
+        $("#OfferOrHoldDate").datepicker({
+
+            dateFormat: "mm/dd/yy",
+            changeMonth: true,
+            changeYear: true,
+            showAnim: "fadeIn",
+        });
+
+        loadFilterDropDown();
+    });
+
+    $(function () {
+        $("#AccountID").change(function (evt) {
+            loadFilterDropDown();
+        });
+    });
+
+    loadFilterDropDown = function () {
+        if ($("#AccountID").text() != "Please Select") {
+            $.ajax({
+                url: rootUrl + "Repos/LoadProjectsListItems",
+                type: 'POST',
+                data: { accountID: $("#AccountID").val() },
+                success: function (data) {
+                    $('#ProjectID').empty();
+                    $.each(data, function () {
+                        $("#ProjectID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                    });
+                },
+                error: function (xhr) { alert('Error while loading the Drop Down list'); }
+            });
+        }
+    }
+</script>
+
+<div class="panel panel-default">
+    <div style="text-align:center" class="panel-heading">
+        <h3><b>Update Recruitment Request</b></h3>
+    </div>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <div class="panel-body">
+            @Html.ValidationSummary(false, "Please correct the below Validation Errors to save the data")
+            <div>
+                <table style="width:86%;" cellpadding="5" cellspacing="5">
+                    <tr>
+                        <td width="20%">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.RequestNo)
+                                @Html.EditorFor(model => model.RequestNo, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+                        <td width="2%"></td>
+                        <td width="20%">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.BusinessUnitID)
+                                @Html.DropDownListFor(model => model.BusinessUnitID, (IEnumerable<SelectListItem>)ViewBag.BuListItems, "Please Select", new { @class = "form-control" })
+                            </div>
+                        </td>
+                        <td width="2%"></td>
+                        <td width="20%">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.AccountID)
+                                @Html.DropDownListFor(model => model.AccountID, (IEnumerable<SelectListItem>)ViewBag.AccountListItems, "Please Select", new { @class = "form-control" })
+                            </div>
+                        </td>
+                        <td width="2%"></td>
+                        <td width="20%">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ProjectID)
+                                @Html.DropDownListFor(model => model.ProjectID, (IEnumerable<SelectListItem>)ViewBag.ProjectListItems, "Please Select", new { @class = "form-control" })
+                                @Html.HiddenFor(model => model.RecruitmentRequestID)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="20%">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.RequiredSkills)
+                                @Html.EditorFor(model => model.RequiredSkills, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+                        <td width="2%"></td>
+                        <td width="20%">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.WorkLocationTypeID)
+                                @Html.DropDownListFor(model => model.WorkLocationTypeID, (IEnumerable<SelectListItem>)ViewBag.WolListItems, "Please Select", new { @class = "form-control" })
+                            </div>
+                        </td>
+                        <td width="2%"></td>
+                        <td width="20%">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.RequestReasonID)
+                                @Html.DropDownListFor(model => model.RequestReasonID, (IEnumerable<SelectListItem>)ViewBag.ReasonListItems, "Please Select", new { @class = "form-control" })
+                            </div>
+                        </td>
+                        <td width="2%"></td>
+                        <td>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ReplacementID)
+                                @Html.DropDownListFor(model => model.ReplacementID, (IEnumerable<SelectListItem>)ViewBag.EmployeeListItems, "Please Select", new { @class = "form-control" })
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="20%">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.RequestedDate)
+                                @Html.EditorFor(model => model.RequestedDate, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+                        <td width="2%"></td>
+                        <td width="20%">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.OfferOrHoldDate)
+                                @Html.EditorFor(model => model.OfferOrHoldDate, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+                        <td width="2%"></td>
+                        <td width="20%">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.AgingBandID)
+                                @Html.DropDownListFor(model => model.AgingBandID, (IEnumerable<SelectListItem>)ViewBag.AgingBandListItems, "Please Select", new { @class = "form-control" })
+                            </div>
+                        </td>
+                        <td width="2%"></td>
+                        <td width="20%">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.PriorityID)
+                                @Html.DropDownListFor(model => model.PriorityID, (IEnumerable<SelectListItem>)ViewBag.PriorityListItems, "Please Select", new { @class = "form-control" })
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.TotalPosition)
+                                @Html.EditorFor(model => model.TotalPosition, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+                        <td width="2%"></td>
+                        <td align="center">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.LattestComment)
+                                @Html.EditorFor(model => model.LattestComment, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+                        <td width="2%"></td>
+                        <td align="center">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.IsBillable)
+                                @Html.EditorFor(model => model.IsBillable, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+                        <td width="2%"></td>
+                        <td>
+                            <div class="form-group">
+                                @Html.ActionLink("Update Request Status", "UpdateStatus", new { @id = Model.RecruitmentRequestID }, new {@class="btn btn-primary" })
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="panel-footer">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                @Html.ActionLink("Cancel and Go Back", "List", new { @filterType = Request.QueryString["filterType"], @filterValue = Request.QueryString["filterValue"], @page = Request.QueryString["page"] }, new { @class = "btn btn-default" })
+            </div>
+        </div>
+    }
+</div>
+

@@ -94,5 +94,10 @@ namespace Agilisium.TalentManager.Service.Concreate
         {
             return repository.GetAllByManagerID(managerID).ToList();
         }
+
+        public List<ProjectDto> GetAllByAccount(int accountID)
+        {
+            return repository.GetAllByProjectAccount(accountID);
+        }
     }
 }

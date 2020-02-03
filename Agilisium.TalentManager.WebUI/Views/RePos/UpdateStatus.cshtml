@@ -1,0 +1,201 @@
+﻿@model Agilisium.TalentManager.WebUI.Models.RecruitmentRequestStatusModel
+@using Agilisium.TalentManager.WebUI.Models
+@using System.Linq
+
+@{
+    ViewBag.Title = "Update Recruitment Request Status";
+    //Layout = "~/Views/Shared/_RecruitmentLayout.cshtml";
+}
+<link href="~/Content/error-styles.css" rel="stylesheet" />
+<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+<script>
+    $(document).ready(function () {
+        var buID = 1;
+
+        $("#RequestUpdatedOn").datepicker({
+            dateFormat: "mm/dd/yy",
+            changeMonth: true,
+            changeYear: true,
+            showAnim: "fadeIn",
+        });
+    });
+
+</script>
+
+<div class="panel panel-default">
+    <div style="text-align:center" class="panel-heading">
+        <h3><b>Update Recruitment Request Status</b></h3>
+    </div>
+
+    <div>
+        <table style="width:100%">
+            <tr>
+                <td style="vertical-align:top; width:60%">
+                    <br />
+                    <table class="table table-striped table-condensed table-bordered">
+                        <tr>
+                            <td colspan="7" style="font-size:15px; text-align:center; background-color:aquamarine;">
+                                <text><b>Recently Updated Status Records</b></text>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="text-left">
+                                Request Status
+                            </th>
+                            <th style="text-align:right" class="text-left">
+                                Total
+                            </th>
+                            <th style="text-align:right" class="text-left">
+                                Joined
+                            </th>
+                            <th style="text-align:right" class="text-left">
+                                Offered
+                            </th>
+                            <th style="text-align:right" class="text-left">
+                                Open
+                            </th>
+                            <th style="text-align:right" class="text-left">
+                                Request Updated On
+                            </th>
+                            <th class="text-left">
+                                Comments
+                            </th>
+                        </tr>
+                        @if (ViewBag.OldStatusEntries.Count == 0)
+                        {
+                            <tr>
+                                <td align="center" colspan="3">No Records to Display</td>
+                            </tr>
+                        }
+                        @foreach (var item in ((List<RecruitmentRequestStatusModel>)ViewBag.OldStatusEntries))
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.RequestStatus)
+                                </td>
+                                <td style="text-align:right">
+                                    @Html.DisplayFor(modelItem => item.TotalPosition)
+                                </td>
+                                <td style="text-align:right">
+                                    @Html.DisplayFor(modelItem => item.JoinedPosition)
+                                </td>
+                                <td style="text-align:right">
+                                    @Html.DisplayFor(modelItem => item.OfferedPosition)
+                                </td>
+                                <td style="text-align:right">
+                                    @{
+                                        int openPos = item.TotalPosition - item.JoinedPosition - item.OfferedPosition;
+                                        <text>@openPos.ToString()</text>
+                                    }
+                                </td>
+                                <td style="text-align:right">
+                                    <text>@item.RequestUpdatedOn.ToString("dd/MMM/yyy")</text>
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Comments)
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </td>
+                <td width="50%">
+                    @using (Html.BeginForm())
+                    {
+                        @Html.AntiForgeryToken()
+                    <div class="panel-body">
+                        @Html.ValidationSummary(false, "Please correct the below Validation Errors to save the data")
+
+                        <table width="90%" class="table table-striped table-condensed">
+                            <tr>
+                                <td colspan="2" style="font-size:15px; text-align:center; background-color:aquamarine;">
+                                    <text><b>Update Current Status</b></text>
+                            </tr>
+                            <tr>
+                                <td width="40%">
+                                    @Html.LabelFor(model => model.RequestNo)
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => model.RequestNo, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @Html.LabelFor(model => model.TotalPosition)
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => model.TotalPosition, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @Html.LabelFor(model => model.OpenPosition)
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => model.OpenPosition, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @Html.LabelFor(model => model.JoinedPosition)
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => model.JoinedPosition, new { htmlAttributes = new { @class = "form-control" } })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @Html.LabelFor(model => model.OfferedPosition)
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => model.OfferedPosition, new { htmlAttributes = new { @class = "form-control" } })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @Html.LabelFor(model => model.RequestStatusID)
+                                </td>
+                                <td>
+                                    <div class="col-md-10; form-horizontal">
+                                        @Html.DropDownListFor(model => model.RequestStatusID, (IEnumerable<SelectListItem>)ViewBag.StatusListItems, "Please Select", new { @class = "form-control" })
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @Html.LabelFor(model => model.RequestUpdatedOn)
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => model.RequestUpdatedOn, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.RequestUpdatedOn, "", new { @class = "text-danger" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @Html.LabelFor(model => model.Comments)
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => model.Comments, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Comments, "", new { @class = "text-danger" })
+                                </td>
+                            </tr>
+                            <tr>
+
+                                <td>
+                                    @Html.HiddenFor(model => model.RecruitmentRequestID)
+                                    <input type="submit" value="Update Status" class="btn btn-default btn-primary" />
+                                </td>
+                                <td align="right">
+                                    @Html.ActionLink("Cancel and Go Back", "List", new { @filterType = Request.QueryString["filterType"], @filterValue = Request.QueryString["filterValue"], @page = Request.QueryString["page"] }, new { @class = "btn btn-default" })
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    }
+                </td>
+            </tr>
+        </table>
+    </div>
+
+
+</div>

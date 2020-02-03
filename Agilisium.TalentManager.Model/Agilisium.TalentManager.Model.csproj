@@ -62,6 +62,8 @@
     <Compile Include="Configuration\SubPracticeEntityConfiguration.cs" />
     <Compile Include="Configuration\SystemSettingTypeConfiguration.cs" />
     <Compile Include="Configuration\VendorEntityConfiguration.cs" />
+    <Compile Include="Entities\ReqReq\RecruitmentRequestStatus.cs" />
+    <Compile Include="Entities\ReqReq\RecruitmentRequest.cs" />
     <Compile Include="Entities\TechSkill\EmployeeSkill.cs" />
     <Compile Include="Entities\TechSkill\TechSkillCategory.cs" />
     <Compile Include="Entities\Certification.cs" />

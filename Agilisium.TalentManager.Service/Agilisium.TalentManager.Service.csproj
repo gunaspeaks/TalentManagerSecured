@@ -49,6 +49,7 @@
     <Compile Include="Abstract\IDropDownCategoryService.cs" />
     <Compile Include="Abstract\IDropDownSubCategoryService.cs" />
     <Compile Include="Abstract\IEmployeeTechService.cs" />
+    <Compile Include="Abstract\IRecruitmentRequestService.cs" />
     <Compile Include="Abstract\IProjectAccountService.cs" />
     <Compile Include="Abstract\IServiceRequestService.cs" />
     <Compile Include="Abstract\ISystemSettingsService.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="Concreate\DropDownSubCategoryService.cs" />
     <Compile Include="Concreate\EmployeeService.cs" />
     <Compile Include="Concreate\EmployeeTechService.cs" />
+    <Compile Include="Concreate\RecruitmentRequestService.cs" />
     <Compile Include="Concreate\PracticeService.cs" />
     <Compile Include="Concreate\ProjectAccountService.cs" />
     <Compile Include="Concreate\ProjectService.cs" />

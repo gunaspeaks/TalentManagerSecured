@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Agilisium.TalentManager.Repository.Repositories
 {
@@ -75,7 +76,8 @@ namespace Agilisium.TalentManager.Repository.Repositories
                            PrimarySkills = a.PrimarySkills,
                            SecondarySkills = a.SecondarySkills,
                            VisaStatusID = a.VisaStatusID,
-                           EmployeeEntryID = e.EmployeeEntryID
+                           EmployeeEntryID = e.EmployeeEntryID,
+
                        }).FirstOrDefault();
             }
 
@@ -99,8 +101,8 @@ namespace Agilisium.TalentManager.Repository.Repositories
                             EmployeeName = e.FirstName + " " + e.LastName,
                             LocationID = a.LocationID,
                             OverallExperience = a.OverallExperience,
-                            PrimarySkills = a.PrimarySkills,
-                            SecondarySkills = a.SecondarySkills,
+                            PrimarySkills = e.PrimarySkills,
+                            SecondarySkills = e.SecondarySkills,
                             VisaStatusID = a.VisaStatusID,
                             EmployeeEntryID = e.EmployeeEntryID,
                             EmailID = e.EmailID,
@@ -128,6 +130,8 @@ namespace Agilisium.TalentManager.Repository.Repositories
                     EmployeeName = emp.FirstName + " " + emp.LastName,
                     EmailID = emp.EmailID,
                     ReportingTo = reportingManager,
+                    PrimarySkills = emp.PrimarySkills,
+                    SecondarySkills = emp.SecondarySkills,
                 };
             }
         }
@@ -149,8 +153,8 @@ namespace Agilisium.TalentManager.Repository.Repositories
                             EmployeeName = e.FirstName + " " + e.LastName,
                             LocationID = a.LocationID,
                             OverallExperience = a.OverallExperience,
-                            PrimarySkills = a.PrimarySkills,
-                            SecondarySkills = a.SecondarySkills,
+                            PrimarySkills = e.PrimarySkills,
+                            SecondarySkills = e.SecondarySkills,
                             VisaStatusID = a.VisaStatusID,
                             EmployeeEntryID = e.EmployeeEntryID,
                             EmailID = e.EmailID,
@@ -180,6 +184,8 @@ namespace Agilisium.TalentManager.Repository.Repositories
                     EmployeeName = emp.FirstName + " " + emp.LastName,
                     EmailID = emp.EmailID,
                     ReportingTo = reportingManager,
+                    PrimarySkills = emp.PrimarySkills,
+                    SecondarySkills = emp.SecondarySkills,
                 };
             }
         }
@@ -255,7 +261,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
             return skills;
         }
 
-        public void UpdateEmployeeDetails(EmpAssetDetailDto empDetails)
+        public int UpdateEmployeeDetails(EmpAssetDetailDto empDetails)
         {
             EmpAssetDetail assetEntity = new EmpAssetDetail();
             empDetails.PrimarySkills = empDetails.PrimarySkills?.Replace(",", ";");
@@ -282,10 +288,14 @@ namespace Agilisium.TalentManager.Repository.Repositories
             }
 
             emp.EmailID = empDetails.EmailID;
+            emp.PrimarySkills = empDetails.PrimarySkills;
+            emp.SecondarySkills = empDetails.SecondarySkills;
             DataContext.Employees.Add(emp);
             DataContext.Entry(emp).State = EntityState.Modified;
 
             DataContext.SaveChanges();
+
+            return Entities.FirstOrDefault(e => e.EmployeeID == empDetails.EmployeeID && e.IsDeleted == false).EmpAssetDetailID;
         }
 
         public EmployeeSkillDto GetEmployeeSkillByID(int id)
@@ -309,7 +319,14 @@ namespace Agilisium.TalentManager.Repository.Repositories
         {
             if (skill.EmployeeEntryID <= 0)
             {
-                throw new InvalidOperationException("Invalid employee record. Please start from the Assets home page");
+                if (string.IsNullOrWhiteSpace(skill.EmployeeID))
+                {
+                    throw new InvalidOperationException("Invalid employee record. Please start from the Assets home page");
+                }
+                else
+                {
+                    skill.EmployeeEntryID = DataContext.Employees.FirstOrDefault(e => e.IsDeleted == false && e.EmployeeID == skill.EmployeeID).EmployeeEntryID;
+                }
             }
 
             EmployeeSkill entity = new EmployeeSkill
@@ -322,6 +339,34 @@ namespace Agilisium.TalentManager.Repository.Repositories
             DataContext.EmployeeSkills.Add(entity);
             DataContext.Entry(entity).State = EntityState.Added;
             DataContext.SaveChanges();
+            DataContext.SaveChangesAsync();
+        }
+
+        public async Task AddEmpSkillAsync(EmployeeSkillDto skill)
+        {
+            if (skill.EmployeeEntryID <= 0)
+            {
+                if (string.IsNullOrWhiteSpace(skill.EmployeeID))
+                {
+                    throw new InvalidOperationException("Invalid employee record. Please start from the Assets home page");
+                }
+                else
+                {
+                    Task<Employee> obj = DataContext.Employees.FirstOrDefaultAsync(e => e.IsDeleted == false && e.EmployeeID == skill.EmployeeID);
+                    skill.EmployeeEntryID = obj.Result.EmployeeEntryID;
+                }
+            }
+
+            EmployeeSkill entity = new EmployeeSkill
+            {
+                EmployeeEntryID = skill.EmployeeEntryID,
+                RatingID = skill.RatingID,
+                TechSkillID = skill.TechSkillID,
+                SkillCategoryID = skill.SkillCategoryID
+            };
+            DataContext.EmployeeSkills.Add(entity);
+            DataContext.Entry(entity).State = EntityState.Added;
+            await DataContext.SaveChangesAsync();
         }
 
         public void UpdateEmpSkill(EmployeeSkillDto skill)
@@ -404,7 +449,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         EmpAssetDetailDto GetByEmployeeID(string eid);
 
-        void UpdateEmployeeDetails(EmpAssetDetailDto empDetails);
+        int UpdateEmployeeDetails(EmpAssetDetailDto empDetails);
 
         EmpAssetDetailDto GetByEmployeeEntryID(int empEntryID);
 

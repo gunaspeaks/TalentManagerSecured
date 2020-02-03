@@ -55,6 +55,8 @@
     <Compile Include="EmployeeDto.cs" />
     <Compile Include="EmployeeLoginDto.cs" />
     <Compile Include="EmployeeLoginMappingDto.cs" />
+    <Compile Include="ReqReq\RecruitmentRequestDto.cs" />
+    <Compile Include="ReqReq\RecruitmentRequestStatusDto.cs" />
     <Compile Include="TechSkill\EmpAssetDetailDto.cs" />
     <Compile Include="TechSkill\EmployeeSkillDto.cs" />
     <Compile Include="EmployeeVisaDto.cs" />

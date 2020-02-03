@@ -71,6 +71,7 @@
     <Compile Include="Abstract\RepositoryBase.cs" />
     <Compile Include="Abstract\IRepository.cs" />
     <Compile Include="Repositories\CertificationRepository.cs" />
+    <Compile Include="Repositories\RecruitmentRequestRepository.cs" />
     <Compile Include="Repositories\EmployeeLoginMappingRepository.cs" />
     <Compile Include="Repositories\DevRequestRepository.cs" />
     <Compile Include="Repositories\NotificationsTrackerRepository.cs" />

@@ -57,6 +57,10 @@ namespace Agilisium.TalentManager.PostgresModel
 
         public DbSet<TechSkillCategory> TechSkillCategories { get; set; }
 
+        public DbSet<RecruitmentRequest> RecruitmentRequests { get; set; }
+
+        public DbSet<RecruitmentRequestStatus> RequestStatuseEntries { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Contractor>().ToTable("Contractor", "TalentManager");
@@ -80,6 +84,8 @@ namespace Agilisium.TalentManager.PostgresModel
             modelBuilder.Entity<EmployeeSkill>().ToTable("EmployeeSkill", "TalentManager");
             modelBuilder.Entity<TechSkill>().ToTable("TechSkill", "TalentManager");
             modelBuilder.Entity<TechSkillCategory>().ToTable("TechSkillCategory", "TalentManager");
+            modelBuilder.Entity<RecruitmentRequest>().ToTable("RecruitmentRequest", "TalentManager");
+            modelBuilder.Entity<RecruitmentRequestStatus>().ToTable("RecruitmentRequestStatus", "TalentManager");
         }
     }
 }

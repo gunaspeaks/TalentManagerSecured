@@ -22,7 +22,12 @@ namespace Agilisium.TalentManager.WebUI.Helpers
         BenchCategory,
         TechnologyArea,
         WorkLocation,
-        TechnologyRating
+        TechnologyRating,
+        RequirementReasonType,
+        RequirementRequestStatus,
+        RequirementRequestPriority,
+        AgingBand,
+        WorkLocationType,
     }
 
     public enum PracticeType

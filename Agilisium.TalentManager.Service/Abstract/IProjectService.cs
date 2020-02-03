@@ -36,5 +36,7 @@ namespace Agilisium.TalentManager.Service.Abstract
         bool IsReservedEntry(int projectID);
 
         List<ProjectDto> GetAllByManagerID(int managerID);
+
+        List<ProjectDto> GetAllByAccount(int accountID);
     }
 }

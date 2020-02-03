@@ -499,6 +499,18 @@ namespace Agilisium.TalentManager.Repository.Repositories
             DataContext.SaveChanges();
         }
 
+        public EmployeeDto GetByEmployeeID(string employeeID)
+        {
+            return (from e in Entities
+                    where e.IsDeleted == false && e.EmployeeID == employeeID
+                    select new EmployeeDto
+                    {
+                        EmployeeEntryID = e.EmployeeEntryID,
+                        EmployeeID = e.EmployeeID,
+                        EmailID = e.EmailID,
+                    }).FirstOrDefault();
+        }
+
         #endregion
 
         #region Private Methods
@@ -717,5 +729,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
         void AddCertification(EmpCertificationDto empCertification);
 
         void DeleteCertification(EmpCertificationDto empCertification);
+
+        EmployeeDto GetByEmployeeID(string employeeID);
     }
 }

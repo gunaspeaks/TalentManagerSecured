@@ -1,10 +1,10 @@
-﻿using Agilisium.TalentManager.Repository.Abstract;
-using Agilisium.TalentManager.Dto;
+﻿using Agilisium.TalentManager.Dto;
 using Agilisium.TalentManager.Model.Entities;
+using Agilisium.TalentManager.Repository.Abstract;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System;
 
 namespace Agilisium.TalentManager.Repository.Repositories
 {
@@ -51,27 +51,27 @@ namespace Agilisium.TalentManager.Repository.Repositories
             try
             {
                 subCategories = from s in Entities
-                                                                   join c in DataContext.DropDownCategories on s.CategoryID equals c.CategoryID into ce
-                                                                   from cd in ce.DefaultIfEmpty()
-                                                                   orderby s.SubCategoryName
-                                                                   where s.IsDeleted == false
-                                                                   select new DropDownSubCategoryDto
-                                                                   {
-                                                                       SubCategoryID = s.SubCategoryID,
-                                                                       SubCategoryName = s.SubCategoryName,
-                                                                       CategoryID = s.CategoryID,
-                                                                       Description = s.Description,
-                                                                       ShortName = s.ShortName,
-                                                                       CategoryName = cd.CategoryName,
-                                                                       IsReserved = cd.IsReserved
-                                                                   };
+                                join c in DataContext.DropDownCategories on s.CategoryID equals c.CategoryID into ce
+                                from cd in ce.DefaultIfEmpty()
+                                orderby s.SubCategoryName
+                                where s.IsDeleted == false
+                                select new DropDownSubCategoryDto
+                                {
+                                    SubCategoryID = s.SubCategoryID,
+                                    SubCategoryName = s.SubCategoryName,
+                                    CategoryID = s.CategoryID,
+                                    Description = s.Description,
+                                    ShortName = s.ShortName,
+                                    CategoryName = cd.CategoryName,
+                                    IsReserved = cd.IsReserved
+                                };
 
                 if (pageSize <= 0 || pageNo < 1)
                 {
                     return subCategories;
                 }
             }
-            catch(Exception exp)
+            catch (Exception)
             {
 
             }
@@ -98,9 +98,9 @@ namespace Agilisium.TalentManager.Repository.Repositories
         public DropDownSubCategoryDto GetByName(string name, int categoryID)
         {
             return (from s in Entities
-                    where s.CategoryID== categoryID &&
-                    (s.SubCategoryName.ToLower() == name.ToLower() || s.ShortName.ToLower() == name.ToLower()) 
-                    && s.IsDeleted == false 
+                    where s.CategoryID == categoryID &&
+                    (s.SubCategoryName.ToLower() == name.ToLower() || s.ShortName.ToLower() == name.ToLower())
+                    && s.IsDeleted == false
                     select new DropDownSubCategoryDto
                     {
                         SubCategoryID = s.SubCategoryID,
@@ -113,20 +113,22 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         public IEnumerable<DropDownSubCategoryDto> GetSubCategories(int categoryID, int pageSize = -1, int pageNo = -1)
         {
-            return (from s in Entities
-                    join c in DataContext.DropDownCategories on s.CategoryID equals c.CategoryID into ce
-                    from cd in ce.DefaultIfEmpty()
-                    where s.CategoryID == categoryID && s.IsDeleted == false && cd.IsDeleted == false
-                    select new DropDownSubCategoryDto
-                    {
-                        SubCategoryID = s.SubCategoryID,
-                        SubCategoryName = s.SubCategoryName,
-                        CategoryID = s.CategoryID,
-                        Description = s.Description,
-                        ShortName = s.ShortName,
-                        CategoryName = cd.CategoryName,
-                        IsReserved = cd.IsReserved
-                    });
+            List<DropDownSubCategoryDto> res = (from s in Entities
+                                                join c in DataContext.DropDownCategories on s.CategoryID equals c.CategoryID into ce
+                                                from cd in ce.DefaultIfEmpty()
+                                                where s.CategoryID == categoryID && s.IsDeleted == false && cd.IsDeleted == false
+                                                select new DropDownSubCategoryDto
+                                                {
+                                                    SubCategoryID = s.SubCategoryID,
+                                                    SubCategoryName = s.SubCategoryName,
+                                                    CategoryID = s.CategoryID,
+                                                    Description = s.Description,
+                                                    ShortName = s.ShortName,
+                                                    CategoryName = cd.CategoryName,
+                                                    IsReserved = cd.IsReserved
+                                                }).ToList();
+
+            return res;
         }
 
         public void Update(DropDownSubCategoryDto entity)

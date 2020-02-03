@@ -267,6 +267,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AccountsController.cs" />
+    <Compile Include="Controllers\AgileSoftController.cs" />
     <Compile Include="Controllers\AllocationController.cs" />
     <Compile Include="Controllers\AssetsController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
@@ -279,6 +280,7 @@
     <Compile Include="Controllers\PracticeController.cs" />
     <Compile Include="Controllers\ProjectController.cs" />
     <Compile Include="Controllers\ReportsController.cs" />
+    <Compile Include="Controllers\RePosController.cs" />
     <Compile Include="Controllers\RolesController.cs" />
     <Compile Include="Controllers\ServiceRequestController.cs" />
     <Compile Include="Controllers\SubCategoryController.cs" />
@@ -294,12 +296,15 @@
     <Compile Include="Helpers\PagingHtmlHelperExtension.cs" />
     <Compile Include="Helpers\UIConstants.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\AllocationModel.cs" />
-    <Compile Include="Models\AllocationViewModel.cs" />
+    <Compile Include="Models\Allocation\AllocationModel.cs" />
+    <Compile Include="Models\Allocation\AllocationViewModel.cs" />
     <Compile Include="Models\Assets\EmployeeSkillModel.cs" />
-    <Compile Include="Models\BillabilityWiseAllocationDetailModel.cs" />
-    <Compile Include="Models\BillabilityWiseAllocationSummaryModel.cs" />
-    <Compile Include="Models\BillabilityWiseResourceCountModel.cs" />
+    <Compile Include="Models\Req\RecruitmentRequestModel.cs" />
+    <Compile Include="Models\Req\RecruitmentRequestStatusModel.cs" />
+    <Compile Include="Models\Req\RecruitmentRequestViewModel.cs" />
+    <Compile Include="Models\Allocation\BillabilityWiseAllocationDetailModel.cs" />
+    <Compile Include="Models\Allocation\BillabilityWiseAllocationSummaryModel.cs" />
+    <Compile Include="Models\Allocation\BillabilityWiseResourceCountModel.cs" />
     <Compile Include="Models\CategoryModel.cs" />
     <Compile Include="Models\CertificationViewModel.cs" />
     <Compile Include="Models\CertificationModel.cs" />
@@ -311,7 +316,7 @@
     <Compile Include="Models\CategoryViewModel.cs" />
     <Compile Include="Models\ContractorViewModel.cs" />
     <Compile Include="Models\ContractorWidgetModel.cs" />
-    <Compile Include="Models\CustomAllocationModel.cs" />
+    <Compile Include="Models\Allocation\CustomAllocationModel.cs" />
     <Compile Include="Models\DevelopmentRequestModel.cs" />
     <Compile Include="Models\DevelopmentRequestViewModel.cs" />
     <Compile Include="Models\EmployeeLoginMappingModel.cs" />
@@ -320,7 +325,7 @@
     <Compile Include="Models\EmployeeViewModel.cs" />
     <Compile Include="Models\EmployeeVisaModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
-    <Compile Include="Models\ManagerWiseAllocationModel.cs" />
+    <Compile Include="Models\Allocation\ManagerWiseAllocationModel.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\MenuItem.cs" />
     <Compile Include="Models\PagingInfo.cs" />
@@ -331,8 +336,8 @@
     <Compile Include="Models\PracticeViewModel.cs" />
     <Compile Include="Models\ProjectAccountModel.cs" />
     <Compile Include="Models\ProjectAccountViewModel.cs" />
-    <Compile Include="Models\ProjectModel.cs" />
-    <Compile Include="Models\ProjectViewModel.cs" />
+    <Compile Include="Models\Project\ProjectModel.cs" />
+    <Compile Include="Models\Project\ProjectViewModel.cs" />
     <Compile Include="Models\ResourceCountModel.cs" />
     <Compile Include="Models\ServiceRequestModel.cs" />
     <Compile Include="Models\ServiceRequestViewModel.cs" />
@@ -341,10 +346,10 @@
     <Compile Include="Models\SubPracticeHeadCountModel.cs" />
     <Compile Include="Models\SubPracticeModel.cs" />
     <Compile Include="Models\SubPracticeViewModel.cs" />
-    <Compile Include="Models\UtilizationDashboardViewModel.cs" />
-    <Compile Include="Models\UtilizationReportDetailViewModel.cs" />
-    <Compile Include="Models\UtilizedDaysSummaryModel.cs" />
-    <Compile Include="Models\UtilizedDaysViewModel.cs" />
+    <Compile Include="Models\Allocation\UtilizationDashboardViewModel.cs" />
+    <Compile Include="Models\Allocation\UtilizationReportDetailViewModel.cs" />
+    <Compile Include="Models\Allocation\UtilizedDaysSummaryModel.cs" />
+    <Compile Include="Models\Allocation\UtilizedDaysViewModel.cs" />
     <Compile Include="Models\VendorSearchResultViewModel.cs" />
     <Compile Include="Models\VendorSpecializedPartnerModel.cs" />
     <Compile Include="Models\VendorViewModel.cs" />
@@ -556,9 +561,18 @@
     <Content Include="Views\Assets\AddEmpSkill.cshtml" />
     <Content Include="Views\Assets\ModifyEmpSkill.cshtml" />
     <Content Include="Views\Assets\Start.cshtml" />
+    <Content Include="Views\RePos\Index.cshtml" />
+    <Content Include="Views\AgileSoft\Start.cshtml" />
+    <Content Include="Views\Shared\_RePosLayout.cshtml" />
+    <Content Include="Views\RePos\List.cshtml" />
+    <Content Include="Views\RePos\Create.cshtml" />
+    <Content Include="Views\RePos\Edit.cshtml" />
+    <Content Include="Views\RePos\UpdateStatus.cshtml" />
+    <Content Include="Views\Shared\_RecruitmentLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Models\Account\" />
     <Folder Include="Views\Shared\EditorTemplates\" />
   </ItemGroup>
   <ItemGroup>

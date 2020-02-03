@@ -293,9 +293,9 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         public int GetPercentageOfAllocation(int employeeID)
         {
-            if (Entities.Any(a => a.EmployeeID == employeeID && a.AllocationEndDate >= DateTime.Now))
+            if (Entities.Any(a => a.EmployeeID == employeeID && a.AllocationEndDate >= DateTime.Now && a.IsDeleted == false))
             {
-                return Entities.Where(a => a.EmployeeID == employeeID && a.AllocationEndDate >= DateTime.Now)
+                return Entities.Where(a => a.EmployeeID == employeeID && a.AllocationEndDate >= DateTime.Now && a.IsDeleted == false)
                     .Sum(p => p.PercentageOfAllocation);
             }
             else
@@ -611,7 +611,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
         {
             return (from a in Entities
                     join p in DataContext.Projects on a.ProjectID equals p.ProjectID
-                    where a.IsDeleted == false && a.AllocationEndDate <= startDate
+                    where a.IsDeleted == false && a.AllocationStartDate >= startDate
                         && p.ProjectName.ToLower() != "bench"
                         && a.EmployeeID == employeeID
                         && a.AllocationEntryID != allocationID
@@ -620,12 +620,12 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         public bool AnyActiveAllocationInBenchProject(int employeeID, DateTime startDate)
         {
-            return (from a in Entities
-                    join p in DataContext.Projects on a.ProjectID equals p.ProjectID
-                    where a.IsDeleted == false
-                        && p.ProjectName.ToLower().Contains("bench")
-                        && a.EmployeeID == employeeID && a.AllocationEndDate <= DateTime.Now
-                    select a).Any();
+            return(from a in Entities
+                       join p in DataContext.Projects on a.ProjectID equals p.ProjectID
+                       where a.IsDeleted == false && p.IsDeleted == false
+                           && p.ProjectName.ToLower().Contains("bench")
+                           && a.EmployeeID == employeeID && a.AllocationStartDate >= startDate
+                       select a).Any();
         }
 
         public void EndAllocation(int allocationID)
@@ -850,7 +850,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                    from pmd in pme.DefaultIfEmpty()
                    join rm in DataContext.Employees on emd.ReportingManagerID equals rm.EmployeeEntryID into rme
                    from rmd in rme.DefaultIfEmpty()
-                   where p.IsDeleted == false && p.AllocationTypeID == (int)AllocationType.Billable && 
+                   where p.IsDeleted == false && p.AllocationTypeID == (int)AllocationType.Billable &&
                    ((p.AllocationStartDate >= fromDate && p.AllocationStartDate <= uptoDate)
                    || (p.AllocationEndDate >= fromDate && p.AllocationEndDate <= uptoDate))
                    orderby p.AllocationEntryID

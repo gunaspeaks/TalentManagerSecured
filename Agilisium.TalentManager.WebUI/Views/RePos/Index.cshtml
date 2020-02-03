@@ -1,0 +1,163 @@
+﻿@model Agilisium.TalentManager.WebUI.Models.RePosModelViewModel
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+
+<table style="font-size:12px;" class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Reposes.FirstOrDefault().RequestID)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Reposes.FirstOrDefault().BusinessUnit)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Reposes.FirstOrDefault().Account)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Reposes.FirstOrDefault().Project)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Reposes.FirstOrDefault().RequiredSkills)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Reposes.FirstOrDefault().IsBillable)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Reposes.FirstOrDefault().WorkLocationType)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Reposes.FirstOrDefault().RequestReason)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Reposes.FirstOrDefault().Replacement)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Reposes.FirstOrDefault().RequestedDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Reposes.FirstOrDefault().OfferOrHoldDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Reposes.FirstOrDefault().Aging)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Reposes.FirstOrDefault().AgingBand)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Reposes.FirstOrDefault().ProjectStartDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Reposes.FirstOrDefault().Status)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Reposes.FirstOrDefault().JoinedCount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Reposes.FirstOrDefault().OfferedCount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Reposes.FirstOrDefault().OpenPosition)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Reposes.FirstOrDefault().TotalPosition)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Reposes.FirstOrDefault().Priority)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model.Reposes)
+    {
+        <tr>
+            <td>
+                @Html.ActionLink($"{item.RequestID}", "Edit", new { id = item.ReposRequestID, page = Request.QueryString["page"] });
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BusinessUnit)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Account)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Project)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RequiredSkills)
+            </td>
+            <td>
+                @if (item.IsBillable)
+                {
+                    Html.DisplayText("Yes");
+                }
+                else
+                {
+                    Html.DisplayText("No");
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.WorkLocationType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RequestReason)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Replacement)
+            </td>
+            <td class="text-right">
+                @Html.DisplayText(item.RequestedDate.ToString("dd/MMM/yyyy"))
+            </td>
+            <td>
+                @if (item.OfferOrHoldDate.HasValue)
+                {
+                    Html.DisplayText(item.OfferOrHoldDate.Value.ToString("dd/MMM/yyyy"));
+                }
+                else
+                {
+                    Html.DisplayText(" ");
+
+                }
+                @Html.DisplayFor(modelItem => item.OfferOrHoldDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Aging)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AgingBand)
+            </td>
+            <td>
+                @Html.DisplayText(item.ProjectStartDate.ToString("dd/MMM/yyyy"))
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.JoinedCount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OfferedCount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OpenPosition)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalPosition)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Priority)
+            </td>
+            <td>
+                @Html.ActionLink("Update Status", "Update Status", new { id = item.ReposRequestID }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.ReposRequestID })
+            </td>
+        </tr>
+    }
+
+</table>

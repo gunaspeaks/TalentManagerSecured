@@ -31,7 +31,7 @@
                         $("#FilterValue").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
                     });
                 },
-                error: function (xhr) { alert('Error while loading the Sub Practice list'); }
+                error: function (xhr) { alert('Error while loading the Drop Down list'); }
             });
         }
     }
@@ -43,7 +43,7 @@
         <h3><b>Project Allocations</b></h3>(@Html.ActionLink("Allocations History", "AllocationHistory", "Allocation"))
     </div>
     <div class="panel-body">
-        @using (Html.BeginForm("List", "Allocation", new { filterType = Model.FilterType, filterValue = Model.FilterValue, sortBy = Model.SortBy, sortType = Model.SortType }))
+        @using (Html.BeginForm("List", "RePos", new { filterType = Model.FilterType, filterValue = Model.FilterValue}))
         {
             <table style=" align-self:center; width:550px">
                 <tr>
