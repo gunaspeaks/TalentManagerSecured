@@ -64,5 +64,7 @@ namespace Agilisium.TalentManager.Service.Abstract
         void AddCertification(EmpCertificationDto empCertification);
 
         void DeleteCertification(EmpCertificationDto empCertification);
+
+        List<EmpAndAllocationDto> GetAllEmployeesWithAllocationDetails();
     }
 }

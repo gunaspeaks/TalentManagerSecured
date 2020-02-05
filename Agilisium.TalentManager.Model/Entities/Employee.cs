@@ -49,5 +49,7 @@ namespace Agilisium.TalentManager.Model.Entities
         public DateTime? PassportValidUpto { get; set; }
 
         public string TravelledCountries { get; set; }
+
+        public int StrengthAreaID { get; set; }
     }
 }

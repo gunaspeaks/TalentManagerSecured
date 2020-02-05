@@ -394,23 +394,34 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         [Authorize(Roles = "Human Resource, Super Admin")]
         public FileStreamResult DownloadAllEmployees(string filterType, string filterValue)
         {
-            StringBuilder recordString = new StringBuilder($"Employee ID,Employee Name,Employee Type,Business Unit,POD,Competency,Date of Join,Last Working Day,Primary Skills,Secondary Skills,Reporting Manager{Environment.NewLine}");
+            StringBuilder recordString = new StringBuilder($"Employee ID,Employee Name,Employee Type,Business Unit," +
+                $"Primary Skills,Secondary Skills,Technical Rank,Strength Area,Visa Category,Visa Valid Upto,Overall Experience," +
+                $"Client(Acc) Name,Project Name,Project Manager,Project Type,Allocation Type,Allocated From, Allocated Upto," +
+                $"Reporting Manager{Environment.NewLine}");
             try
             {
-                List<EmployeeDto> employees = empService.GetAllEmployees("");
-                foreach (EmployeeDto dto in employees)
+                List<EmpAndAllocationDto> employees = empService.GetAllEmployeesWithAllocationDetails();
+                foreach (EmpAndAllocationDto dto in employees)
                 {
                     recordString.Append($"{dto.EmployeeID},");
-                    recordString.Append($"{dto.FirstName} {dto.LastName},");
-                    recordString.Append($"{dto.EmploymentTypeName},");
-                    recordString.Append($"{dto.BusinessUnitName},");
-                    recordString.Append($"{dto.PracticeName},");
-                    recordString.Append($"{dto.SubPracticeName},");
-                    recordString.Append($"{dto.DateOfJoin.ToString("dd/MMM/yyyy")},");
-                    recordString.Append($"{dto.LastWorkingDay?.ToString("dd/MMM/yyyy")},");
+                    recordString.Append($"{dto.EmployeeName},");
+                    recordString.Append($"{dto.EmploymentType},");
+                    recordString.Append($"{dto.BusinessUnit},");
                     recordString.Append($"{dto.PrimarySkills?.Replace(",", ";")},");
                     recordString.Append($"{dto.SecondarySkills?.Replace(",", ";")},");
-                    recordString.Append($"{dto.ReportingManagerName}{Environment.NewLine}");
+                    recordString.Append($"{dto.TechnicalRank},");
+                    recordString.Append($"{dto.StrengthArea},");
+                    recordString.Append($"{dto.VisaCategory},");
+                    recordString.Append($"{dto.VisaValidUpto?.ToString("dd/MMM/yyyy")},");
+                    recordString.Append($"{dto.TotalExperience},");
+                    recordString.Append($"{dto.AccountName},");
+                    recordString.Append($"{dto.ProjectName},");
+                    recordString.Append($"{dto.ProjectManager},");
+                    recordString.Append($"{dto.ProjectType},");
+                    recordString.Append($"{dto.AllocationType},");
+                    recordString.Append($"{dto.AllocationStartDate?.ToString("dd/MMM/yyyy")},");
+                    recordString.Append($"{dto.AllocationEndDate?.ToString("dd/MMM/yyyy")},");
+                    recordString.Append($"{dto.ReportingManager}{Environment.NewLine}");
                 }
 
             }

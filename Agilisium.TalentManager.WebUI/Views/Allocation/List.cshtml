@@ -43,7 +43,7 @@
         <h3><b>Project Allocations</b></h3>(@Html.ActionLink("Allocations History", "AllocationHistory", "Allocation"))
     </div>
     <div class="panel-body">
-        @using (Html.BeginForm("List", "RePos", new { filterType = Model.FilterType, filterValue = Model.FilterValue}))
+        @using (Html.BeginForm("List", "Allocation", new { filterType = Model.FilterType, filterValue = Model.FilterValue}))
         {
             <table style=" align-self:center; width:550px">
                 <tr>

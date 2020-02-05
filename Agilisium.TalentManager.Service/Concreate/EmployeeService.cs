@@ -164,5 +164,10 @@ namespace Agilisium.TalentManager.Service.Concreate
         {
             repository.DeleteCertification(empCertification);
         }
+
+        public List<EmpAndAllocationDto> GetAllEmployeesWithAllocationDetails()
+        {
+            return repository.GetAllEmployeesWithAllocationDetails().ToList();
+        }
     }
 }

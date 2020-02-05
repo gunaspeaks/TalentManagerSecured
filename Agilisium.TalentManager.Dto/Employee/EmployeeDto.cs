@@ -71,5 +71,9 @@ namespace Agilisium.TalentManager.Dto
         public string TravelledCountries { get; set; }
 
         public int Certifications { get; set; }
+
+        public int StrengthAreaID { get; set; }
+
+        public string StrengthArea { get; set; }
     }
 }
