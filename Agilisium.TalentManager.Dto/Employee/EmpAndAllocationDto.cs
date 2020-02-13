@@ -8,6 +8,8 @@ namespace Agilisium.TalentManager.Dto
 {
     public class EmpAndAllocationDto
     {
+        public int EmployeeEntryID { get; set; }
+
         public string EmployeeID { get; set; }
 
         public string EmployeeName { get; set; }

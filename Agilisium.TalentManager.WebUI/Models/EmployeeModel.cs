@@ -131,5 +131,11 @@ namespace Agilisium.TalentManager.WebUI.Models
 
         [DisplayName("Certifications")]
         public int Certifications { get; set; }
+
+        [DisplayName("Strength Area")]
+        public int? StrengthAreaID { get; set; }
+
+        [DisplayName("Strength Area")]
+        public string StrengthArea { get; set; }
     }
 }

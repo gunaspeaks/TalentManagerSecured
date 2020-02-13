@@ -513,57 +513,75 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         public IEnumerable<EmpAndAllocationDto> GetAllEmployeesWithAllocationDetails()
         {
-            return (from emp in Entities
-                    join bc in DataContext.DropDownSubCategories on emp.BusinessUnitID equals bc.SubCategoryID into bue
-                    from bcd in bue.DefaultIfEmpty()
-                    join et in DataContext.DropDownSubCategories on emp.EmploymentTypeID equals et.SubCategoryID into ete
-                    from etd in ete.DefaultIfEmpty()
-                    join rm in Entities on emp.ReportingManagerID equals rm.EmployeeEntryID into rme
-                    from rmd in rme.DefaultIfEmpty()
-                    join al in DataContext.ProjectAllocations on emp.EmployeeEntryID equals al.EmployeeID into ale
-                    from ald in ale.DefaultIfEmpty()
-                    join pr in DataContext.Projects on ald.ProjectID equals pr.ProjectID into pre
-                    from prd in pre.DefaultIfEmpty()
-                    join ea in DataContext.EmpAssetDetails on emp.EmployeeEntryID equals ea.EmployeeEntryID into eae
-                    from ead in eae.DefaultIfEmpty()
-                    join ac in DataContext.ProjectAccounts on prd.ProjectAccountID equals ac.AccountID into ace
-                    from acd in ace.DefaultIfEmpty()
-                    join at in DataContext.DropDownSubCategories on ald.AllocationTypeID equals at.SubCategoryID into ate
-                    from atd in ate.DefaultIfEmpty()
-                    join pm in Entities on prd.ProjectManagerID equals pm.EmployeeEntryID into pme
-                    from pmd in pme.DefaultIfEmpty()
-                    join pt in DataContext.DropDownSubCategories on prd.ProjectTypeID equals pt.SubCategoryID into pte
-                    from ptd in pte.DefaultIfEmpty()
-                    join sa in DataContext.DropDownSubCategories on emp.StrengthAreaID equals sa.SubCategoryID into sae
-                    from sad in sae.DefaultIfEmpty()
-                    join vc in DataContext.DropDownSubCategories on emp.VisaCategoryID equals vc.SubCategoryID into vce
-                    from vcd in vce.DefaultIfEmpty()
+            List<EmpAndAllocationDto> emps = (from emp in Entities
+                                              join bc in DataContext.DropDownSubCategories on emp.BusinessUnitID equals bc.SubCategoryID into bue
+                                              from bcd in bue.DefaultIfEmpty()
+                                              join et in DataContext.DropDownSubCategories on emp.EmploymentTypeID equals et.SubCategoryID into ete
+                                              from etd in ete.DefaultIfEmpty()
+                                              join rm in Entities on emp.ReportingManagerID equals rm.EmployeeEntryID into rme
+                                              from rmd in rme.DefaultIfEmpty()
+                                              join sa in DataContext.DropDownSubCategories on emp.StrengthAreaID equals sa.SubCategoryID into sae
+                                              from sad in sae.DefaultIfEmpty()
+                                              join vc in DataContext.DropDownSubCategories on emp.VisaCategoryID equals vc.SubCategoryID into vce
+                                              from vcd in vce.DefaultIfEmpty()
 
-                    where emp.IsDeleted == false && emp.LastWorkingDay.HasValue == false
-                    || (emp.LastWorkingDay.HasValue == true && emp.LastWorkingDay.Value >= DateTime.Now)
-                    orderby emp.EmployeeID
-                    select new EmpAndAllocationDto
+                                              where emp.IsDeleted == false && emp.LastWorkingDay.HasValue == false
+                                              || (emp.LastWorkingDay.HasValue == true && emp.LastWorkingDay.Value >= DateTime.Now)
+                                              orderby emp.EmployeeID
+                                              select new EmpAndAllocationDto
+                                              {
+                                                  EmployeeEntryID = emp.EmployeeEntryID,
+                                                  BusinessUnit = bcd.SubCategoryName,
+                                                  EmployeeID = emp.EmployeeID,
+                                                  EmployeeName = emp.FirstName + " " + emp.LastName,
+                                                  EmploymentType = etd.SubCategoryName,
+                                                  ReportingManager = rmd.FirstName + " " + rmd.LastName,
+                                                  AccountName = "",
+                                                  AllocationType = "",
+                                                  ProjectManager = "",
+                                                  ProjectName = "",
+                                                  ProjectType = "",
+                                                  TotalExperience = "",
+                                                  StrengthArea = sad.SubCategoryName,
+                                                  TechnicalRank = emp.TechnicalRank,
+                                                  VisaCategory = vcd.SubCategoryName,
+                                                  VisaValidUpto = emp.VisaValidUpto,
+                                              }).Distinct().ToList();
+            foreach (EmpAndAllocationDto emp in emps)
+            {
+                EmpAssetDetail asset = DataContext.EmpAssetDetails.FirstOrDefault(ea => ea.EmployeeEntryID == emp.EmployeeEntryID);
+                emp.PrimarySkills = asset?.PrimarySkills;
+                emp.SecondarySkills = asset?.SecondarySkills;
+                emp.TotalExperience = asset?.OverallExperience;
+                DateTime today = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+                ProjectAllocation allocation = DataContext.ProjectAllocations.Where(pa => pa.EmployeeID == emp.EmployeeEntryID && pa.IsDeleted == false
+                && pa.AllocationEndDate >= today).OrderByDescending(al => al.AllocationEndDate).FirstOrDefault();
+
+                if (allocation != null)
+                {
+                    Project project = DataContext.Projects.FirstOrDefault(e => e.ProjectID == allocation.ProjectID && e.IsDeleted == false);
+                    if (project != null)
                     {
-                        BusinessUnit = bcd.SubCategoryName,
-                        EmployeeID = emp.EmployeeID,
-                        EmployeeName = emp.FirstName + " " + emp.LastName,
-                        PrimarySkills = ead.PrimarySkills,
-                        EmploymentType = etd.SubCategoryName,
-                        ReportingManager = rmd.FirstName + " " + rmd.LastName,
-                        AccountName = acd.AccountName,
-                        AllocationEndDate = ald.AllocationEndDate,
-                        AllocationStartDate = ald.AllocationStartDate,
-                        AllocationType = atd.SubCategoryName,
-                        ProjectManager = pmd.FirstName + " " + pmd.LastName,
-                        ProjectName = prd.ProjectName,
-                        ProjectType = ptd.SubCategoryName,
-                        SecondarySkills = ead.SecondarySkills,
-                        TotalExperience = ead.OverallExperience,
-                        StrengthArea = sad.SubCategoryName,
-                        TechnicalRank = emp.TechnicalRank,
-                        VisaCategory = vcd.SubCategoryName,
-                        VisaValidUpto = emp.VisaValidUpto,
-                    });
+                        emp.ProjectName = project.ProjectName;
+
+                        ProjectAccount account = DataContext.ProjectAccounts.FirstOrDefault(e => e.AccountID == project.ProjectAccountID && e.IsDeleted == false);
+                        emp.AccountName = account?.AccountName;
+
+                        DropDownSubCategory prjType = DataContext.DropDownSubCategories.FirstOrDefault(s => s.IsDeleted == false && s.SubCategoryID == project.ProjectTypeID);
+                        emp.ProjectType = prjType?.SubCategoryName;
+
+                        Employee pm = Entities.FirstOrDefault(e => e.EmployeeEntryID == project.ProjectManagerID);
+                        emp.ProjectManager = $"{pm?.FirstName} {pm?.LastName}";
+                    }
+
+                    DropDownSubCategory allType = DataContext.DropDownSubCategories.FirstOrDefault(s => s.IsDeleted == false && s.SubCategoryID == allocation.AllocationTypeID);
+                    emp.AllocationType = allType?.SubCategoryName;
+                    emp.AllocationStartDate = allocation.AllocationStartDate;
+                    emp.AllocationEndDate = allocation.AllocationEndDate;
+
+                }
+            }
+            return emps;
         }
 
         #endregion

@@ -412,15 +412,15 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                     recordString.Append($"{dto.TechnicalRank},");
                     recordString.Append($"{dto.StrengthArea},");
                     recordString.Append($"{dto.VisaCategory},");
-                    recordString.Append($"{dto.VisaValidUpto?.ToString("dd/MMM/yyyy")},");
+                    recordString.Append($"{dto.VisaValidUpto?.ToString("dd-MMM-yyyy")},");
                     recordString.Append($"{dto.TotalExperience},");
                     recordString.Append($"{dto.AccountName},");
                     recordString.Append($"{dto.ProjectName},");
                     recordString.Append($"{dto.ProjectManager},");
                     recordString.Append($"{dto.ProjectType},");
                     recordString.Append($"{dto.AllocationType},");
-                    recordString.Append($"{dto.AllocationStartDate?.ToString("dd/MMM/yyyy")},");
-                    recordString.Append($"{dto.AllocationEndDate?.ToString("dd/MMM/yyyy")},");
+                    recordString.Append($"{dto.AllocationStartDate?.ToString("dd-MMM-yyyy")},");
+                    recordString.Append($"{dto.AllocationEndDate?.ToString("dd-MMM-yyyy")},");
                     recordString.Append($"{dto.ReportingManager}{Environment.NewLine}");
                 }
 
@@ -431,7 +431,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             }
             byte[] byteArr = Encoding.ASCII.GetBytes(recordString.ToString());
             MemoryStream stream = new MemoryStream(byteArr);
-            return File(stream, "application/vnd.ms-excel", $"Employees As On{DateTime.Now.Year - DateTime.Now.Month - DateTime.Now.Day}.csv");
+            return File(stream, "application/vnd.ms-excel", $"Employees As On {DateTime.Now.Year}/{DateTime.Now.Month}/{DateTime.Now.Day}.csv");
         }
 
         public ActionResult AddCertification(int? cid, int? eid)

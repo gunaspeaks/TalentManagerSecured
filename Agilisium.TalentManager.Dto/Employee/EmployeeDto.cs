@@ -72,7 +72,7 @@ namespace Agilisium.TalentManager.Dto
 
         public int Certifications { get; set; }
 
-        public int StrengthAreaID { get; set; }
+        public int? StrengthAreaID { get; set; }
 
         public string StrengthArea { get; set; }
     }

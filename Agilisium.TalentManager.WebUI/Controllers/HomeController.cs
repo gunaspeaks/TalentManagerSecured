@@ -60,7 +60,8 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                 viewModel.CommittedLabCount = projectWiseCount[1];
                 viewModel.CommittedManagementCount = projectWiseCount[0];
             }
-            catch (Exception) { }
+            catch (Exception exp) {
+            }
             return PartialView(viewModel);
         }
 
