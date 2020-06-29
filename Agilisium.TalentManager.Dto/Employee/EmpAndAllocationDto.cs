@@ -28,7 +28,7 @@ namespace Agilisium.TalentManager.Dto
 
         public int? TechnicalRank { get; set; }
 
-        public string TotalExperience { get; set; }
+        public string OveralExperience { get; set; }
 
         public string AllocationType { get; set; }
 

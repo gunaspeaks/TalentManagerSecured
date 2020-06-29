@@ -18,10 +18,6 @@ namespace Agilisium.TalentManager.Model.Entities
 
         public int BusinessUnitID { get; set; }
 
-        public int PracticeID { get; set; }
-
-        public int SubPracticeID { get; set; }
-
         public DateTime DateOfJoin { get; set; }
 
         public DateTime? LastWorkingDay { get; set; }
@@ -42,14 +38,26 @@ namespace Agilisium.TalentManager.Model.Entities
 
         public int? TechnicalRank { get; set; }
 
-        public float? TotalExperience { get; set; }
+        public string OverallExperience { get; set; }
 
         public string PassportNo { get; set; }
 
         public DateTime? PassportValidUpto { get; set; }
 
-        public string TravelledCountries { get; set; }
-
         public int? StrengthAreaID { get; set; }
+
+        public bool? IsTechResource { get; set; }
+
+        public int? Level1ID { get; set; }
+
+        public int? Level2ID { get; set; }
+
+        public int? Level3ID { get; set; }
+
+        public int? Level4ID { get; set; }
+
+        public int? Level5ID { get; set; }
+
+        public bool? IsManager { get; set; }
     }
 }

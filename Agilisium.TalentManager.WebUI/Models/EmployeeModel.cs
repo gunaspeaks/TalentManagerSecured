@@ -14,49 +14,36 @@ namespace Agilisium.TalentManager.WebUI.Models
         public int EmployeeEntryID { get; set; }
 
         [DisplayName("Employee ID")]
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Employee ID is required")]
+        [Required]
         [MaxLength(10, ErrorMessage = "Employee ID should not exceed 10 characters")]
         public string EmployeeID { get; set; }
 
         [DisplayName("First Name")]
-        [Required(AllowEmptyStrings = false, ErrorMessage = "First Name is required")]
+        [Required]
         [MaxLength(100, ErrorMessage = "First Name should not exceed 100 characters")]
         public string FirstName { get; set; }
 
         [DisplayName("Last Name")]
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Last Name is required")]
+        [Required]
         [MaxLength(100, ErrorMessage = "Last Name should not exceed 100 characters")]
         public string LastName { get; set; }
 
         [DisplayName("Email ID")]
+        [Required]
         [MaxLength(100, ErrorMessage = "Email ID should not exceed 100 characters")]
         [DataType(DataType.EmailAddress)]
         [EmailAddress]
         public string EmailID { get; set; }
 
         [DisplayName("Business Unit")]
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Please select a Business Unit")]
+        [Required]
         public int BusinessUnitID { get; set; }
 
         [DisplayName("Business Unit")]
         public string BusinessUnitName { get; set; }
 
-        [DisplayName("POD")]
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Please select a Practice")]
-        public int PracticeID { get; set; }
-
-        [DisplayName("POD")]
-        public string PracticeName { get; set; }
-
-        [DisplayName("Competency")]
-        [Required(ErrorMessage = "Please select a Competency")]
-        public int SubPracticeID { get; set; }
-
-        [DisplayName("Competency")]
-        public string SubPracticeName { get; set; }
-
         [DisplayName("Date of Join")]
-        [Required(ErrorMessage = "Date of Join is required")]
+        [Required]
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = false)]
         //[DataType(DataType.Date)]
         public DateTime DateOfJoin { get; set; }
@@ -67,8 +54,8 @@ namespace Agilisium.TalentManager.WebUI.Models
         public DateTime? LastWorkingDay { get; set; }
 
         [DisplayName("Primary Skills")]
-        [Required(ErrorMessage = "Primary Skills is required")]
-        [MaxLength(100, ErrorMessage = "Primary Skills should not exceed 100 characters")]
+        [MaxLength(250, ErrorMessage = "Primary Skills should not exceed 100 characters")]
+        [Required]
         public string PrimarySkills { get; set; }
 
         [DisplayName("Secondary Skills")]
@@ -76,6 +63,7 @@ namespace Agilisium.TalentManager.WebUI.Models
         public string SecondarySkills { get; set; }
 
         [DisplayName("Reporting Manager")]
+        [Required]
         public int? ReportingManagerID { get; set; }
 
         [DisplayName("Reporting Manager")]
@@ -112,10 +100,12 @@ namespace Agilisium.TalentManager.WebUI.Models
         public DateTime? VisaValidUpto { get; set; }
 
         [DisplayName("Technical Rank")]
+        [Required]
         public int? TechnicalRank { get; set; }
 
-        [DisplayName("Total Experience")]
-        public float? TotalExperience { get; set; }
+        [DisplayName("Overall Experience")]
+        [Required]
+        public string OverallExperience { get; set; }
 
         [DisplayName("Passport Number")]
         public string PassportNo { get; set; }
@@ -137,5 +127,44 @@ namespace Agilisium.TalentManager.WebUI.Models
 
         [DisplayName("Strength Area")]
         public string StrengthArea { get; set; }
+
+        [DisplayName("Is Technical?")]
+        public bool? IsTechResource { get; set; }
+
+        [DisplayName("Level 1")]
+        [Required]
+        public int? Level1ID { get; set; }
+
+        [DisplayName("Level 2")]
+        [Required]
+        public int? Level2ID { get; set; }
+
+        [DisplayName("Level 3")]
+        public int? Level3ID { get; set; }
+
+        [DisplayName("Level 4")]
+        public int? Level4ID { get; set; }
+
+        [DisplayName("Level 5")]
+        public int? Level5ID { get; set; }
+
+        [DisplayName("Level 1")]
+        public string Level1 { get; set; }
+
+        [DisplayName("Level 2")]
+        public string Level2 { get; set; }
+
+        [DisplayName("Level 3")]
+        public string Level3 { get; set; }
+
+        [DisplayName("Level 4")]
+        public string Level4 { get; set; }
+
+        [DisplayName("Level 5")]
+        public string Level5 { get; set; }
+
+        [DisplayName("Is In Management Role")]
+        [Required]
+        public bool? IsManager { get; set; }
     }
 }

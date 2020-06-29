@@ -27,6 +27,13 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         public void Add(ProjectAllocationDto entity)
         {
+            //int prjBU = DataContext.Projects.FirstOrDefault(p => p.ProjectID == entity.ProjectID).BusinessUnitID;
+            //int empBU= DataContext.Employees.FirstOrDefault(p => p.EmployeeEntryID == entity.EmployeeID).BusinessUnitID;
+            //if(prjBU!=empBU)
+            //{
+
+            //}
+
             ProjectAllocation allocation = CreateBusinessEntity(entity, true);
             Entities.Add(allocation);
             DataContext.Entry(allocation).State = EntityState.Added;
@@ -315,10 +322,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                     from ed in ee.DefaultIfEmpty()
                     join bu in DataContext.DropDownSubCategories on ed.BusinessUnitID equals bu.SubCategoryID into bue
                     from bud in bue.DefaultIfEmpty()
-                    join pr in DataContext.Practices on ed.PracticeID equals pr.PracticeID into pre
-                    from prd in pre.DefaultIfEmpty()
-                    join sp in DataContext.SubPractices on ed.SubPracticeID equals sp.SubPracticeID into spe
-                    from spd in spe.DefaultIfEmpty()
                     join pm in DataContext.Employees on pd.ProjectManagerID equals pm.EmployeeEntryID into pme
                     from pmd in pme.DefaultIfEmpty()
                     join dm in DataContext.Employees on pd.ProjectManagerID equals dm.EmployeeEntryID into dme
@@ -334,8 +337,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                         StartDate = a.AllocationStartDate,
                         UtilizatinType = scd.SubCategoryName,
                         BusinessUnit = bud.SubCategoryName,
-                        Practice = prd.PracticeName,
-                        SubPractice = spd.SubPracticeName,
                         DeliveryManager = string.IsNullOrEmpty(dmd.FirstName) ? "" : dmd.LastName + ", " + dmd.FirstName,
                     });
         }
@@ -776,7 +777,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                           where a.IsDeleted == false && e.IsDeleted == false
                           && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue && e.LastWorkingDay > DateTime.Now))
                           && a.AllocationEndDate > DateTime.Now && a.BenchCategoryID == (int)BenchCategory.Available
-                          && e.PracticeID == pod.PracticeID
                           select a).Count();
 
                 int be = (from a in Entities
@@ -784,7 +784,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                           where a.IsDeleted == false && e.IsDeleted == false
                           && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue && e.LastWorkingDay > DateTime.Now))
                           && a.AllocationEndDate > DateTime.Now && a.BenchCategoryID == (int)BenchCategory.Earmarked
-                          && e.PracticeID == pod.PracticeID
                           select a).Count();
 
                 podWiseCountResult.Add(new PodWiseHeadCountDto
@@ -795,7 +794,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                     BillableCount = podCount.Any(a => a.SubCategoryName == "Billable") ? podCount.FirstOrDefault(a => a.SubCategoryName == "Billable").Count : 0,
                     ComBufferCount = podCount.Any(a => a.SubCategoryName == "Committed Buffer") ? podCount.FirstOrDefault(a => a.SubCategoryName == "Committed Buffer").Count : 0,
                     NonComBufferCount = podCount.Any(a => a.SubCategoryName == "Non-Committed Buffer") ? podCount.FirstOrDefault(a => a.SubCategoryName == "Non-Committed Buffer").Count : 0,
-                    TotalCount = DataContext.Employees.Count(e => e.IsDeleted == false && e.PracticeID == pod.PracticeID && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue && e.LastWorkingDay >= DateTime.Now))),
+                    TotalCount = DataContext.Employees.Count(e => e.IsDeleted == false && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue && e.LastWorkingDay >= DateTime.Now))),
                     BenchAvailableCount = ba,
                     BenchEarmarkedCount = be,
                 });
@@ -842,8 +841,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                    from emd in eme.DefaultIfEmpty()
                    join sc in DataContext.DropDownSubCategories on p.AllocationTypeID equals sc.SubCategoryID into sce
                    from scd in sce.DefaultIfEmpty()
-                   join po in DataContext.Practices on emd.PracticeID equals po.PracticeID into poe
-                   from pod in poe.DefaultIfEmpty()
                    join pr in DataContext.Projects on p.ProjectID equals pr.ProjectID into pre
                    from prd in pre.DefaultIfEmpty()
                    join pm in DataContext.Employees on prd.ProjectManagerID equals pm.EmployeeEntryID into pme
@@ -864,8 +861,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                        EmployeeEntryID = p.EmployeeID,
                        EmployeeID = emd.EmployeeID,
                        EmployeeName = emd.FirstName + " " + emd.LastName,
-                       POD = pod.PracticeName,
-                       PracticeID = pod.PracticeID,
                        ProjectID = p.ProjectID,
                        ProjectManager = pmd.FirstName + " " + pmd.LastName,
                        ProjectManagerID = pmd.EmployeeEntryID,
@@ -895,8 +890,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                     DateOfJoin = emp.DateOfJoin,
                     EmployeeID = emp.EmployeeID,
                     EmployeeName = emp.FirstName + " " + emp.LastName,
-                    PracticeID = emp.PracticeID,
-                    PracticeName = DataContext.Practices.FirstOrDefault(p => p.PracticeID == emp.PracticeID)?.PracticeName,
                     AgingDays = 0
                 };
 
@@ -931,9 +924,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
             {
                 case "aged":
                     entries = sortType == "asc" ? entries.OrderBy(o => o.AgingDays).ToList() : entries.OrderByDescending(o => o.AgingDays).ToList();
-                    break;
-                case "pod":
-                    entries = sortType == "asc" ? entries.OrderBy(o => o.PracticeID).ToList() : entries.OrderByDescending(o => o.PracticeID).ToList();
                     break;
                 default:
                     entries = sortType == "asc" ? entries.OrderBy(o => o.EmployeeName).ToList() : entries.OrderByDescending(o => o.EmployeeName).ToList();
@@ -1063,8 +1053,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                         AllocationStartDate = allocation.AllocationStartDate,
                         BusinessUnitID = project.BusinessUnitID,
                         BusinessUnit = DataContext.DropDownSubCategories.FirstOrDefault(bu => bu.SubCategoryID == project.BusinessUnitID)?.SubCategoryName,
-                        POD = DataContext.Practices.FirstOrDefault(p => p.PracticeID == project.PracticeID)?.PracticeName,
-                        PracticeID = project.PracticeID,
                         ProjectID = project.ProjectID,
                         ProjectManager = (from e in DataContext.Employees where e.EmployeeEntryID == project.ProjectManagerID select e.FirstName + " " + e.LastName).FirstOrDefault(),
                         ProjectManagerID = project.ProjectManagerID,
@@ -1106,12 +1094,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                         && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now))
                         && e.SecondarySkills.ToLower().Contains(filterValue.ToLower())).ToList();
                     break;
-                case "pod":
-                    int.TryParse(filterValue, out int practiceID);
-                    employees = DataContext.Employees.Where(e => e.IsDeleted == false
-                        && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now))
-                        && e.PracticeID == practiceID).ToList();
-                    break;
             }
 
             if (employees.Count() == 0)
@@ -1137,8 +1119,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                         EmployeeName = emp.FirstName + " " + emp.LastName,
                         PrimarySkills = emp.PrimarySkills,
                         SecondarySkills = emp.SecondarySkills,
-                        POD = DataContext.Practices.FirstOrDefault(p => p.PracticeID == emp.PracticeID)?.PracticeName,
-                        PracticeID = emp.PracticeID,
                         ProjectManagerID = emp.ReportingManagerID,
                         ProjectManager = (from e in DataContext.Employees where e.EmployeeEntryID == emp.ReportingManagerID select e.FirstName + " " + e.LastName).FirstOrDefault(),
                         BusinessUnitID = emp.BusinessUnitID,
@@ -1162,8 +1142,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                             AllocationStartDate = allocation.AllocationStartDate,
                             BusinessUnitID = emp.BusinessUnitID,
                             BusinessUnit = DataContext.DropDownSubCategories.FirstOrDefault(bu => bu.SubCategoryID == emp.BusinessUnitID)?.SubCategoryName,
-                            POD = DataContext.Practices.FirstOrDefault(p => p.PracticeID == emp.PracticeID)?.PracticeName,
-                            PracticeID = emp.PracticeID,
                         };
 
                         Project prj = DataContext.Projects.FirstOrDefault(p => p.ProjectID == allocation.ProjectID);

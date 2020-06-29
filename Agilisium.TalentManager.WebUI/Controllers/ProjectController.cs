@@ -195,7 +195,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                     ProjectDto projectDto = Mapper.Map<ProjectModel, ProjectDto>(project);
                     projectService.Update(projectDto);
                     DisplaySuccessMessage("Project details have been updated successfully");
-                    return RedirectToAction("List", new {  filterType,  filterValue, page  });
+                    return RedirectToAction("List", new { filterType, filterValue, page });
                 }
             }
             catch (Exception exp)
@@ -289,9 +289,6 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                 case "Project Type":
                     filterValues = GetProjectTypeList();
                     break;
-                case "POD":
-                    filterValues = GetPracticeList();
-                    break;
             }
 
 
@@ -318,7 +315,6 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             ViewBag.BuListItems = GetBuList();
             ViewBag.ProjectTypeListItems = GetProjectTypeList();
 
-            ViewBag.PracticeListItems = GetPracticeList();
             GetAllManagersList();
             ViewBag.AccountsListItems = GetAllAccountsList();
             ViewBag.SubPracticeListItems = new List<SelectListItem>
@@ -331,11 +327,6 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         {
             viewModel.FilterTypeDropDownItems = new List<SelectListItem>
             {
-                new SelectListItem
-                {
-                    Text = "POD",
-                    Value = "POD"
-                },
                 new SelectListItem
                 {
                     Text = "Account",
@@ -388,18 +379,32 @@ namespace Agilisium.TalentManager.WebUI.Controllers
 
             return buListItems;
         }
-
-        public List<SelectListItem> GetPracticeList()
+        public JsonResult GetProjectsListItems(int accountID)
         {
-            List<PracticeDto> practices = practiceService.GetPractices().ToList();
-            List<SelectListItem> practiceItems = (from p in practices
-                                                  orderby p.PracticeName
-                                                  select new SelectListItem
-                                                  {
-                                                      Text = p.PracticeName,
-                                                      Value = p.PracticeID.ToString()
-                                                  }).ToList();
-            return practiceItems;
+            List<SelectListItem> filterValues = GetAllProjectsList(accountID);
+
+            filterValues.Insert(0, new SelectListItem
+            {
+                Text = "Please Select",
+                Value = "0",
+            });
+            Session["FilterValueListItems"] = filterValues;
+            return Json(filterValues);
+        }
+
+        private List<SelectListItem> GetAllProjectsList(int accountID)
+        {
+            List<ProjectDto> projects = projectService.GetAllByAccount(accountID);
+
+            List<SelectListItem> accDDList = (from e in projects
+                                              orderby e.ProjectName
+                                              select new SelectListItem
+                                              {
+                                                  Text = e.ProjectName + " (" + e.ProjectCode + ")",
+                                                  Value = e.ProjectID.ToString()
+                                              }).ToList();
+
+            return accDDList;
         }
 
         private void GetAllManagersList()

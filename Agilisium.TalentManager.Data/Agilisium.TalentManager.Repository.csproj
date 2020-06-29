@@ -70,7 +70,9 @@
     <Compile Include="Abstract\EnumerationTypes.cs" />
     <Compile Include="Abstract\RepositoryBase.cs" />
     <Compile Include="Abstract\IRepository.cs" />
+    <Compile Include="Repositories\ResourceLevelRepository.cs" />
     <Compile Include="Repositories\CertificationRepository.cs" />
+    <Compile Include="Repositories\BuLevelRepository.cs" />
     <Compile Include="Repositories\RecruitmentRequestRepository.cs" />
     <Compile Include="Repositories\EmployeeLoginMappingRepository.cs" />
     <Compile Include="Repositories\DevRequestRepository.cs" />

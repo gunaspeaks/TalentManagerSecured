@@ -18,22 +18,23 @@ namespace Agilisium.TalentManager.WebUI.Controllers
 
         private readonly IEmployeeService empService;
         private readonly IDropDownSubCategoryService subCategoryService;
-        private readonly IPracticeService practiceService;
-        private readonly ISubPracticeService subPracticeService;
+        private readonly IBuLevelService buLevelService;
+        private readonly IResourceLevelService resLevelService;
         private readonly ICertificationService certService;
+        private readonly IProjectAccountService accService;
+        private readonly IProjectService projectService;
 
-
-        public EmployeeController(IEmployeeService empService,
-            IDropDownSubCategoryService subCategoryService,
-            IPracticeService practiceService,
-            ISubPracticeService subPracticeService,
-            ICertificationService certService)
+        public EmployeeController(IEmployeeService empService, IDropDownSubCategoryService subCategoryService, IBuLevelService buLevelService,
+            IResourceLevelService resLevelService, ICertificationService certService, IProjectAccountService accService,
+            IProjectService projectService)
         {
             this.empService = empService;
             this.subCategoryService = subCategoryService;
-            this.practiceService = practiceService;
-            this.subPracticeService = subPracticeService;
+            this.buLevelService = buLevelService;
+            this.resLevelService = resLevelService;
             this.certService = certService;
+            this.accService = accService;
+            this.projectService = projectService;
         }
 
         // GET: Employee
@@ -204,6 +205,8 @@ namespace Agilisium.TalentManager.WebUI.Controllers
 
                 if (ModelState.IsValid)
                 {
+                    if (!IsValidEmployeeData(employee)) return View(employee);
+
                     if (empService.IsDuplicateName(employee.FirstName, employee.LastName))
                     {
                         DisplayWarningMessage("There is already an Employee with the same First and Last Name");
@@ -230,21 +233,73 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             return View(employee);
         }
 
+        private bool IsValidEmployeeData(EmployeeModel employee)
+        {
+            if (employee.Level1ID.HasValue == false || (employee.Level1ID.HasValue && employee.Level1ID <= 0))
+            {
+                DisplayWarningMessage("Please select a value for Level 1 field");
+                return false;
+            }
+
+            if (employee.BusinessUnitID == (int)BusinessUnitType.BusinessDelevopment &&
+                employee.Level2ID.HasValue == false || (employee.Level2ID.HasValue && employee.Level2ID <= 0))
+            {
+                DisplayWarningMessage("Please select a value for Level 2 field");
+                return false;
+            }
+
+            if (employee.BusinessUnitID == (int)BusinessUnitType.Delivery)
+            {
+                if (employee.Level1ID.HasValue == false || (employee.Level1ID.HasValue && employee.Level1ID <= 0))
+                {
+                    DisplayWarningMessage("Please select an Account from Level 1 field");
+                    return false;
+                }
+
+                if (employee.Level2ID.HasValue == false || (employee.Level2ID.HasValue && employee.Level2ID <= 0))
+                {
+                    DisplayWarningMessage("Please select a Project from Level 2 field");
+                    return false;
+                }
+
+                if (employee.Level3ID.HasValue == false || (employee.Level3ID.HasValue && employee.Level3ID <= 0))
+                {
+                    DisplayWarningMessage("Please select a Billable Type from Level 3 field");
+                    return false;
+                }
+
+                if (employee.Level3ID == (int)BillabilityType.NonBillable &&
+                    employee.Level4ID.HasValue == false || (employee.Level4ID.HasValue && employee.Level4ID <= 0))
+                {
+                    DisplayWarningMessage("Please select a value for Level 4 field");
+                    return false;
+                }
+
+                if (employee.Level3ID == (int)BillabilityType.NonBillable &&
+                    employee.Level5ID.HasValue == false || (employee.Level5ID.HasValue && employee.Level5ID <= 0))
+                {
+                    DisplayWarningMessage("Please select a value for Level 5 field");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         // GET: Employe/Edit/5
         [Authorize(Roles = "Human Resource, Super Admin, Admin")]
         public ActionResult Edit(int? id)
         {
             EmployeeModel empModel = new EmployeeModel();
-            InitializePageData(empModel.PracticeID, id ?? -1);
-
-            if (!id.HasValue)
-            {
-                DisplayWarningMessage("Looks like, the employee ID is missing in your request");
-                return View(empModel);
-            }
-
             try
             {
+                InitializePageData(id ?? -1);
+
+                if (!id.HasValue)
+                {
+                    DisplayWarningMessage("Looks like, the employee ID is missing in your request");
+                    return View(empModel);
+                }
 
                 if (!empService.Exists(id.Value))
                 {
@@ -253,7 +308,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                 }
 
                 EmployeeDto emp = empService.GetEmployee(id.Value);
-                GetSubPracticeList(emp.PracticeID);
+                LoadListItemsBasedOnEmployeeData(emp);
                 empModel = Mapper.Map<EmployeeDto, EmployeeModel>(emp);
                 if (string.IsNullOrWhiteSpace(empModel.TravelledCountries))
                 {
@@ -270,6 +325,183 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                 DisplayReadErrorMessage(exp);
             }
             return View(empModel);
+        }
+
+        private void LoadListItemsBasedOnEmployeeData(EmployeeDto employee)
+        {
+            IEnumerable<BuLevelDto> buLevelItems = buLevelService.GetAllByBU(employee.BusinessUnitID);
+            List<SelectListItem> level1Items = new List<SelectListItem>();
+
+            if (employee.BusinessUnitID == (int)BusinessUnitType.BusinessDelevopment)
+            {
+                ViewBag.Level1ListItems = (from a in buLevelItems
+                                           orderby a.ItemName
+                                           select new SelectListItem
+                                           {
+                                               Text = a.ItemName,
+                                               Value = a.ItemEntryID.ToString(),
+                                           }).ToList();
+
+                int salesLevel = buLevelItems.Count() > 0 ? buLevelItems.FirstOrDefault(a => a.ItemName == "Sales").ItemEntryID : -1;
+                List<ResourceLevelDto> resLevels = resLevelService.GetAllByLevel(salesLevel).ToList();
+                ViewBag.Level2ListItems = (from a in resLevels
+                                           orderby a.ItemName
+                                           select new SelectListItem
+                                           {
+                                               Text = a.ItemName,
+                                               Value = a.ItemEntryID.ToString(),
+                                           }).ToList();
+
+                ViewBag.Level3ListItems = (from a in resLevels
+                                           orderby a.ItemName
+                                           select new SelectListItem
+                                           {
+                                               Text = a.ItemName,
+                                               Value = a.ItemEntryID.ToString(),
+                                           }).ToList();
+
+                ViewBag.Level4ListItems = (from a in resLevels
+                                           orderby a.ItemName
+                                           select new SelectListItem
+                                           {
+                                               Text = a.ItemName,
+                                               Value = a.ItemEntryID.ToString(),
+                                           }).ToList();
+
+                ViewBag.Level5ListItems = (from a in resLevels
+                                           orderby a.ItemName
+                                           select new SelectListItem
+                                           {
+                                               Text = a.ItemName,
+                                               Value = a.ItemEntryID.ToString(),
+                                           }).ToList();
+
+            }
+            if (employee.BusinessUnitID == (int)BusinessUnitType.Operations
+                || employee.BusinessUnitID == (int)BusinessUnitType.RMG)
+            {
+                ViewBag.Level1ListItems = (from a in buLevelItems
+                                           orderby a.ItemName
+                                           select new SelectListItem
+                                           {
+                                               Text = a.ItemName,
+                                               Value = a.ItemEntryID.ToString(),
+                                           }).ToList();
+
+                ViewBag.Level2ListItems = (from a in buLevelItems
+                                           orderby a.ItemName
+                                           select new SelectListItem
+                                           {
+                                               Text = a.ItemName,
+                                               Value = a.ItemEntryID.ToString(),
+                                           }).ToList();
+
+                ViewBag.Level3ListItems = (from a in buLevelItems
+                                           orderby a.ItemName
+                                           select new SelectListItem
+                                           {
+                                               Text = a.ItemName,
+                                               Value = a.ItemEntryID.ToString(),
+                                           }).ToList();
+
+                ViewBag.Level4ListItems = (from a in buLevelItems
+                                           orderby a.ItemName
+                                           select new SelectListItem
+                                           {
+                                               Text = a.ItemName,
+                                               Value = a.ItemEntryID.ToString(),
+                                           }).ToList();
+
+                ViewBag.Level5ListItems = (from a in buLevelItems
+                                           orderby a.ItemName
+                                           select new SelectListItem
+                                           {
+                                               Text = a.ItemName,
+                                               Value = a.ItemEntryID.ToString(),
+                                           }).ToList();
+
+            }
+            else if (employee.BusinessUnitID == (int)BusinessUnitType.Delivery)
+            {
+                List<ProjectAccountDto> accounts = accService.GetAll();
+                ViewBag.Level1ListItems = (from a in accounts
+                                           orderby a.AccountName
+                                           select new SelectListItem
+                                           {
+                                               Text = a.AccountName,
+                                               Value = a.AccountID.ToString(),
+                                           }).ToList();
+
+                if (employee.Level1ID.HasValue)
+                {
+                    List<ProjectDto> projects = projectService.GetAllByAccount(employee.Level1ID.Value).ToList();
+                    ViewBag.Level2ListItems = (from a in projects
+                                               orderby a.ProjectName, a.ProjectCode
+                                               select new SelectListItem
+                                               {
+                                                   Text = a.ProjectName + " (" + a.ProjectCode + ")",
+                                                   Value = a.ProjectID.ToString(),
+                                               }).ToList();
+                }
+
+                List<DropDownSubCategoryDto> subCategories = subCategoryService.GetSubCategories((int)CategoryType.BillabilityType).ToList();
+                ViewBag.Level3ListItems = (from a in subCategories
+                                           orderby a.SubCategoryName
+                                           select new SelectListItem
+                                           {
+                                               Text = a.SubCategoryName,
+                                               Value = a.SubCategoryID.ToString(),
+                                           }).ToList();
+
+                if (employee.Level3ID == (int)BillabilityType.Billable)
+                {
+                    ViewBag.Level4ListItems = (from a in subCategories
+                                               orderby a.SubCategoryName
+                                               select new SelectListItem
+                                               {
+                                                   Text = a.SubCategoryName,
+                                                   Value = a.SubCategoryID.ToString(),
+                                               }).ToList();
+
+                    ViewBag.Level5ListItems = (from a in subCategories
+                                               orderby a.SubCategoryName
+                                               select new SelectListItem
+                                               {
+                                                   Text = a.SubCategoryName,
+                                                   Value = a.SubCategoryID.ToString(),
+                                               }).ToList();
+                }
+                else
+                {
+                    List<DropDownSubCategoryDto> level4SubCategories = subCategoryService.GetSubCategories((int)CategoryType.Level4_NonBillableItems).ToList();
+                    ViewBag.Level4ListItems = (from a in level4SubCategories
+                                               orderby a.SubCategoryName
+                                               select new SelectListItem
+                                               {
+                                                   Text = a.SubCategoryName,
+                                                   Value = a.SubCategoryID.ToString(),
+                                               }).ToList();
+
+                    List<DropDownSubCategoryDto> level5SubCategories = subCategoryService.GetSubCategories((int)CategoryType.Level5_NonBillableItems).ToList();
+                    ViewBag.Level5ListItems = (from a in level5SubCategories
+                                               orderby a.SubCategoryName
+                                               select new SelectListItem
+                                               {
+                                                   Text = a.SubCategoryName,
+                                                   Value = a.SubCategoryID.ToString(),
+                                               }).ToList();
+                }
+            }
+            else
+            {
+                // reserved
+            }
+        }
+
+        private void LoadListItemsBasedOnEmployeeData(EmployeeModel employee)
+        {
+            EmployeeDto employeeDto = Mapper.Map<EmployeeModel, EmployeeDto>(employee);
+            LoadListItemsBasedOnEmployeeData(employeeDto);
         }
 
         public ActionResult View(int? id)
@@ -308,9 +540,13 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         {
             try
             {
-                InitializePageData(employee.PracticeID, employee.EmployeeEntryID);
+                InitializePageData(employee.EmployeeEntryID);
+                LoadListItemsBasedOnEmployeeData(employee);
+
                 if (ModelState.IsValid)
                 {
+                    if (!IsValidEmployeeData(employee)) return View(employee);
+
                     if (empService.IsDuplicateName(employee.EmployeeEntryID, employee.FirstName, employee.LastName))
                     {
                         DisplayWarningMessage("There is already an Employee with the same First and Last Name");
@@ -369,7 +605,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         [HttpPost]
         public JsonResult GetSubPracticeList(int id)
         {
-            return Json(GetSubPractices(id));
+            return Json("");
         }
 
         [HttpPost]
@@ -395,30 +631,31 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         public FileStreamResult DownloadAllEmployees(string filterType, string filterValue)
         {
             StringBuilder recordString = new StringBuilder($"Employee ID,Employee Name,Employee Type,Business Unit," +
-                $"Primary Skills,Secondary Skills,Technical Rank,Strength Area,Visa Category,Visa Valid Upto,Overall Experience," +
-                $"Client(Acc) Name,Project Name,Project Manager,Project Type,Allocation Type,Allocated From, Allocated Upto," +
-                $"Reporting Manager{Environment.NewLine}");
+                $"Primary Skills,Visa Category,Visa Valid Upto,Overall Experience," +
+                $"Project Manager,Allocated From,Allocated Upto,Reporting Manager{Environment.NewLine}");
             try
             {
                 List<EmpAndAllocationDto> employees = empService.GetAllEmployeesWithAllocationDetails();
                 foreach (EmpAndAllocationDto dto in employees)
                 {
+                    //
                     recordString.Append($"{dto.EmployeeID},");
                     recordString.Append($"{dto.EmployeeName},");
                     recordString.Append($"{dto.EmploymentType},");
                     recordString.Append($"{dto.BusinessUnit},");
                     recordString.Append($"{dto.PrimarySkills?.Replace(",", ";")},");
-                    recordString.Append($"{dto.SecondarySkills?.Replace(",", ";")},");
-                    recordString.Append($"{dto.TechnicalRank},");
-                    recordString.Append($"{dto.StrengthArea},");
+                    //recordString.Append($"{dto.SecondarySkills?.Replace(",", ";")},");
+                    //  level 1 to 5
+                    //recordString.Append($"{dto.TechnicalRank},");
+                    //recordString.Append($"{dto.StrengthArea},");
                     recordString.Append($"{dto.VisaCategory},");
                     recordString.Append($"{dto.VisaValidUpto?.ToString("dd-MMM-yyyy")},");
-                    recordString.Append($"{dto.TotalExperience},");
-                    recordString.Append($"{dto.AccountName},");
-                    recordString.Append($"{dto.ProjectName},");
+                    recordString.Append($"{dto.OveralExperience},");
+                    //recordString.Append($"{dto.AccountName},");
+                    //recordString.Append($"{dto.ProjectName},");
                     recordString.Append($"{dto.ProjectManager},");
-                    recordString.Append($"{dto.ProjectType},");
-                    recordString.Append($"{dto.AllocationType},");
+                    //recordString.Append($"{dto.ProjectType},");
+                    //recordString.Append($"{dto.AllocationType},");
                     recordString.Append($"{dto.AllocationStartDate?.ToString("dd-MMM-yyyy")},");
                     recordString.Append($"{dto.AllocationEndDate?.ToString("dd-MMM-yyyy")},");
                     recordString.Append($"{dto.ReportingManager}{Environment.NewLine}");
@@ -566,12 +803,16 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             return employeeModels;
         }
 
-        private void InitializePageData(int subPracticeID = -1, int employeeID = -1)
+        private void InitializePageData(int employeeID = -1)
         {
             ViewBag.IsNewEntry = true;
-            GetPracticeList();
+            ViewBag.Level1ListItems = new List<SelectListItem>();
+            ViewBag.Level2ListItems = new List<SelectListItem>();
+            ViewBag.Level3ListItems = new List<SelectListItem>();
+            ViewBag.Level4ListItems = new List<SelectListItem>();
+            ViewBag.Level5ListItems = new List<SelectListItem>();
+
             GetReportingManagersList(employeeID);
-            GetSubPractices(subPracticeID);
             GetOtherDropDownItems();
         }
 
@@ -641,34 +882,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             }
             ViewBag.GradeListItems = gradeListItems;
 
-        }
-
-        private void GetPracticeList()
-        {
-            List<PracticeDto> practices = practiceService.GetPractices().ToList();
-            List<SelectListItem> practiceItems = (from p in practices
-                                                  orderby p.PracticeName
-                                                  select new SelectListItem
-                                                  {
-                                                      Text = p.PracticeName,
-                                                      Value = p.PracticeID.ToString()
-                                                  }).ToList();
-            ViewBag.PracticeListItems = practiceItems;
-        }
-
-        private List<SelectListItem> GetSubPractices(int practiceID)
-        {
-            IEnumerable<SubPracticeDto> subPracticeList = subPracticeService.GetAllByPracticeID(practiceID);
-            List<SelectListItem> ddList = (from c in subPracticeList
-                                           orderby c.SubPracticeName
-                                           select new SelectListItem
-                                           {
-                                               Text = c.SubPracticeName,
-                                               Value = c.SubPracticeID.ToString()
-                                           }).ToList();
-
-            ViewBag.SubPracticeListItems = ddList;
-            return ddList;
+            ViewBag.EmptyListItems = new List<SelectListItem>();
         }
 
         private void GetReportingManagersList(int employeeID)

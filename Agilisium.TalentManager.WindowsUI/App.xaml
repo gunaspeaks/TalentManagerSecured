@@ -4,6 +4,358 @@
              xmlns:local="clr-namespace:Agilisium.TalentManager.WindowsUI"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" x:Key="ButtonBackgroundColor">
+            <GradientStop Color="#FF003163" Offset="0.02"/>
+            <GradientStop Color="#FF292727" Offset="0.976"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" x:Key="DefaultWindowBackground">
+            <GradientStop Color="#FF003163" Offset="0.02"/>
+            <GradientStop Color="#FF292727" Offset="0.976"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0" x:Key="WindowRedBackground">
+            <LinearGradientBrush.RelativeTransform>
+                <TransformGroup>
+                    <ScaleTransform ScaleY="1" ScaleX="1"/>
+                    <SkewTransform AngleY="0" AngleX="0"/>
+                    <RotateTransform Angle="0"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </LinearGradientBrush.RelativeTransform>
+            <GradientStop Color="Black" Offset="1"/>
+            <GradientStop Color="#FF871B3D"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" x:Key="WindowGreenBackground">
+            <GradientStop Color="Black" Offset="0"/>
+            <GradientStop Color="#FF35800A" Offset="1"/>
+            <GradientStop Color="#FF173804" Offset="0.335"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0" x:Key="WindowBlueBackground">
+            <LinearGradientBrush.RelativeTransform>
+                <TransformGroup>
+                    <ScaleTransform ScaleY="1" ScaleX="1"/>
+                    <SkewTransform AngleY="0" AngleX="0"/>
+                    <RotateTransform Angle="0"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </LinearGradientBrush.RelativeTransform>
+            <GradientStop Color="Black" Offset="1"/>
+            <GradientStop Color="#FF2042DC"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0" x:Key="WindowBlueRedBackground">
+            <LinearGradientBrush.RelativeTransform>
+                <TransformGroup>
+                    <ScaleTransform ScaleY="1" ScaleX="1"/>
+                    <SkewTransform AngleY="0" AngleX="0"/>
+                    <RotateTransform Angle="0"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </LinearGradientBrush.RelativeTransform>
+            <GradientStop Color="#FF1FA41F" Offset="0.561"/>
+            <GradientStop Color="#FFEA4259" Offset="0.043"/>
+            <GradientStop Color="#7F6E0A18" Offset="1"/>
+            <GradientStop Color="#83CF1528" Offset="0.983"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" x:Key="WindowBlackBackground">
+            <LinearGradientBrush.RelativeTransform>
+                <TransformGroup>
+                    <ScaleTransform ScaleY="1" ScaleX="1"/>
+                    <SkewTransform AngleY="0" AngleX="0"/>
+                    <RotateTransform Angle="0"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </LinearGradientBrush.RelativeTransform>
+            <GradientStop Color="Black" Offset="0"/>
+            <GradientStop Color="#FF898282" Offset="1"/>
+        </LinearGradientBrush>
+
+        <SolidColorBrush Color="AliceBlue" x:Key="ButtonForegroundColor" />
+
+        <Style  x:Key="MenuButtonNormalStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate   TargetType="Button">
+                        <Border BorderThickness="1" CornerRadius="15" x:Name="theMenuButtonBorder" HorizontalAlignment="Stretch" VerticalAlignment="Top" BorderBrush="#1683DB">
+                            <Border.Background>
+                                <RadialGradientBrush>
+                                    <GradientStop Color="#FF3B4B91" Offset="0.228"/>
+                                    <GradientStop Color="#FF30AAFE" Offset="1"/>
+                                </RadialGradientBrush>
+                            </Border.Background>
+                            <TextBlock x:Name="theButtonText" TextAlignment="Center" Margin="10,5,10,5" Foreground="White" >
+                                <ContentPresenter TextBlock.FontSize="14"/>
+                            </TextBlock>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="theButtonText" Property="Foreground" Value="#FF0080" />
+                                <Setter Property="Cursor" Value="Hand" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Margin" Value="20,5,15,0" />
+            <Setter Property="Foreground" Value="{StaticResource ButtonForegroundColor}" />
+        </Style>
+
+        <Style  x:Key="MenuButtonSelectedStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate   TargetType="Button">
+                        <Border BorderThickness="1" CornerRadius="15" x:Name="theMenuButtonBorder" HorizontalAlignment="Stretch" VerticalAlignment="Top" BorderBrush="#FF6233">
+                            <Border.Background>
+                                <RadialGradientBrush>
+                                    <GradientStop Color="#FFA62B41" Offset="0.716"/>
+                                    <GradientStop Color="#FFF53737" Offset="1"/>
+                                </RadialGradientBrush>
+                            </Border.Background>
+                            <TextBlock x:Name="theButtonText" TextAlignment="Center" Margin="10,5,10,5" Foreground="White" >
+                                <ContentPresenter TextBlock.FontSize="14"/>
+                            </TextBlock>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Margin" Value="20,5,15,0" />
+            <Setter Property="Foreground" Value="{StaticResource ButtonForegroundColor}" />
+        </Style>
+
+        <Style  x:Key="MenuButtonDisabledStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate   TargetType="Button">
+                        <Border BorderThickness="1" CornerRadius="15" x:Name="theMenuButtonBorder" HorizontalAlignment="Stretch" VerticalAlignment="Top" BorderBrush="#1683DB">
+                            <Border.Background>
+                                <RadialGradientBrush>
+                                    <GradientStop Color="#FF2E2E32" Offset="0.228"/>
+                                    <GradientStop Color="#FFD4E8F5" Offset="1"/>
+                                </RadialGradientBrush>
+                            </Border.Background>
+                            <TextBlock x:Name="theButtonText" TextAlignment="Center" Margin="10,5,10,5" Foreground="White" >
+                                <ContentPresenter TextBlock.FontSize="14"/>
+                            </TextBlock>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Margin" Value="20,5,15,0" />
+            <Setter Property="Foreground" Value="{StaticResource ButtonForegroundColor}" />
+        </Style>
+
+        <Style  x:Key="ToolbarButtonStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate   TargetType="Button">
+                        <Border BorderThickness="1" CornerRadius="15" x:Name="theMenuButtonBorder" VerticalAlignment="Center"  HorizontalAlignment="Stretch" BorderBrush="#1683DB">
+                            <Border.Background>
+                                <RadialGradientBrush>
+                                    <GradientStop Color="#FF3B4B91" Offset="0.228"/>
+                                    <GradientStop Color="#FF30AAFE" Offset="1"/>
+                                </RadialGradientBrush>
+                            </Border.Background>
+                            <TextBlock x:Name="theButtonText" TextAlignment="Center" Margin="5" Foreground="White" >
+                                <ContentPresenter TextBlock.FontSize="14"/>
+                            </TextBlock>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="theButtonText" Property="Foreground" Value="#FF0080" />
+                                <Setter Property="Cursor" Value="Hand" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Margin" Value="25,5,15,0" />
+        </Style>
+
+        <Style  x:Key="ToolbarButtonDisabledStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate   TargetType="Button">
+                        <Border BorderThickness="1" CornerRadius="15" x:Name="theMenuButtonBorder" HorizontalAlignment="Stretch" VerticalAlignment="Center" BorderBrush="#1683DB">
+                            <Border.Background>
+                                <RadialGradientBrush>
+                                    <GradientStop Color="#FF2E2E32" Offset="0.228"/>
+                                    <GradientStop Color="#FFD4E8F5" Offset="1"/>
+                                </RadialGradientBrush>
+                            </Border.Background>
+                            <TextBlock x:Name="theButtonText" TextAlignment="Center" Margin="5" Foreground="White" >
+                                <ContentPresenter TextBlock.FontSize="14"/>
+                            </TextBlock>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Margin" Value="25,5,15,0" />
+        </Style>
+
+        <Style x:Key="MainPageExpanderStype" TargetType="Expander">
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="BorderThickness" Value="0.5" />
+        </Style>
+
+        <Style  x:Key="HyperlinkButtonStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate   TargetType="Button">
+                        <TextBlock x:Name="theButtonText" TextAlignment="Center" Foreground="#1683DB" >
+                                <ContentPresenter TextBlock.FontWeight="Normal" TextBlock.FontSize="13"/>
+                        </TextBlock>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="theButtonText" Property="Foreground" Value="#FF0080" />
+                                <Setter Property="Cursor" Value="Hand" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TextErrorStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Validation.ErrorTemplate">
+                <Setter.Value>
+                    <ControlTemplate x:Name="TextErrorTemplate">
+                        <DockPanel LastChildFill="True">
+                            <AdornedElementPlaceholder>
+                                <Border BorderBrush="Red" BorderThickness="2"/>
+                            </AdornedElementPlaceholder>
+                            <TextBlock FontSize="20" Foreground="Red">*?*</TextBlock>
+                        </DockPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding RelativeSource={x:Static RelativeSource.Self},Path=(Validation.Errors)[0].ErrorContent}"></Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ComboErrorStyle" TargetType="{x:Type ComboBox}">
+            <Setter Property="Validation.ErrorTemplate">
+                <Setter.Value>
+                    <ControlTemplate x:Name="TextErrorTemplate">
+                        <DockPanel LastChildFill="True">
+                            <AdornedElementPlaceholder>
+                                <Border BorderBrush="Red" BorderThickness="2"/>
+                            </AdornedElementPlaceholder>
+                            <TextBlock FontSize="20" Foreground="Red">*?*</TextBlock>
+                        </DockPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding RelativeSource={x:Static RelativeSource.Self},Path=(Validation.Errors)[0].ErrorContent}"></Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="DataGridStyle" TargetType="DataGrid">
+            <Setter Property="SelectionMode" Value="Single" />
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="AutoGenerateColumns" Value="False" />
+            <Setter Property="CanUserAddRows" Value="False" />
+            <Setter Property="CanUserDeleteRows" Value="False" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="IsReadOnly" Value="True" />
+            <Setter Property="SelectionUnit" Value="FullRow" />
+        </Style>
+
+        <Style x:Key="DataGridCellStyle" TargetType="{x:Type DataGridCell}">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="BorderThickness" Value="0.3" />
+        </Style>
+
+        <Style x:Key="DataGridRowHeaderStyle" TargetType="{x:Type DataGridRowHeader}">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="SeparatorBrush" Value="White" />
+            <Setter Property="FontSize" Value="16" />
+        </Style>
+
+        <Style x:Key="DataGridRowStyle" TargetType="{x:Type DataGridRow}">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="BorderThickness" Value="0.5" />
+            <Setter Property="FontSize" Value="15" />
+        </Style>
+
+        <Style x:Key="DataGridColumnHeaderrStyle" TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Height" Value="35" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="16" />
+            <!--<Setter Property="Background" Value="Transparent" />-->
+            <Setter Property="Foreground" Value="YellowGreen" />
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="BorderThickness" Value="0.5" />
+            <Setter Property="Padding" Value="3,0" />
+            <Setter Property="SeparatorBrush" Value="White" />
+        </Style>
+
+        <Style x:Key="ExpanderWithDataGridStyle" TargetType="Expander">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="BorderThickness" Value="0.75" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+
+        <DataTemplate x:Key="titleText">
+            <Border Height="24">
+                <TextBlock Text="{Binding}" 
+                        Margin="4 0"
+                        VerticalAlignment="Center"
+                        Foreground="White"
+                        FontSize="15" 
+                        FontWeight="Bold"
+                        Width="{Binding
+                        RelativeSource={RelativeSource
+                        Mode=FindAncestor,
+                        AncestorType={x:Type Expander}},
+                        Path=ActualWidth}"
+                        TextWrapping="Wrap"/>
+            </Border>
+        </DataTemplate>
+
+        <Style TargetType="{x:Type Expander}">
+            <Setter Property="HeaderTemplate" Value="{StaticResource titleText}"/>
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="BorderThickness" Value="0.75" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+
+        <Style  x:Key="RoundButtonStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate   TargetType="Button">
+                        <Border BorderThickness="1" CornerRadius="200" x:Name="theMenuButtonBorder" VerticalAlignment="Center" HorizontalAlignment="Stretch" BorderBrush="#1683DB">
+                            <TextBlock x:Name="theButtonText" TextAlignment="Center" Margin="5" Foreground="White" >
+                                <ContentPresenter TextBlock.FontWeight="SemiBold" TextBlock.FontSize="14"/>
+                            </TextBlock>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
     </Application.Resources>
 </Application>

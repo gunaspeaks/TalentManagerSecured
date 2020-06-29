@@ -64,6 +64,8 @@
     <Compile Include="Configuration\VendorEntityConfiguration.cs" />
     <Compile Include="Entities\ReqReq\RecruitmentRequestStatus.cs" />
     <Compile Include="Entities\ReqReq\RecruitmentRequest.cs" />
+    <Compile Include="Entities\Settings\ResourceLevel.cs" />
+    <Compile Include="Entities\Settings\BuLevel.cs" />
     <Compile Include="Entities\TechSkill\EmployeeSkill.cs" />
     <Compile Include="Entities\TechSkill\TechSkillCategory.cs" />
     <Compile Include="Entities\Certification.cs" />

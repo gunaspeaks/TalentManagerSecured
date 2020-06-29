@@ -36,14 +36,6 @@ namespace Agilisium.TalentManager.Dto
 
         public string BusinessUnitName { get; set; }
 
-        public int PracticeID { get; set; }
-
-        public string PracticeName { get; set; }
-
-        public int? SubPracticeID { get; set; }
-
-        public string SubPracticeName { get; set; }
-
         public bool IsSowAvailable { get; set; }
 
         public DateTime? SowStartDate { get; set; }

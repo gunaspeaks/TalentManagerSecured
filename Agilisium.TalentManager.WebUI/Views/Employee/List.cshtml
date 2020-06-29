@@ -10,7 +10,7 @@
     <div class="panel-heading" style="text-align:center">
         <h3><b>Employees Master</b></h3>
         (@Html.ActionLink("Click here for Past Employees", "PastEmployeeList", "Employee"))
-        @if (User.IsInRole("Human Resource")|| User.IsInRole("Super Admin"))
+        @if (User.IsInRole("Human Resource") || User.IsInRole("Super Admin"))
         {
             <text>- (@Html.ActionLink("Download All Emplloyee Data", "DownloadAllEmployees", "Employee"))</text>
         }
@@ -27,17 +27,17 @@
                 <th class="text-left">
                     @Html.DisplayNameFor(model => model.Employees.FirstOrDefault().BusinessUnitName)
                 </th>
-                <th class="text-left">
-                    @Html.DisplayNameFor(model => model.Employees.FirstOrDefault().PracticeName)
-                </th>
-                <th class="text-left">
-                    @Html.DisplayNameFor(model => model.Employees.FirstOrDefault().SubPracticeName)
-                </th>
                 <th class="text-right">
                     @Html.DisplayNameFor(model => model.Employees.FirstOrDefault().DateOfJoin)
                 </th>
                 <th class="text-left">
                     @Html.DisplayNameFor(model => model.Employees.FirstOrDefault().PrimarySkills)
+                </th>
+                <th class="text-center">
+                    @Html.DisplayNameFor(model => model.Employees.FirstOrDefault().OverallExperience)
+                </th>
+                <th class="text-center">
+                    @Html.DisplayNameFor(model => model.Employees.FirstOrDefault().IsTechResource)
                 </th>
                 <th class="text-center">
                     @Html.DisplayNameFor(model => model.Employees.FirstOrDefault().Certifications)
@@ -50,49 +50,56 @@
 
             @foreach (var item in Model.Employees)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.EmployeeID)
-                    </td>
-                    <td>
-                        @if (User.IsInRole("Super Admin") || User.IsInRole("Human Resource") || User.IsInRole("Admin"))
-                        {
-                            @Html.ActionLink($"{item.FirstName} {item.LastName}", "Edit", new { id = item.EmployeeEntryID, page = Request.QueryString["page"] });
-                        }
-                        else
-                        {
-                            <label>@item.FirstName &nbsp; @item.LastName </label>
-                        }
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.BusinessUnitName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.PracticeName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.SubPracticeName)
-                    </td>
-                    <td class="text-right">
-                        <text>@item.DateOfJoin.ToString("dd/MMM/yyyy")</text>
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.PrimarySkills)
-                    </td>
-                    <td class="text-center">
-                        @Html.ActionLink(item.Certifications.ToString(), "Certifications", new { eid = item.EmployeeEntryID, page = Request.QueryString["page"] })
-                    </td>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EmployeeID)
+                </td>
+                <td>
                     @if (User.IsInRole("Super Admin") || User.IsInRole("Human Resource") || User.IsInRole("Admin"))
                     {
-                        <td class="text-center">
-                            @using (Html.BeginForm("Delete", "Employee"))
-                            {
-                                @Html.Hidden("id", item.EmployeeEntryID)
-                                <input type="submit" onclick="return confirm('Are you sure you about deleting this Employee?');" class="btn btn-default btn-xs" value="Delete" />
-                            }
-                        </td>
+                        @Html.ActionLink($"{item.FirstName} {item.LastName}", "Edit", new { id = item.EmployeeEntryID, page = Request.QueryString["page"] });
                     }
-                </tr>
+                    else
+                    {
+                        <label>@item.FirstName &nbsp; @item.LastName </label>
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BusinessUnitName)
+                </td>
+                <td class="text-right">
+                    <text>@item.DateOfJoin.ToString("dd/MMM/yyyy")</text>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PrimarySkills)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OverallExperience)
+                </td>
+                <td class="text-center">
+                    @if (item.IsTechResource.HasValue && item.IsTechResource.Value)
+                    {
+                        <text>Yes</text>
+                    }
+                    else
+                    {
+                        <text>No</text>
+                    }
+                </td>
+                <td class="text-center">
+                    @Html.ActionLink(item.Certifications.ToString(), "Certifications", new { eid = item.EmployeeEntryID, page = Request.QueryString["page"] })
+                </td>
+                @if (User.IsInRole("Super Admin") || User.IsInRole("Human Resource") || User.IsInRole("Admin"))
+                {
+                    <td class="text-center">
+                        @using (Html.BeginForm("Delete", "Employee"))
+                        {
+                            @Html.Hidden("id", item.EmployeeEntryID)
+                            <input type="submit" onclick="return confirm('Are you sure you about deleting this Employee?');" class="btn btn-default btn-xs" value="Delete" />
+                        }
+                    </td>
+                }
+            </tr>
             }
 
         </table>

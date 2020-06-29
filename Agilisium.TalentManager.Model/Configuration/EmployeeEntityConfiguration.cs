@@ -22,7 +22,6 @@ namespace Agilisium.TalentManager.Model.Configuration
             Property(e => e.SecondarySkills).IsOptional().HasMaxLength(100);
             Property(e => e.ReportingManagerID).IsOptional();
             Property(e => e.UtilizationTypeID).IsOptional();
-            Property(e => e.SubPracticeID).IsRequired();
             Property(e => e.EmploymentTypeID).IsRequired();
 
             ToTable("Employee");

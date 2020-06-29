@@ -41,26 +41,19 @@ namespace Agilisium.TalentManager.WebUI.Models
         public string ProjectTypeName { get; set; }
 
         [DisplayName("Start Date")]
-        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = false)]
+        [DisplayFormat(DataFormatString = "{0:mm/dd/yyyy}", ApplyFormatInEditMode = false)]
         [Required(ErrorMessage = "Project Start Date is required")]
         //[DataType(DataType.Date)]
         public DateTime StartDate { get; set; }
 
         [DisplayName("End Date")]
         [Required(ErrorMessage = "Project End Date is required")]
-        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = false)]
+        [DisplayFormat(DataFormatString = "{0:dd/mm/yyyy}", ApplyFormatInEditMode = false)]
         //[DataType(DataType.Date)]
         public DateTime EndDate { get; set; }
 
         [DataType(DataType.MultilineText)]
         public string Remarks { get; set; }
-
-        [DisplayName("POD")]
-        [Required(ErrorMessage = "Please select a POD")]
-        public int PracticeID { get; set; }
-
-        [DisplayName("POD")]
-        public string PracticeName { get; set; }
 
         [DisplayName("Business Unit")]
         [Required(ErrorMessage = "Please select a Business Unit")]
@@ -68,12 +61,6 @@ namespace Agilisium.TalentManager.WebUI.Models
 
         [DisplayName("Business Unit")]
         public string BusinessUnitName { get; set; }
-
-        [DisplayName("Competence")]
-        public int? SubPracticeID { get; set; }
-
-        [DisplayName("Competence")]
-        public string SubPracticeName { get; set; }
 
         [DisplayName("Is SoW Available")]
         public bool IsSowAvailable { get; set; }

@@ -107,39 +107,40 @@ namespace Agilisium.TalentManager.ServiceProcessors
 
         private string CreateFileAttachment(string appTempDirectory, int podID)
         {
-            logger.Info("Generate CSV file for the attachment");
-            string filePath = "";
-            StringBuilder recordString = new StringBuilder($"Employee ID,Employee Name,POD,Project Name{Environment.NewLine}");
-            try
-            {
-                logger.Info($"Retrieve employess for the POD ID {podID}");
-                IEnumerable<EmployeeDto> emps = empService.GetAllByPractice(podID);
-                string podName = "";
-                foreach (EmployeeDto emp in emps)
-                {
-                    recordString.Append($"{emp.EmployeeID},");
-                    recordString.Append($"{emp.FirstName} {emp.LastName},");
-                    podName = emp.PracticeName;
-                    recordString.Append($"{podName},");
-                    List<CustomAllocationDto> allocations = allocationService.GetAllocatedProjectsByEmployeeID(emp.EmployeeEntryID).ToList();
-                    string projectName = "";
-                    foreach (CustomAllocationDto prj in allocations)
-                    {
-                        projectName += projectName + prj.ProjectName;
-                    }
-                    recordString.Append($"{projectName}{Environment.NewLine}");
-                }
+            return null;
+            //logger.Info("Generate CSV file for the attachment");
+            //string filePath = "";
+            //StringBuilder recordString = new StringBuilder($"Employee ID,Employee Name,POD,Project Name{Environment.NewLine}");
+            //try
+            //{
+            //    logger.Info($"Retrieve employess for the POD ID {podID}");
+            //    IEnumerable<EmployeeDto> emps = empService.GetAllByPractice(podID);
+            //    string podName = "";
+            //    foreach (EmployeeDto emp in emps)
+            //    {
+            //        recordString.Append($"{emp.EmployeeID},");
+            //        recordString.Append($"{emp.FirstName} {emp.LastName},");
+            //        podName = emp.PracticeName;
+            //        recordString.Append($"{podName},");
+            //        List<CustomAllocationDto> allocations = allocationService.GetAllocatedProjectsByEmployeeID(emp.EmployeeEntryID).ToList();
+            //        string projectName = "";
+            //        foreach (CustomAllocationDto prj in allocations)
+            //        {
+            //            projectName += projectName + prj.ProjectName;
+            //        }
+            //        recordString.Append($"{projectName}{Environment.NewLine}");
+            //    }
 
-                logger.Info("create the file");
-                string fileName = $"EmployeesMappedUnder-{podName}-AsOn-{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}.csv";
-                filePath = FilesHandler.CreateFile(appTempDirectory, fileName, recordString.ToString());
-            }
-            catch (Exception exp)
-            {
-                logger.Error("Error while generating CSV file", exp);
-            }
+            //    logger.Info("create the file");
+            //    string fileName = $"EmployeesMappedUnder-{podName}-AsOn-{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}.csv";
+            //    filePath = FilesHandler.CreateFile(appTempDirectory, fileName, recordString.ToString());
+            //}
+            //catch (Exception exp)
+            //{
+            //    logger.Error("Error while generating CSV file", exp);
+            //}
 
-            return filePath;
+            //return filePath;
         }
     }
 }

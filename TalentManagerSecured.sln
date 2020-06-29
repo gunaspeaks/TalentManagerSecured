@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2046
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agilisium.TalentManager.WebUI", "Agilisium.TalentManager.WebUI\Agilisium.TalentManager.WebUI.csproj", "{AFF06B9B-3D49-4062-8537-9F8F1AE04F9E}"
 EndProject
@@ -42,6 +42,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agilisium.TalentManager.WebApi", "Agilisium.TalentManager.WebApi\Agilisium.TalentManager.WebApi.csproj", "{09DA5B78-D02F-49FF-916B-B336A0D17DFE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillSetDataUploader", "SkillSetDataUploader\SkillSetDataUploader.csproj", "{99F64502-C44A-4CC7-BAAD-32626A5569B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agilisium.TalentManager.WindowsUIUtilities", "WindowsUIUtilities\Agilisium.TalentManager.WindowsUIUtilities.csproj", "{1ECF7F3D-D295-44DF-8162-FDBE2794A00B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -121,6 +123,10 @@ Global
 		{99F64502-C44A-4CC7-BAAD-32626A5569B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99F64502-C44A-4CC7-BAAD-32626A5569B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99F64502-C44A-4CC7-BAAD-32626A5569B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1ECF7F3D-D295-44DF-8162-FDBE2794A00B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ECF7F3D-D295-44DF-8162-FDBE2794A00B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ECF7F3D-D295-44DF-8162-FDBE2794A00B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ECF7F3D-D295-44DF-8162-FDBE2794A00B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

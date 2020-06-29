@@ -64,7 +64,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                                                     IsReserved = p.IsReserved,
                                                     ManagerID = p.ManagerID,
                                                     ManagerName = ed.FirstName + " " + ed.LastName,
-                                                    HeadCount = DataContext.Employees.Count(h => h.PracticeID == p.PracticeID && h.IsDeleted == false && h.LastWorkingDay.HasValue == false)
+                                                    HeadCount = DataContext.Employees.Count(h => h.IsDeleted == false && h.LastWorkingDay.HasValue == false)
                                                 };
 
             if (pageSize <= 0 || pageNo < 1)
@@ -158,9 +158,8 @@ namespace Agilisium.TalentManager.Repository.Repositories
         public override bool CanBeDeleted(int id)
         {
             // are there any depending sub practices
-            if (DataContext.SubPractices.Any(c => c.IsDeleted == false && c.PracticeID == id)
-                || DataContext.Employees.Any(c => c.IsDeleted == false && c.PracticeID == id)
-                || DataContext.Projects.Any(c => c.IsDeleted == false && c.PracticeID == id))
+            if (DataContext.Employees.Any(c => c.IsDeleted == false)
+                || DataContext.Projects.Any(c => c.IsDeleted == false ))
             {
                 return false;
             }

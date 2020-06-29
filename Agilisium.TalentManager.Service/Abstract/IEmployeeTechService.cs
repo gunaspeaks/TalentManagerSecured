@@ -15,6 +15,8 @@ namespace Agilisium.TalentManager.Service.Abstract
 
         List<TechSkillDto> GetAllAvailableTechSkillsByCategory(int categoryID);
 
+        List<EmpAssetDetailDto> GetAll(int pageSize, int pageNo);
+
         EmpAssetDetailDto GetByID(int id);
 
         List<EmployeeSkillDto> GetAllEmployeeSkills(int employeeID);
@@ -38,5 +40,9 @@ namespace Agilisium.TalentManager.Service.Abstract
         void UpdateEmpSkill(EmployeeSkillDto skill);
 
         bool Exists(string itemName);
+
+        int TotalRecordsCount(string findBy);
+
+        List<EmpSkillSummaryDto> GetAllSkillSummary(string findBy, int pageSize = -1, int pageNo = -1);
     }
 }

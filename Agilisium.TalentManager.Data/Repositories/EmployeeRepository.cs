@@ -50,8 +50,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
             return (from emp in Entities
                     join bc in DataContext.DropDownSubCategories on emp.BusinessUnitID equals bc.SubCategoryID into bue
                     from bcd in bue.DefaultIfEmpty()
-                    join pc in DataContext.Practices on emp.PracticeID equals pc.PracticeID into pce
-                    from pcd in pce.DefaultIfEmpty()
                     join ut in DataContext.DropDownSubCategories on emp.UtilizationTypeID equals ut.SubCategoryID into ute
                     from utd in ute.DefaultIfEmpty()
                     join et in DataContext.DropDownSubCategories on emp.EmploymentTypeID equals et.SubCategoryID into ete
@@ -71,24 +69,29 @@ namespace Agilisium.TalentManager.Repository.Repositories
                         FirstName = emp.FirstName,
                         LastName = emp.LastName,
                         LastWorkingDay = emp.LastWorkingDay,
-                        PracticeID = emp.PracticeID,
                         PrimarySkills = emp.PrimarySkills,
                         ProjectManagerID = pmd.EmployeeEntryID,
                         ProjectManagerName = pmd.LastName + ", " + pmd.FirstName,
                         ReportingManagerID = emp.ReportingManagerID,
                         SecondarySkills = emp.SecondarySkills,
-                        SubPracticeID = emp.SubPracticeID,
                         UtilizationTypeID = emp.UtilizationTypeID,
                         EmploymentTypeID = emp.EmploymentTypeID,
                         EmploymentTypeName = etd.SubCategoryName,
                         PassportNo = emp.PassportNo,
                         PassportValidUpto = emp.PassportValidUpto,
                         TechnicalRank = emp.TechnicalRank,
-                        TotalExperience = emp.TotalExperience,
-                        TravelledCountries = emp.TravelledCountries,
+                        OverallExperience = emp.OverallExperience,
                         VisaCategoryID = emp.VisaCategoryID,
                         VisaValidUpto = emp.VisaValidUpto,
                         VisaCategory = vtd.SubCategoryName,
+                        Level1ID = emp.Level1ID,
+                        Level2ID = emp.Level2ID,
+                        Level3ID = emp.Level3ID,
+                        Level4ID = emp.Level4ID,
+                        Level5ID = emp.Level5ID,
+                        IsManager = emp.IsManager,
+                        StrengthAreaID = emp.StrengthAreaID,
+                        IsTechResource = emp.IsTechResource,
                     }).FirstOrDefault();
         }
 
@@ -143,11 +146,9 @@ namespace Agilisium.TalentManager.Repository.Repositories
                     EmployeeID = emp.EmployeeID,
                     FirstName = emp.FirstName,
                     LastName = emp.LastName,
-                    PracticeName = DataContext.Practices.FirstOrDefault(b => b.PracticeID == emp.PracticeID)?.PracticeName,
                     PrimarySkills = emp.PrimarySkills,
                     UtilizationTypeName = DataContext.DropDownSubCategories.FirstOrDefault(b => b.SubCategoryID == emp.UtilizationTypeID)?.SubCategoryName,
                     EmploymentTypeName = DataContext.DropDownSubCategories.FirstOrDefault(b => b.SubCategoryID == emp.EmploymentTypeID)?.SubCategoryName,
-                    SubPracticeName = DataContext.SubPractices.FirstOrDefault(b => b.SubPracticeID == emp.SubPracticeID)?.SubPracticeName,
                     LastWorkingDay = emp.LastWorkingDay,
                     ReportingManagerName = Entities.FirstOrDefault(e => e.ReportingManagerID == emp.ReportingManagerID)?.FirstName,
                 });
@@ -198,14 +199,59 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         public void Update(EmployeeDto entity)
         {
-            Employee buzEntity = Entities.FirstOrDefault(e => e.EmployeeEntryID == entity.EmployeeEntryID);
-            MigrateEntity(entity, buzEntity);
-            buzEntity.UpdateTimeStamp(entity.LoggedInUserName);
-            Entities.Add(buzEntity);
-            DataContext.Entry(buzEntity).State = EntityState.Modified;
-            DataContext.SaveChanges();
+            Employee oldEntity = Entities.FirstOrDefault(e => e.EmployeeEntryID == entity.EmployeeEntryID);
+            if (!CanEmployeeBeUpdated(entity, oldEntity)) return;
 
-            //UpdateEmployeeIDTracker(entity.EmploymentTypeID, entity.EmployeeID);
+            MigrateEntity(entity, oldEntity);
+            oldEntity.UpdateTimeStamp(entity.LoggedInUserName);
+            Entities.Add(oldEntity);
+            DataContext.Entry(oldEntity).State = EntityState.Modified;
+            DataContext.SaveChanges();
+        }
+
+        private bool CanEmployeeBeUpdated(EmployeeDto updatedEmp, Employee oldEmp)
+        {
+            if (updatedEmp == null || oldEmp == null) return true;
+
+            if (oldEmp.BusinessUnitID != updatedEmp.BusinessUnitID)
+            {
+                if (DataContext.ProjectAllocations.Any(a => a.IsDeleted == false && a.AllocationEndDate >= DateTime.Now
+                 && a.EmployeeID == oldEmp.EmployeeEntryID))
+                {
+                    string oldBuName = DataContext.DropDownSubCategories.FirstOrDefault(s => s.SubCategoryID == oldEmp.BusinessUnitID)?.SubCategoryName;
+                    throw new InvalidOperationException($"You can't change the Business Unit as there is an active alloaction under {oldBuName} BU");
+                }
+            }
+
+            if (oldEmp.BusinessUnitID == (int)BusinessUnit.Delivery)
+            {
+                if (oldEmp.Level1ID != updatedEmp.Level1ID)
+                {
+                    List<Project> projects = DataContext.Projects.Where(p => p.ProjectAccountID == oldEmp.Level1ID).ToList();
+                    string oldAccName = DataContext.ProjectAccounts.FirstOrDefault(a => a.AccountID == oldEmp.Level1ID)?.AccountName;
+                    foreach (Project prj in projects)
+                    {
+                        if (DataContext.ProjectAllocations.Any(a => a.IsDeleted == false && a.AllocationEndDate >= DateTime.Now
+                         && a.ProjectID == prj.ProjectID))
+                        {
+                            throw new InvalidOperationException($"You can't change the Account when there is an active allocation with the previous account {oldAccName}");
+                        }
+                    }
+                }
+
+                if (oldEmp.Level2ID != updatedEmp.Level2ID)
+                {
+                    Project project = DataContext.Projects.Where(p => p.ProjectAccountID == oldEmp.Level2ID).FirstOrDefault();
+                    if (DataContext.ProjectAllocations.Any(a => a.IsDeleted == false && a.AllocationEndDate >= DateTime.Now
+                     && a.ProjectID == project.ProjectID))
+                    {
+                        throw new InvalidOperationException($"You can't change the Project when there is an active allocation with the previous Project {project.ProjectName}");
+                    }
+                }
+
+            }
+
+            return true;
         }
 
         public void Delete(EmployeeDto entity)
@@ -227,8 +273,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
         public IEnumerable<EmployeeDto> GetAllManagers()
         {
             return (from emp in Entities
-                    join sp in DataContext.SubPractices on emp.SubPracticeID equals sp.SubPracticeID
-                    where emp.IsDeleted == false && sp.SubPracticeName == "Project Management"
+                    where emp.IsDeleted == false && emp.IsManager == true
                     && (emp.LastWorkingDay.HasValue == false || (emp.LastWorkingDay.HasValue == true && emp.LastWorkingDay.Value >= DateTime.Now))
                     orderby emp.EmployeeID
                     select new EmployeeDto
@@ -339,7 +384,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         public IEnumerable<EmployeeDto> GetAllByPractice(int practiceID, int pageSize = -1, int pageNo = -1)
         {
-            IEnumerable<EmployeeDto> employees = GetAllActiveEmployees("").Where(e => e.PracticeID == practiceID);
+            IEnumerable<EmployeeDto> employees = GetAllActiveEmployees("");
 
             if (pageSize <= 0 || pageNo < 1)
             {
@@ -351,8 +396,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         public IEnumerable<EmployeeDto> GetAllBySubPractice(int subPracticeID, int pageSize = -1, int pageNo = -1)
         {
-            IEnumerable<EmployeeDto> employees = GetAllActiveEmployees("")
-                                                .Where(e => e.SubPracticeID == subPracticeID);
+            IEnumerable<EmployeeDto> employees = GetAllActiveEmployees("");
 
             if (pageSize <= 0 || pageNo < 1)
             {
@@ -365,15 +409,13 @@ namespace Agilisium.TalentManager.Repository.Repositories
         public int PracticeWiseRecordsCount(int practiceID)
         {
             return Entities.Count(e => e.IsDeleted == false
-                && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now))
-                && e.PracticeID == practiceID);
+                && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now)));
         }
 
         public int SubPracticeWiseRecordsCount(int subPracticeID)
         {
             return Entities.Count(e => e.IsDeleted == false
-                && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now))
-                && e.SubPracticeID == subPracticeID);
+                && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now)));
         }
 
         public ResourceCountDto GetEmployeesCountSummary()
@@ -382,10 +424,8 @@ namespace Agilisium.TalentManager.Repository.Repositories
             {
 
                 TotalCount = (from e in Entities
-                              join p in DataContext.Practices on e.PracticeID equals p.PracticeID into po
-                              from pd in po.DefaultIfEmpty()
-                              where e.IsDeleted == false && pd.IsDeleted == false
-                                 && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue && e.LastWorkingDay.Value >= DateTime.Now))
+                              where e.IsDeleted == false
+              && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue && e.LastWorkingDay.Value >= DateTime.Now))
                               select e).Count(),
                 DeliveryCount = GetEmployeesCountByBU(BusinessUnit.Delivery),
                 BoCount = GetEmployeesCountByBU(BusinessUnit.BusinessOperations),
@@ -425,8 +465,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                 from e in Entities
                 join vc in DataContext.DropDownSubCategories on e.VisaCategoryID equals vc.SubCategoryID into vce
                 from vcd in vce.DefaultIfEmpty()
-                join pd in DataContext.Practices on e.PracticeID equals pd.PracticeID into pde
-                from pdd in pde.DefaultIfEmpty()
                 join al in DataContext.ProjectAllocations on e.EmployeeEntryID equals al.EmployeeID into ale
                 from ald in ale.DefaultIfEmpty()
                 join at in DataContext.DropDownSubCategories on ald.AllocationTypeID equals at.SubCategoryID into ate
@@ -443,11 +481,9 @@ namespace Agilisium.TalentManager.Repository.Repositories
                     EmployeeID = e.EmployeeID,
                     EmployeeEntryID = e.EmployeeEntryID,
                     EmployeeName = e.FirstName + " " + e.LastName,
-                    POD = pdd.PracticeName,
                     PrimarySkills = e.PrimarySkills,
                     ProjectName = prd.ProjectName,
                     SecondarySkills = e.SecondarySkills,
-                    TravelledCountries = e.TravelledCountries,
                     VisaCategory = vcd.SubCategoryName,
                     VisaValidity = e.VisaValidUpto
                 });
@@ -514,45 +550,31 @@ namespace Agilisium.TalentManager.Repository.Repositories
         public IEnumerable<EmpAndAllocationDto> GetAllEmployeesWithAllocationDetails()
         {
             List<EmpAndAllocationDto> emps = (from emp in Entities
-                                              join bc in DataContext.DropDownSubCategories on emp.BusinessUnitID equals bc.SubCategoryID into bue
-                                              from bcd in bue.DefaultIfEmpty()
-                                              join et in DataContext.DropDownSubCategories on emp.EmploymentTypeID equals et.SubCategoryID into ete
-                                              from etd in ete.DefaultIfEmpty()
                                               join rm in Entities on emp.ReportingManagerID equals rm.EmployeeEntryID into rme
                                               from rmd in rme.DefaultIfEmpty()
-                                              join sa in DataContext.DropDownSubCategories on emp.StrengthAreaID equals sa.SubCategoryID into sae
-                                              from sad in sae.DefaultIfEmpty()
-                                              join vc in DataContext.DropDownSubCategories on emp.VisaCategoryID equals vc.SubCategoryID into vce
-                                              from vcd in vce.DefaultIfEmpty()
-
                                               where emp.IsDeleted == false && emp.LastWorkingDay.HasValue == false
                                               || (emp.LastWorkingDay.HasValue == true && emp.LastWorkingDay.Value >= DateTime.Now)
                                               orderby emp.EmployeeID
                                               select new EmpAndAllocationDto
                                               {
                                                   EmployeeEntryID = emp.EmployeeEntryID,
-                                                  BusinessUnit = bcd.SubCategoryName,
                                                   EmployeeID = emp.EmployeeID,
                                                   EmployeeName = emp.FirstName + " " + emp.LastName,
-                                                  EmploymentType = etd.SubCategoryName,
-                                                  ReportingManager = rmd.FirstName + " " + rmd.LastName,
-                                                  AccountName = "",
-                                                  AllocationType = "",
-                                                  ProjectManager = "",
-                                                  ProjectName = "",
-                                                  ProjectType = "",
-                                                  TotalExperience = "",
-                                                  StrengthArea = sad.SubCategoryName,
-                                                  TechnicalRank = emp.TechnicalRank,
-                                                  VisaCategory = vcd.SubCategoryName,
+                                                  EmploymentType = DataContext.DropDownSubCategories.FirstOrDefault(s => s.SubCategoryID == emp.EmploymentTypeID).SubCategoryName,
+                                                  BusinessUnit = DataContext.DropDownSubCategories.FirstOrDefault(s => s.SubCategoryID == emp.BusinessUnitID).SubCategoryName,
+                                                  PrimarySkills = emp.PrimarySkills,
+                                                  VisaCategory = emp.VisaCategoryID.HasValue ? DataContext.DropDownSubCategories.FirstOrDefault(s => s.SubCategoryID == emp.VisaCategoryID).SubCategoryName : "",
                                                   VisaValidUpto = emp.VisaValidUpto,
+                                                  OveralExperience = emp.OverallExperience,
+                                                  ProjectManager = "",
+                                                  ReportingManager = rmd.FirstName + " " + rmd.LastName,
                                               }).Distinct().ToList();
+
             foreach (EmpAndAllocationDto emp in emps)
             {
                 EmpAssetDetail asset = DataContext.EmpAssetDetails.FirstOrDefault(ea => ea.EmployeeEntryID == emp.EmployeeEntryID);
-                emp.PrimarySkills = asset?.PrimarySkills;
-                emp.SecondarySkills = asset?.SecondarySkills;
-                emp.TotalExperience = asset?.OverallExperience;
+                emp.PrimarySkills = asset?.PrimarySkills+";"+asset?.SecondarySkills;
+                emp.OveralExperience = asset?.OverallExperience;
                 DateTime today = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
                 ProjectAllocation allocation = DataContext.ProjectAllocations.Where(pa => pa.EmployeeID == emp.EmployeeEntryID && pa.IsDeleted == false
                 && pa.AllocationEndDate >= today).OrderByDescending(al => al.AllocationEndDate).FirstOrDefault();
@@ -564,21 +586,13 @@ namespace Agilisium.TalentManager.Repository.Repositories
                     {
                         emp.ProjectName = project.ProjectName;
 
-                        ProjectAccount account = DataContext.ProjectAccounts.FirstOrDefault(e => e.AccountID == project.ProjectAccountID && e.IsDeleted == false);
-                        emp.AccountName = account?.AccountName;
-
-                        DropDownSubCategory prjType = DataContext.DropDownSubCategories.FirstOrDefault(s => s.IsDeleted == false && s.SubCategoryID == project.ProjectTypeID);
-                        emp.ProjectType = prjType?.SubCategoryName;
-
                         Employee pm = Entities.FirstOrDefault(e => e.EmployeeEntryID == project.ProjectManagerID);
                         emp.ProjectManager = $"{pm?.FirstName} {pm?.LastName}";
                     }
 
                     DropDownSubCategory allType = DataContext.DropDownSubCategories.FirstOrDefault(s => s.IsDeleted == false && s.SubCategoryID == allocation.AllocationTypeID);
-                    emp.AllocationType = allType?.SubCategoryName;
                     emp.AllocationStartDate = allocation.AllocationStartDate;
                     emp.AllocationEndDate = allocation.AllocationEndDate;
-
                 }
             }
             return emps;
@@ -624,14 +638,10 @@ namespace Agilisium.TalentManager.Repository.Repositories
             employees = from emp in Entities
                         join bc in DataContext.DropDownSubCategories on emp.BusinessUnitID equals bc.SubCategoryID into bue
                         from bcd in bue.DefaultIfEmpty()
-                        join pc in DataContext.Practices on emp.PracticeID equals pc.PracticeID into pce
-                        from pcd in pce.DefaultIfEmpty()
                         join ut in DataContext.DropDownSubCategories on emp.UtilizationTypeID equals ut.SubCategoryID into ute
                         from utd in ute.DefaultIfEmpty()
                         join et in DataContext.DropDownSubCategories on emp.EmploymentTypeID equals et.SubCategoryID into ete
                         from etd in ete.DefaultIfEmpty()
-                        join sp in DataContext.SubPractices on emp.SubPracticeID equals sp.SubPracticeID into spe
-                        from spd in spe.DefaultIfEmpty()
                         join rm in Entities on emp.ReportingManagerID equals rm.EmployeeEntryID into rme
                         from rmd in rme.DefaultIfEmpty()
 
@@ -646,15 +656,13 @@ namespace Agilisium.TalentManager.Repository.Repositories
                             EmployeeID = emp.EmployeeID,
                             FirstName = emp.FirstName,
                             LastName = emp.LastName,
-                            PracticeID = emp.PracticeID,
-                            PracticeName = pcd.PracticeName,
                             PrimarySkills = emp.PrimarySkills,
                             UtilizationTypeName = utd.SubCategoryName,
                             EmploymentTypeName = etd.SubCategoryName,
-                            SubPracticeID = emp.SubPracticeID,
-                            SubPracticeName = spd.SubPracticeName,
                             ReportingManagerName = rmd.FirstName + " " + rmd.LastName,
                             Certifications = DataContext.EmpCertifications.Count(ec => ec.IsDeleted == false && ec.EmployeeID == emp.EmployeeEntryID),
+                            IsTechResource = emp.IsTechResource,
+                            OverallExperience = emp.OverallExperience,
                         };
 
             if (string.IsNullOrEmpty(searchText) == false)
@@ -675,23 +683,27 @@ namespace Agilisium.TalentManager.Repository.Repositories
                 FirstName = employeeDto.FirstName,
                 LastName = employeeDto.LastName,
                 LastWorkingDay = employeeDto.LastWorkingDay,
-                PracticeID = employeeDto.PracticeID,
                 PrimarySkills = employeeDto.PrimarySkills,
                 ReportingManagerID = employeeDto.ReportingManagerID,
                 SecondarySkills = employeeDto.SecondarySkills,
-                SubPracticeID = employeeDto.SubPracticeID,
                 UtilizationTypeID = employeeDto.UtilizationTypeID,
                 EmployeeEntryID = employeeDto.EmployeeEntryID,
                 EmploymentTypeID = employeeDto.EmploymentTypeID,
                 PassportNo = employeeDto.PassportNo,
                 PassportValidUpto = employeeDto.PassportValidUpto,
                 TechnicalRank = employeeDto.TechnicalRank,
-                TotalExperience = employeeDto.TotalExperience,
-                TravelledCountries = employeeDto.TravelledCountries,
+                OverallExperience = employeeDto.OverallExperience,
                 VisaCategoryID = employeeDto.VisaCategoryID,
                 VisaValidUpto = employeeDto.VisaValidUpto,
                 IsDeleted = false,
                 StrengthAreaID = employeeDto.StrengthAreaID,
+                Level1ID = employeeDto.Level1ID,
+                Level2ID = employeeDto.Level2ID,
+                Level3ID = employeeDto.Level3ID,
+                Level4ID = employeeDto.Level4ID,
+                Level5ID = employeeDto.Level5ID,
+                IsManager = employeeDto.IsManager.HasValue ? employeeDto.IsManager : false,
+                IsTechResource = employeeDto.IsTechResource.HasValue ? employeeDto.IsTechResource : false,
             };
 
             employee.UpdateTimeStamp(employeeDto.LoggedInUserName, true);
@@ -707,22 +719,25 @@ namespace Agilisium.TalentManager.Repository.Repositories
             targetEntity.FirstName = sourceEntity.FirstName;
             targetEntity.LastName = sourceEntity.LastName;
             targetEntity.LastWorkingDay = sourceEntity.LastWorkingDay;
-            targetEntity.PracticeID = sourceEntity.PracticeID;
             targetEntity.PrimarySkills = sourceEntity.PrimarySkills;
             targetEntity.ReportingManagerID = sourceEntity.ReportingManagerID;
             targetEntity.SecondarySkills = sourceEntity.SecondarySkills;
-            targetEntity.SubPracticeID = sourceEntity.SubPracticeID;
             targetEntity.UtilizationTypeID = sourceEntity.UtilizationTypeID;
             targetEntity.EmployeeEntryID = sourceEntity.EmployeeEntryID;
             targetEntity.EmploymentTypeID = sourceEntity.EmploymentTypeID;
             targetEntity.PassportNo = sourceEntity.PassportNo;
             targetEntity.PassportValidUpto = sourceEntity.PassportValidUpto;
             targetEntity.TechnicalRank = sourceEntity.TechnicalRank;
-            targetEntity.TotalExperience = sourceEntity.TotalExperience;
-            targetEntity.TravelledCountries = sourceEntity.TravelledCountries;
+            targetEntity.OverallExperience = sourceEntity.OverallExperience;
             targetEntity.VisaCategoryID = sourceEntity.VisaCategoryID;
             targetEntity.VisaValidUpto = sourceEntity.VisaValidUpto;
-            targetEntity.StrengthAreaID = sourceEntity.StrengthAreaID;
+            targetEntity.Level1ID = sourceEntity.Level1ID;
+            targetEntity.Level2ID = sourceEntity.Level2ID;
+            targetEntity.Level3ID = sourceEntity.Level3ID;
+            targetEntity.Level4ID = sourceEntity.Level4ID;
+            targetEntity.Level5ID = sourceEntity.Level5ID;
+            targetEntity.IsManager = sourceEntity.IsManager.HasValue ? sourceEntity.IsManager : false;
+            targetEntity.IsTechResource = sourceEntity.IsTechResource.HasValue ? sourceEntity.IsTechResource : false;
 
             targetEntity.UpdateTimeStamp(sourceEntity.LoggedInUserName);
         }
@@ -742,9 +757,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
         private int GetEmployeesCountByBU(BusinessUnit bu)
         {
             return (from e in Entities
-                    join p in DataContext.Practices on e.PracticeID equals p.PracticeID into po
-                    from pd in po.DefaultIfEmpty()
-                    where e.IsDeleted == false && pd.IsDeleted == false
+                    where e.IsDeleted == false
                    && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now))
                    && e.BusinessUnitID == (int)bu
                     select e).Count();

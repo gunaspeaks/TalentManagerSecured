@@ -173,29 +173,29 @@ namespace Agilisium.TalentManager.ServiceProcessors
 
         private void MoveResourceToBenchProject(int employeeID)
         {
-            EmployeeDto emp = employeeRepo.GetByID(employeeID);
-            ProjectDto benchProject = projectRepo.GetBenchProjectByPractice(emp.PracticeID);
-            if (benchProject == null)
-            {
-                logger.Info($"Bench Project not found for Employee {emp.EmployeeID} under his POD {emp.PracticeID}");
-                //SendAllocationFailureNotification(allocation);
-                return;
-            }
+            //EmployeeDto emp = employeeRepo.GetByID(employeeID);
+            ////ProjectDto benchProject = projectRepo.GetBenchProjectByPractice(emp.PracticeID);
+            //if (benchProject == null)
+            //{
+            //    logger.Info($"Bench Project not found for Employee {emp.EmployeeID} under his POD {emp.PracticeID}");
+            //    //SendAllocationFailureNotification(allocation);
+            //    return;
+            //}
 
-            ProjectAllocationDto newAllocation = new ProjectAllocationDto
-            {
-                AllocationEndDate = benchProject.EndDate,
-                AllocationStartDate = DateTime.Now,
-                AllocationTypeID = (int)AllocationType.NonCommittedBuffer,
-                EmployeeID = employeeID,
-                PercentageOfAllocation = 100,
-                ProjectID = benchProject.ProjectID,
-                Remarks = "Automatically moved to Bench by RMT"
-            };
-            allocationRepo.Add(newAllocation);
-            logger.Info("New allocation has been created");
-            logger.Info("sending email alert");
-            SendNewAllocationNotification(benchProject, emp);
+            //ProjectAllocationDto newAllocation = new ProjectAllocationDto
+            //{
+            //    AllocationEndDate = benchProject.EndDate,
+            //    AllocationStartDate = DateTime.Now,
+            //    AllocationTypeID = (int)AllocationType.NonCommittedBuffer,
+            //    EmployeeID = employeeID,
+            //    PercentageOfAllocation = 100,
+            //    ProjectID = benchProject.ProjectID,
+            //    Remarks = "Automatically moved to Bench by RMT"
+            //};
+            //allocationRepo.Add(newAllocation);
+            //logger.Info("New allocation has been created");
+            //logger.Info("sending email alert");
+            //SendNewAllocationNotification(benchProject, emp);
         }
 
         private void SendAllocationFailureNotification(ProjectAllocationDto allocation)
@@ -240,8 +240,6 @@ namespace Agilisium.TalentManager.ServiceProcessors
         {
             EmployeeDto pm = employeeRepo.GetByID(benchProject.ProjectManagerID);
             EmployeeDto rm = employee.ReportingManagerID.HasValue ? employeeRepo.GetByID(employee.ReportingManagerID.Value) : null;
-            PracticeDto practice = practiceRepository.GetByID(benchProject.PracticeID);
-            EmployeeDto practiceMgr = practice.ManagerID.HasValue ? employeeRepo.GetByID(practice.ManagerID.Value) : null;
 
             StringBuilder toEmailID = new StringBuilder();
             if (!string.IsNullOrEmpty(pm?.EmailID))
@@ -262,11 +260,6 @@ namespace Agilisium.TalentManager.ServiceProcessors
             if (!string.IsNullOrEmpty(rm?.EmailID))
             {
                 bccEmailIDs.Append(rm.EmailID + ";");
-            }
-
-            if (!string.IsNullOrEmpty(practiceMgr?.EmailID))
-            {
-                bccEmailIDs.Append(practiceMgr.EmailID + ";");
             }
 
             bccEmailIDs.Append(dmEmailID);

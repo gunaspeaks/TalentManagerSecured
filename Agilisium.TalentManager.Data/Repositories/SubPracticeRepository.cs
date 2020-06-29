@@ -65,7 +65,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                                                        ShortName = c.ShortName,
                                                        ManagerID = c.ManagerID,
                                                        ManagerName = ed.FirstName + " " + ed.LastName,
-                                                       HeadCount = DataContext.Employees.Count(h => h.SubPracticeID == c.SubPracticeID)
+                                                       HeadCount = DataContext.Employees.Count(h => h.IsDeleted == false)
                                                    };
 
             if (pageSize <= 0 || pageNo < 1)
@@ -94,7 +94,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                                                        ShortName = c.ShortName,
                                                        ManagerID = c.ManagerID,
                                                        ManagerName = ed.FirstName + " " + ed.LastName,
-                                                       HeadCount = DataContext.Employees.Count(h => h.SubPracticeID == c.SubPracticeID)
+                                                       HeadCount = DataContext.Employees.Count(h => h.IsDeleted == false)
                                                    };
 
             if (pageSize <= 0 || pageNo < 1)
@@ -149,12 +149,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
         public override bool CanBeDeleted(int id)
         {
             // are there any depending employees
-            if (DataContext.Employees.Any(c => c.IsDeleted == false && c.SubPracticeID == id)
-                || DataContext.Projects.Any(c => c.IsDeleted == false && c.SubPracticeID == id))
-            {
-                return false;
-            }
-
             return true;
         }
 

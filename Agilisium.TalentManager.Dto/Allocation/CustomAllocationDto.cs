@@ -20,10 +20,6 @@ namespace Agilisium.TalentManager.Dto
 
         public string BusinessUnit { get; set; }
 
-        public string Practice { get; set; }
-
-        public string SubPractice { get; set; }
-
         public string DeliveryManager { get; set; }
     }
 }

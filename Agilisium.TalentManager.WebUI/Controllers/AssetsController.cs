@@ -21,11 +21,13 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             this.techService = techService;
         }
 
+        [HttpGet]
         public ActionResult Start()
         {
             return View();
         }
 
+        [HttpGet]
         public ActionResult Index(string eid = "")
         {
             EmpAssetDetailModel assetViewModel = new EmpAssetDetailModel();
@@ -48,6 +50,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Index(EmpAssetDetailModel model)
         {
             try
@@ -62,6 +65,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             return RedirectToAction("UpdateEmpSkills", new { eeid = model.EmployeeEntryID, eid = model.EmployeeID });
         }
 
+        [HttpGet]
         public ActionResult UpdateEmpSkills(int eeid, string eid = "")
         {
             EmpAssetDetailViewModel assetViewModel = new EmpAssetDetailViewModel();
@@ -82,6 +86,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             return View(assetViewModel);
         }
 
+        [HttpGet]
         public ActionResult AddEmpSkill(string sid, string eid, int eeid)
         {
             EmployeeSkillModel skillModel = new EmployeeSkillModel();
@@ -112,6 +117,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult AddEmpSkill(EmployeeSkillModel skillModel)
         {
             try
@@ -126,6 +132,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             return RedirectToAction("UpdateEmpSkills", new { eeid = skillModel.EmployeeEntryID, eid = skillModel.EmployeeID });
         }
 
+        [HttpGet]
         public ActionResult ModifyEmpSkill(int id, int eeid, string eid = "")
         {
             EmployeeSkillModel skillModel = new EmployeeSkillModel();
@@ -150,6 +157,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult ModifyEmpSkill(EmployeeSkillModel skillModel, string eid = "")
         {
             try
@@ -164,6 +172,8 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             return RedirectToAction("UpdateEmpSkills", new { eeid = skillModel.EmployeeEntryID, eid });
         }
 
+        [HttpDelete]
+        [ValidateAntiForgeryToken]
         public ActionResult RemoveEmpSkill(int sid, int eeid, string eid = "")
         {
             try
@@ -271,6 +281,6 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             return categoriesModel;
         }
 
-
+        
     }
 }

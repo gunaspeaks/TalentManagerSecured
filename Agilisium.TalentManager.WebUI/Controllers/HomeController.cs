@@ -43,7 +43,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                 ResourceCountDto dto = empService.GetEmployeesCountSummary();
                 model = Mapper.Map<ResourceCountDto, ResourceCountModel>(dto);
             }
-            catch (Exception) { }
+            catch (Exception exp) { }
             return PartialView(model);
         }
 

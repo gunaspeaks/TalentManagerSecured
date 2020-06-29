@@ -18,6 +18,11 @@ namespace Agilisium.TalentManager.Service.Concreate
             this.repository = repository;
         }
 
+        public List<EmpAssetDetailDto> GetAll(int pageSize,int pageNo)
+        {
+            return repository.GetAll(pageSize, pageNo).ToList();
+        }
+
         public EmpAssetDetailDto GetByID(int id)
         {
             return repository.GetByID(id);
@@ -91,6 +96,16 @@ namespace Agilisium.TalentManager.Service.Concreate
         public bool Exists(string itemName)
         {
             return repository.Exists(itemName);
+        }
+
+        public int TotalRecordsCount(string findBy)
+        {
+            return repository.TotalRecordsCount(findBy);
+        }
+
+        public List<EmpSkillSummaryDto> GetAllSkillSummary(string findBy, int pageSize = -1, int pageNo = -1)
+        {
+            return repository.GetAllSkillSummary(findBy, pageSize, pageNo).ToList();
         }
     }
 }

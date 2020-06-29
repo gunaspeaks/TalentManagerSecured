@@ -14,10 +14,6 @@ namespace Agilisium.TalentManager.Dto
 
         public string EmployeeName { get; set; }
 
-        public int PracticeID { get; set; }
-
-        public string PracticeName { get; set; }
-
         public int AgingDays { get; set; }
 
         public DateTime DateOfJoin { get; set; }

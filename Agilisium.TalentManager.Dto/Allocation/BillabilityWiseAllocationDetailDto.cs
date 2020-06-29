@@ -15,7 +15,6 @@ namespace Agilisium.TalentManager.Dto
             PrimarySkills = "";
             SecondarySkills = "";
             BusinessUnit = "";
-            POD = "";
             ProjectName = "";
         }
 
@@ -32,10 +31,6 @@ namespace Agilisium.TalentManager.Dto
         public int? BusinessUnitID { get; set; }
 
         public string BusinessUnit { get; set; }
-
-        public int? PracticeID { get; set; }
-
-        public string POD { get; set; }
 
         public string ProjectName { get; set; }
 
@@ -61,10 +56,14 @@ namespace Agilisium.TalentManager.Dto
 
         public string Comments { get; set; }
 
+        public string POD { get; set; }
+
         public int? ReportingManagerID { get; set; }
 
         public string ReportingManager { get; set; }
 
         public int AllocationEntryID { get; set; }
+
+        public int PracticeID { get; set; }
     }
 }

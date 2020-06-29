@@ -475,10 +475,10 @@ namespace Agilisium.TalentManager.Tools.DataUploader
                             EmploymentTypeID = employmentType.SubCategoryID,
                             FirstName = row["FirstName"].ToString(),
                             LastName = row["LastName"].ToString(),
-                            PracticeID = practiceDto.PracticeID,
+                            //PracticeID = practiceDto.PracticeID,
                             PrimarySkills = row["PrimarySkills"].ToString(),
                             SecondarySkills = row["SecondarySkills"].ToString(),
-                            SubPracticeID = subPracticeDto.SubPracticeID,
+                            //SubPracticeID = subPracticeDto.SubPracticeID,
                         };
 
                         if (string.IsNullOrWhiteSpace(row["LWD"].ToString()) == false)

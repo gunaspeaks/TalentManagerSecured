@@ -80,7 +80,6 @@ function loadEmployeeDetailsForAllocationEditPage() {
                 $("#employeeID").text(data["EmployeeID"]);
                 $("#employeeType").text(data["EmploymentTypeName"]);
                 $("#primarySkills").text(data["PrimarySkills"]);
-                $("#secondarySkills").text(data["SecondarySkills"]);
             },
             error: function () {
                 alert("Error has occured while loading project details");
@@ -232,6 +231,400 @@ function getSubPracticeManagerNameForEmployeePage() {
             }
         });
     }
+}
+
+function loadBuLevelDropDownListForEmpPage() {
+    if ($("#BusinessUnitID").val().length == 0) return;
+    $("#Level1ID").empty();
+    $("#Level1ID").append($("<option></option>").val(0).text("Please Select"));
+
+    $("#Level2ID").empty();
+    $("#Level2ID").append($("<option></option>").val(0).text("Please Select"));
+    $("#Level3ID").empty();
+    $("#Level3ID").append($("<option></option>").val(0).text("Please Select"));
+    $("#Level4ID").empty();
+    $("#Level4ID").append($("<option></option>").val(0).text("Please Select"));
+    $("#Level5ID").empty();
+    $("#Level5ID").append($("<option></option>").val(0).text("Please Select"));
+
+    $.ajax({
+        url: rootUrl + "BuLevel/GetBuLevelsByBuID",
+        type: "POST",
+        data: { buID: $("#BusinessUnitID").val() },
+        success: function (data) {
+
+            $.each(data, function () {
+                $("#Level1ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+
+                if ($("#BusinessUnitID").val() == 2) {
+                    $("#Level2ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                    $("#Level3ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                    $("#Level4ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                    $("#Level5ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                }
+            });
+        },
+        error: function () {
+            alert("Error has occured while loading the BU Levels for the selected BU");
+        }
+    });
+}
+
+function loadBuLevelDropDownListForEmpPageFromLevel2() {
+    if ($("#BusinessUnitID").val().length == 0) return;
+    $("#Level2ID").empty();
+    $("#Level2ID").append($("<option></option>").val(0).text("Please Select"));
+    $("#Level3ID").empty();
+    $("#Level3ID").append($("<option></option>").val(0).text("Please Select"));
+    $("#Level4ID").empty();
+    $("#Level4ID").append($("<option></option>").val(0).text("Please Select"));
+    $("#Level5ID").empty();
+    $("#Level5ID").append($("<option></option>").val(0).text("Please Select"));
+
+    $.ajax({
+        url: rootUrl + "BuLevel/GetBuLevelsByBuID",
+        type: "POST",
+        data: { buID: $("#BusinessUnitID").val() },
+        success: function (data) {
+
+            $.each(data, function () {
+                $("#Level2ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                $("#Level3ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                $("#Level4ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                $("#Level5ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+            });
+        },
+        error: function () {
+            alert("Error has occured while loading the BU Levels for the selected BU");
+        }
+    });
+}
+
+function loadResourceLevelDropDownListForEmpPage() {
+    if ($("#Level1ID").val().length == 0) return;
+
+
+    $.ajax({
+        url: rootUrl + "RLevel/GetResourceLevelsByBuID",
+        type: "POST",
+        data: { levelID: $("#Level1ID").val() },
+        success: function (data) {
+
+            $.each(data, function () {
+                $("#Level2ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+
+                if ($("#BusinessUnitID").val() == 1) {
+                    $("#Level3ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                    $("#Level4ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                    $("#Level5ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                }
+            });
+        },
+        error: function () {
+            alert("Error has occured while loading the Resource Levels for the selected BU Level");
+        }
+    });
+}
+
+function loadAccountsDropDownListForEmpPage() {
+    $("#Level1ID").empty();
+    $("#Level2ID").empty();
+    $("#Level2ID").append($("<option></option>").val(0).text("Please Select"));
+    $("#Level3ID").empty();
+    $("#Level3ID").append($("<option></option>").val(0).text("Please Select"));
+    $("#Level4ID").empty();
+    $("#Level4ID").append($("<option></option>").val(0).text("Please Select"));
+    $("#Level5ID").empty();
+    $("#Level5ID").append($("<option></option>").val(0).text("Please Select"));
+
+    $.ajax({
+        url: rootUrl + "Accounts/GetAccountsListItems",
+        type: "POST",
+        success: function (data) {
+
+            $.each(data, function () {
+                $("#Level1ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+            });
+        },
+        error: function () {
+            alert("Error has occured while loading the Accounts list");
+        }
+    });
+}
+
+function loadAccountsListForEmpPageWithRmgEarked() {
+    $("#Level3ID").empty();
+    $("#Level4ID").empty();
+    $("#Level4ID").append($("<option></option>").val(0).text("Please Select"));
+
+    $.ajax({
+        url: rootUrl + "Accounts/GetAccountsListItems",
+        type: "POST",
+        success: function (data) {
+
+            $.each(data, function () {
+                $("#Level3ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+            });
+        },
+        error: function () {
+            alert("Error has occured while loading the Accounts list");
+        }
+    });
+}
+
+function loadProjectsDropDownListForEmpPageWithRmgEarmarked() {
+    $("#Level4ID").empty();
+
+    $.ajax({
+        url: rootUrl + "Project/GetProjectsListItems",
+        data: { accountID: $("#Level3ID").val() },
+        type: "POST",
+        success: function (data) {
+
+            $.each(data, function () {
+                $("#Level4ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+            });
+        },
+        error: function () {
+            alert("Error has occured while loading the Accounts list");
+        }
+    });
+}
+
+function GetLevel5ListForEmpPageWithRmGEarmarked() {
+    $("#Level5ID").empty();
+
+    $.ajax({
+        url: rootUrl + "SubCategory/GetSubCategoriesByCategory",
+        data: { categoryID: 27 },
+        type: "POST",
+        success: function (data) {
+
+            $.each(data, function () {
+                $("#Level5ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+            });
+        },
+        error: function () {
+            alert("Error has occured while loading the Accounts list");
+        }
+    });
+}
+
+function GetBillableTypeListForEmpPage() {
+    $("#Level3ID").empty();
+    $("#Level4ID").empty();
+    $("#Level5ID").empty();
+
+    $.ajax({
+        url: rootUrl + "SubCategory/GetSubCategoriesByCategory",
+        data: { categoryID: 23 },
+        type: "POST",
+        success: function (data) {
+
+            $.each(data, function () {
+                $("#Level3ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                $("#Level4ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                $("#Level5ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+            });
+        },
+        error: function () {
+            alert("Error has occured while loading the Accounts list");
+        }
+    });
+}
+
+function GetBillableTypeListForLevel45InEmpPage() {
+    $("#Level4ID").empty();
+
+    $.ajax({
+        url: rootUrl + "SubCategory/GetSubCategoriesByCategory",
+        data: { categoryID: 23 },
+        type: "POST",
+        success: function (data) {
+
+            $.each(data, function () {
+                $("#Level4ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+            });
+        },
+        error: function () {
+            alert("Error has occured while loading the Accounts list");
+        }
+    });
+}
+
+function GetBillableTypeListForLevel5InEmpPage() {
+    $("#Level5ID").empty();
+
+    $.ajax({
+        url: rootUrl + "SubCategory/GetSubCategoriesByCategory",
+        data: { categoryID: 27 },
+        type: "POST",
+        success: function (data) {
+
+            $.each(data, function () {
+                $("#Level5ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+            });
+        },
+        error: function () {
+            alert("Error has occured while loading the Accounts list");
+        }
+    });
+}
+
+
+function GetBOLevel2ListForInEmpPageWithAdmin() {
+    $("#Level2ID").empty();
+    $("#Level3ID").empty();
+    $("#Level4ID").empty();
+    $("#Level5ID").empty();
+
+    $.ajax({
+        url: rootUrl + "SubCategory/GetSubCategoriesByCategory",
+        data: { categoryID: 29 },
+        type: "POST",
+        success: function (data) {
+
+            $.each(data, function () {
+                $("#Level2ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                $("#Level3ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                $("#Level4ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                $("#Level5ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+            });
+        },
+        error: function () {
+            alert("Error has occured while loading the Accounts list");
+        }
+    });
+}
+
+function GetBOLevel2ListForInEmpPageWithFinance() {
+    $("#Level2ID").empty();
+    $("#Level3ID").empty();
+    $("#Level4ID").empty();
+    $("#Level5ID").empty();
+
+    $.ajax({
+        url: rootUrl + "SubCategory/GetSubCategoriesByCategory",
+        data: { categoryID: 28 },
+        type: "POST",
+        success: function (data) {
+
+            $.each(data, function () {
+                $("#Level2ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                $("#Level3ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                $("#Level4ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                $("#Level5ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+            });
+        },
+        error: function () {
+            alert("Error has occured while loading the Accounts list");
+        }
+    });
+}
+
+function GetLevel4NonBillableListForEmpPage() {
+    $("#Level4ID").empty();
+
+    $.ajax({
+        url: rootUrl + "SubCategory/GetSubCategoriesByCategory",
+        data: { categoryID: 24 },
+        type: "POST",
+        success: function (data) {
+
+            $.each(data, function () {
+                $("#Level4ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+            });
+        },
+        error: function () {
+            alert("Error has occured while loading the Accounts list");
+        }
+    });
+}
+
+function GetLevel5NonBillableListForEmpPage() {
+    $("#Level5ID").empty();
+
+    $.ajax({
+        url: rootUrl + "SubCategory/GetSubCategoriesByCategory",
+        data: { categoryID: 25 },
+        type: "POST",
+        success: function (data) {
+
+            $.each(data, function () {
+                $("#Level5ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+            });
+        },
+        error: function () {
+            alert("Error has occured while loading the list");
+        }
+    });
+}
+
+function loadProjectsDropDownListForEmpPage() {
+    $("#Level2ID").empty();
+
+    $.ajax({
+        url: rootUrl + "Project/GetProjectsListItems",
+        data: { accountID: $("#Level1ID").val() },
+        type: "POST",
+        success: function (data) {
+
+            $.each(data, function () {
+                $("#Level2ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+            });
+        },
+        error: function () {
+            alert("Error has occured while loading the Accounts list");
+        }
+    });
+}
+
+function loadLevel2ListOnRmgGrowthBenchForEmpPage() {
+    $("#Level2ID").empty();
+    $("#Level3ID").empty();
+    $("#Level4ID").empty();
+    $("#Level5ID").empty();
+
+    $.ajax({
+        url: rootUrl + "SubCategory/GetSubCategoriesByCategory",
+        data: { categoryID: 26 },
+        type: "POST",
+        success: function (data) {
+
+            $.each(data, function () {
+                $("#Level2ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                $("#Level3ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                $("#Level4ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                $("#Level5ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+            });
+        },
+        error: function () {
+            alert("Error has occured while loading the Accounts list");
+        }
+    });
+}
+
+function loadLevel3ListOnRmgGrowthBenchForEmpPage() {
+    $("#Level3ID").empty();
+    $("#Level4ID").empty();
+    $("#Level5ID").empty();
+
+    $.ajax({
+        url: rootUrl + "SubCategory/GetSubCategoriesByCategory",
+        data: { categoryID: 26 },
+        type: "POST",
+        success: function (data) {
+
+            $.each(data, function () {
+                $("#Level3ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                $("#Level4ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                $("#Level5ID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+            });
+        },
+        error: function () {
+            alert("Error has occured while loading the Accounts list");
+        }
+    });
 }
 
 function loadPracticeDropDownListForEmpPage() {

@@ -29,7 +29,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             try
             {
                 model.CategoryListItems = GetCategoriesDropDownList();
-                if(model.CategoryListItems.Count()==0)
+                if (model.CategoryListItems.Count() == 0)
                 {
                     DisplayWarningMessage("There are no Categories configured yet. You will not be able to configure Sub-Categories");
                     return View(model);
@@ -90,7 +90,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         {
             try
             {
-                ViewBag.CategoryListItems =  GetCategoriesDropDownList();
+                ViewBag.CategoryListItems = GetCategoriesDropDownList();
             }
             catch (Exception exp)
             {
@@ -105,7 +105,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         {
             try
             {
-                ViewBag.CategoryListItems =  GetCategoriesDropDownList();
+                ViewBag.CategoryListItems = GetCategoriesDropDownList();
 
                 if (ModelState.IsValid)
                 {
@@ -148,7 +148,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                     return RedirectToAction("List");
                 }
 
-                ViewBag.CategoryListItems =  GetCategoriesDropDownList();
+                ViewBag.CategoryListItems = GetCategoriesDropDownList();
 
                 DropDownSubCategoryDto category = subCategoryService.GetSubCategory(id.Value);
                 uiCategory = Mapper.Map<DropDownSubCategoryDto, SubCategoryModel>(category);
@@ -226,6 +226,25 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             return RedirectToAction("List");
         }
 
+        public JsonResult GetSubCategoriesByCategory(int categoryID)
+        {
+            List<SubCategoryModel> categories = GetSubCategories(categoryID);
+            List<SelectListItem> filterValues = (from e in categories
+                                              orderby e.SubCategoryName
+                                              select new SelectListItem
+                                              {
+                                                  Text = e.SubCategoryName,
+                                                  Value = e.SubCategoryID.ToString()
+                                              }).ToList();
+
+            filterValues.Insert(0, new SelectListItem
+            {
+                Text = "Please Select",
+                Value = "0",
+            });
+            return Json(filterValues);
+        }
+
         private IEnumerable<SelectListItem> GetCategoriesDropDownList()
         {
             IEnumerable<DropDownCategoryDto> categories = categories = categoryService.GetCategories();
@@ -240,11 +259,11 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             return categoriesList;
         }
 
-        private IEnumerable<SubCategoryModel> GetSubCategories(int categoryID, int pageNo)
+        private List<SubCategoryModel> GetSubCategories(int categoryID, int pageNo = 0)
         {
             IEnumerable<DropDownSubCategoryDto> subCategories = subCategoryService.GetSubCategories(categoryID, RecordsPerPage, pageNo);
             IEnumerable<SubCategoryModel> uiCategories = Mapper.Map<IEnumerable<DropDownSubCategoryDto>, IEnumerable<SubCategoryModel>>(subCategories);
-            return uiCategories;
+            return uiCategories.ToList();
         }
     }
 }

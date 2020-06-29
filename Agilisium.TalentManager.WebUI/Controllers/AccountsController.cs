@@ -200,6 +200,33 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             return RedirectToAction("List");
         }
 
+        public JsonResult GetAccountsListItems()
+        {
+            List<SelectListItem> filterValues = GetAllAccountsList();
+
+            filterValues.Insert(0, new SelectListItem
+            {
+                Text = "Please Select",
+                Value = "0",
+            });
+            return Json(filterValues);
+        }
+
+        private List<SelectListItem> GetAllAccountsList()
+        {
+            List<ProjectAccountDto> accounts = accountsService.GetAll();
+
+            List<SelectListItem> accDDList = (from e in accounts
+                                              orderby e.AccountName
+                                              select new SelectListItem
+                                              {
+                                                  Text = e.AccountName,
+                                                  Value = e.AccountID.ToString()
+                                              }).ToList();
+
+            return accDDList;
+        }
+
         private IEnumerable<ProjectAccountModel> GetAllAccounts(int pageNo)
         {
             IEnumerable<ProjectAccountDto> accounts = accountsService.GetAll(RecordsPerPage, pageNo);

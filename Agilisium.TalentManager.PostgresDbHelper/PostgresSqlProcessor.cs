@@ -160,8 +160,6 @@ namespace Agilisium.TalentManager.PostgresDbHelper
                             EmployeeEntryID = res.IsDBNull(0) == false ? (int?)res.GetInt64(0) : nullInt,
                             EmployeeID = res.IsDBNull(1) == false ? res.GetString(1) : "",
                             EmployeeName = res.IsDBNull(2) == false ? res.GetString(2) : "",
-                            POD = res.IsDBNull(10) == false ? res.GetString(10) : "",
-                            PracticeID = res.IsDBNull(9) == false ? res.GetInt32(9) : nullInt,
                             PrimarySkills = res.IsDBNull(3) == false ? res.GetString(3) : "",
                             ProjectID = res.IsDBNull(13) == false ? (int?)res.GetInt64(13) : nullInt,
                             ProjectManager = res.IsDBNull(17) == false ? res.GetString(17) : "",

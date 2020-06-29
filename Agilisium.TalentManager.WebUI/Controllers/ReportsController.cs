@@ -161,7 +161,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
 
         public FileStreamResult DownloadAllocationDetails(string filterType, string filterValue)
         {
-            StringBuilder recordString = new StringBuilder($"Employee ID,Employee Name,Primary Skills,Secondary Skills,Business Unit,POD,Project Name,Account Name,Allocation Type,Allocation Start Date,Allocation End Date,Project Manager,Comments{Environment.NewLine}");
+            StringBuilder recordString = new StringBuilder($"Employee ID,Employee Name,Primary Skills,Secondary Skills,Business Unit,Project Name,Account Name,Allocation Type,Allocation Start Date,Allocation End Date,Project Manager,Comments{Environment.NewLine}");
             try
             {
                 List<BillabilityWiseAllocationDetailDto> detailsDtos = allocationService.GetBillabilityWiseAllocationDetail(filterType, filterValue);
@@ -172,7 +172,6 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                     recordString.Append($"{dto.PrimarySkills?.Replace(",", ";")},");
                     recordString.Append($"{dto.SecondarySkills?.Replace(",", ";")},");
                     recordString.Append($"{dto.BusinessUnit},");
-                    recordString.Append($"{dto.POD},");
                     recordString.Append($"{dto.ProjectName},");
                     recordString.Append($"{dto.AccountName},");
                     recordString.Append($"{dto.AllocationType},");
@@ -194,7 +193,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
 
         public FileStreamResult DownloadUtilizedDaysSummary(string filterType, string filterValue)
         {
-            StringBuilder recordString = new StringBuilder($"Employee ID,Employee Name,POD,Date of Join,Last Allocation End Date,Last Allocation Age In Days,Number Of Allocations{Environment.NewLine}");
+            StringBuilder recordString = new StringBuilder($"Employee ID,Employee Name,Date of Join,Last Allocation End Date,Last Allocation Age In Days,Number Of Allocations{Environment.NewLine}");
             try
             {
                 List<UtilizedDaysSummaryDto> summaryDtos = allocationService.GetUtilizedDaysSummary(filterType, filterValue);
@@ -202,7 +201,6 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                 {
                     recordString.Append($"{dto.EmployeeID},");
                     recordString.Append($"{dto.EmployeeName},");
-                    recordString.Append($"{dto.PracticeName},");
                     recordString.Append($"{dto.DateOfJoin.ToString("dd/MMM/yyyy")},");
                     recordString.Append($"{dto.LastAllocatedDate?.ToString("dd/MMM/yyyy")},");
                     recordString.Append($"{dto.AgingDays},");
@@ -316,7 +314,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
 
         public FileStreamResult DownloadBillableAllocations(DateTime? from, DateTime? upto)
         {
-            StringBuilder recordString = new StringBuilder($"Employee ID,Employee Name,Primary Skills,Secondary Skills,Business Unit,POD,Project Name,Account Name,Allocation Type,Allocation Start Date,Allocation End Date,Project Manager,Comments{Environment.NewLine}");
+            StringBuilder recordString = new StringBuilder($"Employee ID,Employee Name,Primary Skills,Secondary Skills,Business Unit,Project Name,Account Name,Allocation Type,Allocation Start Date,Allocation End Date,Project Manager,Comments{Environment.NewLine}");
             try
             {
                 List<BillabilityWiseAllocationDetailDto> detailsDtos = allocationService.GetAllocationsForDates(from.Value, upto.Value);
@@ -327,7 +325,6 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                     recordString.Append($"{dto.PrimarySkills?.Replace(",", ";")},");
                     recordString.Append($"{dto.SecondarySkills?.Replace(",", ";")},");
                     recordString.Append($"{dto.BusinessUnit},");
-                    recordString.Append($"{dto.POD},");
                     recordString.Append($"{dto.ProjectName},");
                     recordString.Append($"{dto.AccountName},");
                     recordString.Append($"{dto.AllocationType},");

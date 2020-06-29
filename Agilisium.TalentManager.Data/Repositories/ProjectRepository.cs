@@ -90,8 +90,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                                               from dmd in dme.DefaultIfEmpty()
                                               join pm in DataContext.Employees on p.ProjectManagerID equals pm.EmployeeEntryID into pme
                                               from pmd in pme.DefaultIfEmpty()
-                                              join pr in DataContext.Practices on p.PracticeID equals pr.PracticeID into pre
-                                              from prd in pre.DefaultIfEmpty()
                                               join pt in DataContext.DropDownSubCategories on p.ProjectTypeID equals pt.SubCategoryID into pte
                                               from ptd in pte.DefaultIfEmpty()
                                               join pa in DataContext.ProjectAccounts on p.ProjectAccountID equals pa.AccountID into pae
@@ -104,7 +102,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                                                   ProjectID = p.ProjectID,
                                                   DeliveryManagerName = string.IsNullOrEmpty(dmd.LastName) ? "" : (dmd.LastName + ", " + dmd.FirstName),
                                                   EndDate = p.EndDate,
-                                                  PracticeName = prd.PracticeName,
                                                   ProjectCode = p.ProjectCode,
                                                   ProjectName = p.ProjectName,
                                                   ProjectTypeName = ptd.SubCategoryName,
@@ -170,8 +167,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                                               from dmd in dme.DefaultIfEmpty()
                                               join pm in DataContext.Employees on p.ProjectManagerID equals pm.EmployeeEntryID into pme
                                               from pmd in pme.DefaultIfEmpty()
-                                              join pr in DataContext.Practices on p.PracticeID equals pr.PracticeID into pre
-                                              from prd in pre.DefaultIfEmpty()
                                               join pt in DataContext.DropDownSubCategories on p.ProjectTypeID equals pt.SubCategoryID into pte
                                               from ptd in pte.DefaultIfEmpty()
                                               join pa in DataContext.ProjectAccounts on p.ProjectAccountID equals pa.AccountID into pae
@@ -185,7 +180,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                                                   ProjectID = p.ProjectID,
                                                   DeliveryManagerName = string.IsNullOrEmpty(dmd.LastName) ? "" : (dmd.LastName + ", " + dmd.FirstName),
                                                   EndDate = p.EndDate,
-                                                  PracticeName = prd.PracticeName,
                                                   ProjectCode = p.ProjectCode,
                                                   ProjectName = p.ProjectName,
                                                   ProjectTypeName = ptd.SubCategoryName,
@@ -210,8 +204,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                                               from dmd in dme.DefaultIfEmpty()
                                               join pm in DataContext.Employees on p.ProjectManagerID equals pm.EmployeeEntryID into pme
                                               from pmd in pme.DefaultIfEmpty()
-                                              join pr in DataContext.Practices on p.PracticeID equals pr.PracticeID into pre
-                                              from prd in pre.DefaultIfEmpty()
                                               join pt in DataContext.DropDownSubCategories on p.ProjectTypeID equals pt.SubCategoryID into pte
                                               from ptd in pte.DefaultIfEmpty()
                                               join pa in DataContext.ProjectAccounts on p.ProjectAccountID equals pa.AccountID into pae
@@ -225,7 +217,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                                                   ProjectID = p.ProjectID,
                                                   DeliveryManagerName = string.IsNullOrEmpty(dmd.LastName) ? "" : (dmd.LastName + ", " + dmd.FirstName),
                                                   EndDate = p.EndDate,
-                                                  PracticeName = prd.PracticeName,
                                                   ProjectCode = p.ProjectCode,
                                                   ProjectName = p.ProjectName,
                                                   ProjectTypeName = ptd.SubCategoryName,
@@ -250,8 +241,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                                               from dmd in dme.DefaultIfEmpty()
                                               join pm in DataContext.Employees on p.ProjectManagerID equals pm.EmployeeEntryID into pme
                                               from pmd in pme.DefaultIfEmpty()
-                                              join pr in DataContext.Practices on p.PracticeID equals pr.PracticeID into pre
-                                              from prd in pre.DefaultIfEmpty()
                                               join pt in DataContext.DropDownSubCategories on p.ProjectTypeID equals pt.SubCategoryID into pte
                                               from ptd in pte.DefaultIfEmpty()
                                               join pa in DataContext.ProjectAccounts on p.ProjectAccountID equals pa.AccountID into pae
@@ -265,7 +254,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                                                   ProjectID = p.ProjectID,
                                                   DeliveryManagerName = string.IsNullOrEmpty(dmd.LastName) ? "" : (dmd.LastName + ", " + dmd.FirstName),
                                                   EndDate = p.EndDate,
-                                                  PracticeName = prd.PracticeName,
                                                   ProjectCode = p.ProjectCode,
                                                   ProjectName = p.ProjectName,
                                                   ProjectTypeName = ptd.SubCategoryName,
@@ -290,22 +278,18 @@ namespace Agilisium.TalentManager.Repository.Repositories
                                               from dmd in dme.DefaultIfEmpty()
                                               join pm in DataContext.Employees on p.ProjectManagerID equals pm.EmployeeEntryID into pme
                                               from pmd in pme.DefaultIfEmpty()
-                                              join pr in DataContext.Practices on p.PracticeID equals pr.PracticeID into pre
-                                              from prd in pre.DefaultIfEmpty()
                                               join pt in DataContext.DropDownSubCategories on p.ProjectTypeID equals pt.SubCategoryID into pte
                                               from ptd in pte.DefaultIfEmpty()
                                               join pa in DataContext.ProjectAccounts on p.ProjectAccountID equals pa.AccountID into pae
                                               from pad in pae.DefaultIfEmpty()
                                               join bs in DataContext.DropDownSubCategories on p.BusinessUnitID equals bs.SubCategoryID into bse
                                               from bsd in bse.DefaultIfEmpty()
-                                              where p.PracticeID == podID
                                               orderby p.ProjectCode
                                               select new ProjectDto
                                               {
                                                   ProjectID = p.ProjectID,
                                                   DeliveryManagerName = string.IsNullOrEmpty(dmd.LastName) ? "" : (dmd.LastName + ", " + dmd.FirstName),
                                                   EndDate = p.EndDate,
-                                                  PracticeName = prd.PracticeName,
                                                   ProjectCode = p.ProjectCode,
                                                   ProjectName = p.ProjectName,
                                                   ProjectTypeName = ptd.SubCategoryName,
@@ -330,8 +314,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                                               from dmd in dme.DefaultIfEmpty()
                                               join pm in DataContext.Employees on p.ProjectManagerID equals pm.EmployeeEntryID into pme
                                               from pmd in pme.DefaultIfEmpty()
-                                              join pr in DataContext.Practices on p.PracticeID equals pr.PracticeID into pre
-                                              from prd in pre.DefaultIfEmpty()
                                               join pt in DataContext.DropDownSubCategories on p.ProjectTypeID equals pt.SubCategoryID into pte
                                               from ptd in pte.DefaultIfEmpty()
                                               join pa in DataContext.ProjectAccounts on p.ProjectAccountID equals pa.AccountID into pae
@@ -345,7 +327,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                                                   ProjectID = p.ProjectID,
                                                   DeliveryManagerName = string.IsNullOrEmpty(dmd.LastName) ? "" : (dmd.LastName + ", " + dmd.FirstName),
                                                   EndDate = p.EndDate,
-                                                  PracticeName = prd.PracticeName,
                                                   ProjectCode = p.ProjectCode,
                                                   ProjectName = p.ProjectName,
                                                   ProjectTypeName = ptd.SubCategoryName,
@@ -359,8 +340,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                                                   BusinessUnitName = bsd.SubCategoryName,
                                                   IsReserved = p.IsReserved
                                               };
-            //if (pageSize < 0)
-            //{
             return projects;
             //}
             //return projects.Skip((pageNo - 1) * pageSize).Take(pageSize);
@@ -380,7 +359,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                         BusinessUnitID = p.BusinessUnitID,
                         DeliveryManagerID = p.DeliveryManagerID,
                         EndDate = p.EndDate,
-                        PracticeID = p.PracticeID,
                         ProjectCode = p.ProjectCode,
                         ProjectID = p.ProjectID,
                         ProjectManagerID = p.ProjectManagerID,
@@ -388,7 +366,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
                         ProjectName = p.ProjectName,
                         ProjectTypeID = p.ProjectTypeID,
                         ProjectTypeName = ptd.SubCategoryName,
-                        SubPracticeID = p.SubPracticeID,
                         Remarks = p.Remarks,
                         StartDate = p.StartDate,
                         IsSowAvailable = p.IsSowAvailable,
@@ -402,6 +379,15 @@ namespace Agilisium.TalentManager.Repository.Repositories
         public void Update(ProjectDto entity)
         {
             Project buzEntity = Entities.FirstOrDefault(p => p.ProjectID == entity.ProjectID);
+            if(buzEntity.EndDate.Year>entity.EndDate.Year&& buzEntity.EndDate.Month > entity.EndDate.Month&& buzEntity.EndDate.Day > entity.EndDate.Day)
+            {
+                if(DataContext.ProjectAllocations.Any(p=>p.IsDeleted==false&&p.ProjectID==entity.ProjectID
+                &&p.AllocationEndDate>=entity.EndDate))
+                {
+                    throw new InvalidOperationException($"You can't reduce the Project End Date as there are some allocations till {buzEntity.EndDate.Year}/{buzEntity.EndDate.Month}/{buzEntity.EndDate.Day}");
+                }
+            }
+
             MigrateEntity(entity, buzEntity);
             buzEntity.UpdateTimeStamp(entity.LoggedInUserName);
             Entities.Add(buzEntity);
@@ -441,19 +427,17 @@ namespace Agilisium.TalentManager.Repository.Repositories
         public ProjectDto GetBenchProjectByPractice(int practiceID)
         {
             return (from p in Entities
-                    where p.PracticeID == practiceID && p.IsDeleted == false && p.ProjectName.ToLower().Contains("bench")
+                    where p.IsDeleted == false && p.ProjectName.ToLower().Contains("bench")
                     select new ProjectDto
                     {
                         BusinessUnitID = p.BusinessUnitID,
                         DeliveryManagerID = p.DeliveryManagerID,
                         EndDate = p.EndDate,
-                        PracticeID = p.PracticeID,
                         ProjectCode = p.ProjectCode,
                         ProjectID = p.ProjectID,
                         ProjectManagerID = p.ProjectManagerID,
                         ProjectName = p.ProjectName,
                         ProjectTypeID = p.ProjectTypeID,
-                        SubPracticeID = p.SubPracticeID,
                         Remarks = p.Remarks,
                         StartDate = p.StartDate,
                         IsSowAvailable = p.IsSowAvailable,
@@ -478,14 +462,12 @@ namespace Agilisium.TalentManager.Repository.Repositories
                 BusinessUnitID = projectDto.BusinessUnitID,
                 DeliveryManagerID = projectDto.DeliveryManagerID,
                 EndDate = new DateTime(projectDto.EndDate.Year, projectDto.EndDate.Month, projectDto.EndDate.Day),
-                PracticeID = projectDto.PracticeID,
                 ProjectCode = projectDto.ProjectCode,
                 ProjectManagerID = projectDto.ProjectManagerID,
                 ProjectName = projectDto.ProjectName,
                 ProjectTypeID = projectDto.ProjectTypeID,
                 Remarks = projectDto.Remarks,
                 StartDate = new DateTime(projectDto.StartDate.Year, projectDto.StartDate.Month, projectDto.StartDate.Day),
-                SubPracticeID = projectDto.SubPracticeID,
                 ProjectID = projectDto.ProjectID,
                 IsSowAvailable = projectDto.IsSowAvailable,
                 SowEndDate = projectDto.SowEndDate,
@@ -503,14 +485,12 @@ namespace Agilisium.TalentManager.Repository.Repositories
             targetEntity.BusinessUnitID = sourceEntity.BusinessUnitID;
             targetEntity.DeliveryManagerID = sourceEntity.DeliveryManagerID;
             targetEntity.EndDate = new DateTime(sourceEntity.EndDate.Year, sourceEntity.EndDate.Month, sourceEntity.EndDate.Day);
-            targetEntity.PracticeID = sourceEntity.PracticeID;
             targetEntity.ProjectCode = sourceEntity.ProjectCode;
             targetEntity.ProjectManagerID = sourceEntity.ProjectManagerID;
             targetEntity.ProjectName = sourceEntity.ProjectName;
             targetEntity.ProjectTypeID = sourceEntity.ProjectTypeID;
             targetEntity.Remarks = sourceEntity.Remarks;
             targetEntity.StartDate = new DateTime(sourceEntity.StartDate.Year, sourceEntity.StartDate.Month, sourceEntity.StartDate.Day);
-            targetEntity.SubPracticeID = sourceEntity.SubPracticeID;
             targetEntity.IsSowAvailable = sourceEntity.IsSowAvailable;
             targetEntity.SowEndDate = sourceEntity.SowEndDate;
             if (sourceEntity.SowEndDate.HasValue)

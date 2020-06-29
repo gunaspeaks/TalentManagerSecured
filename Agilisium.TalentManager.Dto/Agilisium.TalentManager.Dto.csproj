@@ -58,6 +58,8 @@
     <Compile Include="Employee\EmployeeLoginMappingDto.cs" />
     <Compile Include="ReqReq\RecruitmentRequestDto.cs" />
     <Compile Include="ReqReq\RecruitmentRequestStatusDto.cs" />
+    <Compile Include="Settings\ResourceLevelDto.cs" />
+    <Compile Include="Settings\BuLevelDto.cs" />
     <Compile Include="TechSkill\EmpAssetDetailDto.cs" />
     <Compile Include="TechSkill\EmployeeSkillDto.cs" />
     <Compile Include="Employee\EmployeeVisaDto.cs" />
@@ -77,6 +79,7 @@
     <Compile Include="SubPracticeDto.cs" />
     <Compile Include="SubPracticeHeadCountDto.cs" />
     <Compile Include="SystemSettingDto.cs" />
+    <Compile Include="TechSkill\EmpSkillSummaryDto.cs" />
     <Compile Include="TechSkill\TechSkillCategoryDto.cs" />
     <Compile Include="UserRoleDto.cs" />
     <Compile Include="UtilizedDaysDetailDto.cs" />

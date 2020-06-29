@@ -22,14 +22,6 @@ namespace Agilisium.TalentManager.Dto
 
         public string BusinessUnitName { get; set; }
 
-        public int PracticeID { get; set; }
-
-        public string PracticeName { get; set; }
-
-        public int SubPracticeID { get; set; }
-
-        public string SubPracticeName { get; set; }
-
         public DateTime DateOfJoin { get; set; }
 
         public DateTime? LastWorkingDay { get; set; }
@@ -62,7 +54,7 @@ namespace Agilisium.TalentManager.Dto
 
         public int? TechnicalRank { get; set; }
 
-        public float? TotalExperience { get; set; }
+        public string OverallExperience { get; set; }
 
         public string PassportNo { get; set; }
 
@@ -75,5 +67,29 @@ namespace Agilisium.TalentManager.Dto
         public int? StrengthAreaID { get; set; }
 
         public string StrengthArea { get; set; }
+
+        public bool? IsTechResource { get; set; }
+
+        public int? Level1ID { get; set; }
+
+        public int? Level2ID { get; set; }
+
+        public int? Level3ID { get; set; }
+
+        public int? Level4ID { get; set; }
+
+        public int? Level5ID { get; set; }
+
+        public string Level1 { get; set; }
+
+        public string Level2 { get; set; }
+
+        public string Level3 { get; set; }
+
+        public string Level4 { get; set; }
+
+        public string Level5 { get; set; }
+
+        public bool? IsManager { get; set; }
     }
 }

@@ -1,0 +1,49 @@
+﻿@model Agilisium.TalentManager.WebUI.Models.ResourceLevelModel
+
+@{
+    Layout = "~/Views/Shared/_SettingsLayout.cshtml";
+    ViewBag.Title = "Update Resource Level Item";
+}
+<link href="~/Content/error-styles.css" rel="stylesheet" />
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3><b>Update Resource Level Item</b></h3>
+    </div>
+
+    @using (Html.BeginForm())
+    {
+        <div class="panel-body">
+            @Html.HiddenFor(model => model.ItemEntryID)
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(false, "Please correct the below Validation Errors to save the data")
+
+            <div>
+                <table style="width:80%;">
+                    <tr>
+                        <td>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ParentLevelID)
+                                @Html.DropDownListFor(model => model.ParentLevelID, (IEnumerable<SelectListItem>)ViewBag.BuLevelListItems, "Please Select", new { @class = "form-control" })
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ItemName)
+                                @Html.EditorFor(model => model.ItemName, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="panel-footer">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                @Html.ActionLink("Cancel and Go Back", "List", null, new { @class = "btn btn-default" })
+            </div>
+        </div>
+    }
+</div>
+

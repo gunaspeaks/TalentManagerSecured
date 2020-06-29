@@ -6,7 +6,222 @@
         xmlns:local="clr-namespace:Agilisium.TalentManager.WindowsUI"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+    <ScrollViewer HorizontalAlignment="Stretch" CanContentScroll="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" VerticalAlignment="Stretch">
+        <Grid Name="grdMain">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="25"/>
+            </Grid.RowDefinitions>
+            <DockPanel FlowDirection="LeftToRight" HorizontalAlignment="Stretch" Grid.Row="0" Name="toolbarPanel" >
+                <Border BorderBrush="White"  Name="brdToolBar" BorderThickness="0,0,0,1"  >
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="250" />
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <!--<Image HorizontalAlignment="Left" RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Stretch" Source="Resources/Images/Cognizant.png" />-->
+
+                        <StackPanel Orientation="Horizontal">
+                            <Image HorizontalAlignment="Left" RenderOptions.BitmapScalingMode="HighQuality" Margin="5,5,0,5" Source="Resources/Images/cts_logo.png" />
+                            <!--<Border BorderBrush="White" BorderThickness="4" CornerRadius="65" Height="48" Width="50">
+                                <TextBlock Text="C" FontSize="60" Name="txbC" HorizontalAlignment="Center" FontWeight="Bold" VerticalAlignment="Bottom" FontFamily="BrowalliaUPC"  Foreground="#FF4CB3CF" Margin="6.865,-16.485" />
+                            </Border>
+                            <TextBlock Text="Cognizant" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Nirmala UI" RenderTransformOrigin="0.5,0.5" Margin="15.603,-23.289,15.603,-21.289" Foreground="White" />-->
+                        </StackPanel>
+
+                        <Button Name="btnNew" Content="New"  ToolTip="Add New Item" Grid.Column="1" IsEnabled="False" Style="{StaticResource ToolbarButtonDisabledStyle}"  Click="AddNewButtonClick" />
+
+                        <Button Name="btnUpdate" Content="Modify" ToolTip="Modify" Grid.Column="2" HorizontalAlignment="Stretch"  IsEnabled="False" Style="{StaticResource ToolbarButtonDisabledStyle}" Click="UpdateButtonClick" />
+
+                        <Button Name="btnSave" Content="Save" ToolTip="Save" Grid.Column="3"  IsEnabled="False" Style="{StaticResource ToolbarButtonDisabledStyle}" Click="SaveButtonClick"  />
+
+                        <Button Name="btnCancel" Content="Cancel" IsCancel="True" ToolTip="Cancel" Grid.Column="4"  IsEnabled="False" Style="{StaticResource ToolbarButtonDisabledStyle}" Click="CancelButtonClick" />
+
+                        <Button Name="btnDelete" Content="Delete" ToolTip="Delete" Grid.Column="5" IsEnabled="False"   Style="{StaticResource ToolbarButtonDisabledStyle}" Click="DeleteButtonClick" />
+
+                        <Button Name="btnRefresh" Content="Refresh"  ToolTip="Refresh" Grid.Column="6" HorizontalAlignment="Stretch"   Style="{StaticResource ToolbarButtonStyle}" Click="RefreshButtonClick" />
+
+                        <Button Name="btnExport" Content="Export"  ToolTip="Export Data" IsEnabled="False" Grid.Column="7" HorizontalAlignment="Stretch"  Style="{StaticResource ToolbarButtonDisabledStyle}" Click="ExportButtonClick" />
+
+                        <Button Name="btnDynamic" Content="Restore"  ToolTip="Dynamic" Grid.Column="8" HorizontalAlignment="Stretch"  Style="{StaticResource ToolbarButtonStyle}" Visibility="Hidden" Click="DynamicButtonClick" />
+
+                        <StackPanel HorizontalAlignment="Right" Grid.Column="9">
+                            <!--<ComboBox FontSize="14" Name="cmbUaId" VerticalAlignment="Center" HorizontalAlignment="Right" Width="150" Margin="10,10" SelectionChanged="cmbUaId_SelectionChanged" />-->
+                            <TextBlock Name="txbUserName" VerticalAlignment="Center" FontSize="13" Margin="10,5" FontWeight="SemiBold" Foreground="White" HorizontalAlignment="Right" />
+                        </StackPanel>
+
+                    </Grid>
+                </Border>
+            </DockPanel>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Expander Style="{StaticResource ExpanderWithDataGridStyle}" ExpandDirection="Right" IsExpanded="True" Name="expMainMenuExpander">
+                    <StackPanel>
+                        <Expander Style="{StaticResource ExpanderWithDataGridStyle}" Header="Onboarding" Name="expOnboarding" Margin="5" >
+                            <Expander.ToolTip>
+                                <StackPanel Background="Black">
+                                    <!--<TextBlock Text="Onboarding Requests" Background="Black" Foreground="White" Margin="5" />-->
+                                    <TextBlock Text="Onboarded Applications" Background="Black" Foreground="White" Margin="5" />
+                                    <!--<TextBlock Text="CAST Admin Owner" Background="Black" Foreground="White" Margin="5" />-->
+                                    <TextBlock Text="CAST Analysis History" Background="Black" Foreground="White" Margin="5" />
+                                </StackPanel>
+                            </Expander.ToolTip>
+                            <StackPanel Margin="5">
+                                <!--<Button Name="btnManageRequests" Click="MenuButtonClickEventHandler" Style="{StaticResource MenuButtonNormalStyle}"  Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Foreground="{StaticResource ButtonForegroundColor}" Content="Onboarding Requests" Height="35" VerticalAlignment="Center" />-->
+                                <Button Name="btnManageApplication" Click="MenuButtonClickEventHandler" Style="{StaticResource MenuButtonNormalStyle}"  Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Foreground="{StaticResource ButtonForegroundColor}" Content="Onboarded Applications" Height="35" VerticalAlignment="Center" />
+                                <!--<Button Name="btnApplicationOwner" Click="MenuButtonClickEventHandler" Style="{StaticResource MenuButtonNormalStyle}"  Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Foreground="{StaticResource ButtonForegroundColor}" Content="CAST Admin Owner" Height="35" VerticalAlignment="Center" />-->
+                                <Button  Name="btnAnalysisHistory" Click="MenuButtonClickEventHandler" Style="{StaticResource MenuButtonNormalStyle}"  Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Foreground="{StaticResource ButtonForegroundColor}" Content="CAST Analysis History" Height="35" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Expander>
+
+                        <Expander Header="Pre-Analysis" Style="{StaticResource ExpanderWithDataGridStyle}" Name="expPreAnalysis" Margin="5">
+                            <Expander.ToolTip>
+                                <StackPanel Background="Black">
+                                    <TextBlock Text="Create Schema" Background="Black" Foreground="White" Margin="5" />
+                                    <TextBlock Text="Analyze Source Files" Background="Black" Foreground="White" Margin="5" />
+                                    <TextBlock Text="Compare Source Versions" Background="Black" Foreground="White" Margin="5" />
+                                    <TextBlock Text="Extract Table Size Data" Background="Black" Foreground="White" Margin="5" />
+                                </StackPanel>
+                            </Expander.ToolTip>
+                            <StackPanel Margin="5">
+                                <Button Name="btnCreateSchema" Click="MenuButtonClickEventHandler" Content="Create Triplet Schemas"  Style="{StaticResource MenuButtonNormalStyle}"  Height="35" Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Foreground="{StaticResource ButtonForegroundColor}"  />
+                                <Button Name="btnAnalyzeSourceCode" Click="MenuButtonClickEventHandler" Content="Analyze Source Files"  Style="{StaticResource MenuButtonNormalStyle}"  Height="35" Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Foreground="{StaticResource ButtonForegroundColor}"  />
+                                <Button Name="btnCompareSourceCode" Click="MenuButtonClickEventHandler" Content="Compare Source Versions"  Style="{StaticResource MenuButtonNormalStyle}"  Height="35" Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Foreground="{StaticResource ButtonForegroundColor}"  />
+                            </StackPanel>
+                        </Expander>
+
+                        <Expander Header="Mini Tools"  Style="{StaticResource ExpanderWithDataGridStyle}"  FontSize="15" Name="expMiniTools" Margin="5">
+                            <Expander.ToolTip>
+                                <StackPanel Background="Black">
+                                    <TextBlock Text="SQL to CAST Delivery Format Converter" Background="White" Margin="5" />
+                                    <!--  <TextBlock Text="Table Size Data Reader - Sql Server" Background="Black" Foreground="White" Margin="5" />
+                                    <TextBlock Text="Dynamic Link Manager Helper" Background="Black" Foreground="White" Margin="5" />
+                                    <TextBlock Text="C/C++ Header Files Finder" Background="Black" Foreground="White" Margin="5" />
+                                    <TextBlock Text="Db Objects Reader - Oracle" Background="Black" Foreground="White" Margin="5" />
+                                    <TextBlock Text="Db Objects Reader - Sql Server" Background="Black" Foreground="White" Margin="5" />
+                                    <TextBlock Text="Extensions Identifier" Background="Black" Foreground="White" Margin="5" />
+                                    -->
+                                </StackPanel>
+                            </Expander.ToolTip>
+                            <StackPanel Margin="5">
+                                <Button Name="btnSqlTCastFormatConverter" Content="SQL to CAST Delivery Format Converter" Style="{StaticResource MenuButtonNormalStyle}" Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Click="MenuButtonClickEventHandler"  Height="35" Foreground="{StaticResource ButtonForegroundColor}" />
+                                <!--<Button Name="btnTableSizeReaderSqlSrv" Content="Table Size Data Reader - Sql Server" Style="{StaticResource MenuButtonNormalStyle}" Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Click="MenuButtonClickEventHandler"  Height="35" Foreground="{StaticResource ButtonForegroundColor}" />
+                                <Button Name="btnDlmHelper" Content="Dynamic Link Manager Helper" Style="{StaticResource MenuButtonNormalStyle}" Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Click="MenuButtonClickEventHandler"  Height="35" Foreground="{StaticResource ButtonForegroundColor}" />
+                                <Button Name="btnCppHeaderFilesFinder" Content="C/C++ Header Files Finder" Style="{StaticResource MenuButtonNormalStyle}" Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Click="MenuButtonClickEventHandler"  Height="35" Foreground="{StaticResource ButtonForegroundColor}" />
+                                <Button Name="btnDbObjectsReaderOracle" Content="Db Objects Reader - Oracle" Style="{StaticResource MenuButtonNormalStyle}" Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Click="MenuButtonClickEventHandler"  Height="35" Foreground="{StaticResource ButtonForegroundColor}" />
+                                <Button Name="btnDbObjectsReaderSqlSrv" Content="Db Objects Reader - Sql Server" Style="{StaticResource MenuButtonNormalStyle}" Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Click="MenuButtonClickEventHandler"  Height="35" Foreground="{StaticResource ButtonForegroundColor}" />
+                                <Button Name="btnExtensionsIdentifier" Content="Extensions Identifier" Style="{StaticResource MenuButtonNormalStyle}" Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Click="MenuButtonClickEventHandler"  Height="35" Foreground="{StaticResource ButtonForegroundColor}" />
+                                -->
+                            </StackPanel>
+                        </Expander>
+
+                        <Expander Header="Post-Analysis" Name="expPostAnalysis"  Style="{StaticResource ExpanderWithDataGridStyle}"  Margin="5">
+                            <Expander.ToolTip>
+                                <StackPanel Background="Black">
+                                    <TextBlock Text="Manage Application Docs" Background="Black" Foreground="White" Margin="5" />
+                                    <TextBlock Text="Verify Analysis Results" Background="Black" Foreground="White" Margin="5" />
+                                    <TextBlock Text="Backup Application" Background="Black" Foreground="White" Margin="5" />
+                                    <TextBlock Text="Backup Schema(s) - On Server" Background="Black" Foreground="White" Margin="5" />
+                                    <TextBlock Text="Backup Schema(s) - On Local" Background="Black" Foreground="White" Margin="5" />
+                                    <TextBlock Text="Restore Schema(s)" Background="Black" Foreground="White" Margin="5" />
+                                    <TextBlock Text="Deploy Engg. Dashboard" Background="Black" Foreground="White" Margin="5" />
+                                </StackPanel>
+                            </Expander.ToolTip>
+                            <StackPanel Margin="5">
+                                <Button Name="btnManageAppDocs" Click="MenuButtonClickEventHandler" Content="Manage Application Docs" Background="{StaticResource ResourceKey=ButtonBackgroundColor}"  Height="35" Style="{StaticResource MenuButtonNormalStyle}" Foreground="{StaticResource ButtonForegroundColor}" />
+                                <Button Name="btnVerifyAnalysisResults" Click="MenuButtonClickEventHandler" Content="Verify Analysis Results" Background="{StaticResource ResourceKey=ButtonBackgroundColor}"  Height="35" Style="{StaticResource MenuButtonNormalStyle}" Foreground="{StaticResource ButtonForegroundColor}" />
+                                <Button Name="btnBackupApplication" Content="Backup Application" Style="{StaticResource MenuButtonNormalStyle}" Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Click="MenuButtonClickEventHandler"  Height="35" Foreground="{StaticResource ButtonForegroundColor}" />
+                                <Button Name="btnBackupDatabase" Content="Backup Schema(s) - On Server" Style="{StaticResource MenuButtonNormalStyle}" Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Click="MenuButtonClickEventHandler"  Height="35" Foreground="{StaticResource ButtonForegroundColor}" />
+                                <Button Name="btnBackupDatabaseLocal" Content="Backup Schema(s) - On Local" Style="{StaticResource MenuButtonNormalStyle}" Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Click="MenuButtonClickEventHandler"  Height="35" Foreground="{StaticResource ButtonForegroundColor}" />
+                                <Button Name="btnRestoreDatabase" Content="Restore Schema(s)" Style="{StaticResource MenuButtonNormalStyle}" Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Click="MenuButtonClickEventHandler"  Height="35" Foreground="{StaticResource ButtonForegroundColor}" />
+                                <Button Name="btnDeployEnggDashboard" Click="MenuButtonClickEventHandler" Content="Deploy Engg. Dashboard"  Style="{StaticResource MenuButtonNormalStyle}"  Height="35" Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Foreground="{StaticResource ButtonForegroundColor}"  />
+                            </StackPanel>
+                        </Expander>
+
+                        <Expander Header="Automated Analysis" Name="expAutomatedAnalysis"  Style="{StaticResource ExpanderWithDataGridStyle}"  Margin="5">
+                            <Expander.ToolTip>
+                                <StackPanel Background="Black">
+                                    <TextBlock Text="Enable Automated Analysis" Background="Black" Foreground="White" Margin="5" />
+                                </StackPanel>
+                            </Expander.ToolTip>
+                            <StackPanel Margin="5">
+                                <Button Name="btnConfigureAutomatedJobs" Click="MenuButtonClickEventHandler" Content="Enable Automated Analysis"  Style="{StaticResource MenuButtonNormalStyle}"  Height="35" Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Foreground="{StaticResource ButtonForegroundColor}"  />
+                            </StackPanel>
+                        </Expander>
+
+                        <Expander Header="Supported Technologies  "  Style="{StaticResource ExpanderWithDataGridStyle}" Name="expTechSpec"  Margin="5" >
+                            <Expander.ToolTip>
+                                <StackPanel Background="Black">
+                                    <TextBlock Text="CAST Supported Technologies" Background="Black" Foreground="White" Margin="5" />
+                                    <TextBlock Text="Technology Specific Frameworks" Background="Black" Foreground="White" Margin="5" />
+                                    <TextBlock Text="Configure File Extensions" Background="Black" Foreground="White" Margin="5" />
+                                </StackPanel>
+                            </Expander.ToolTip>
+                            <StackPanel Margin="5">
+                                <Button Name="btnManageTechnology" Content="CAST Supported Technologies" Click="MenuButtonClickEventHandler"  Style="{StaticResource MenuButtonNormalStyle}" Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Height="35"  Foreground="{StaticResource ButtonForegroundColor}"/>
+                                <Button Name="btnManageFrameworks" Content="Technology Specific Frameworks" Click="MenuButtonClickEventHandler" Style="{StaticResource MenuButtonNormalStyle}" Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Height="35"  Foreground="{StaticResource ButtonForegroundColor}"/>
+                                <Button Name="btnManageExtensions" Content="Configure File Extensions" Click="MenuButtonClickEventHandler"  Style="{StaticResource MenuButtonNormalStyle}" Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Height="35"  Foreground="{StaticResource ButtonForegroundColor}"/>
+                            </StackPanel>
+                        </Expander>
+
+                        <Expander Header="Application Settings" Style="{StaticResource ExpanderWithDataGridStyle}" Name="expSettings" Margin="5" >
+                            <Expander.ToolTip>
+                                <StackPanel Background="Black">
+                                    <TextBlock Text="CAST Admin Users" Background="Black" Foreground="White" Margin="5" />
+                                    <TextBlock Text="Application List Items" Background="Black" Foreground="White" Margin="5" />
+                                    <TextBlock Text="User Interface Settings" Background="Black" Foreground="White" Margin="5" />
+                                </StackPanel>
+                            </Expander.ToolTip>
+                            <StackPanel Margin="5">
+                                <Button Name="btnManageCastCoe" Tag="Restricted" Click="MenuButtonClickEventHandler" Content="CAST Admin Users"  Style="{StaticResource MenuButtonNormalStyle}" Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Height="35"  Foreground="{StaticResource ButtonForegroundColor}"/>
+                                <Button Name="btnConfigureDropDownItems" Click="MenuButtonClickEventHandler" Content="Application List Items"  Style="{StaticResource MenuButtonNormalStyle}" Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Height="35"  Foreground="{StaticResource ButtonForegroundColor}"/>
+                                <Button Name="btnChangeApplicationBackground" Content="User Interface Settings" Click="MenuButtonClickEventHandler"  Style="{StaticResource MenuButtonNormalStyle}" Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Height="35"  Foreground="{StaticResource ButtonForegroundColor}"/>
+                            </StackPanel>
+                        </Expander>
+
+                        <Expander Header="Reports" Style="{StaticResource ExpanderWithDataGridStyle}" Name="expReports" Margin="5" >
+                            <Expander.ToolTip>
+                                <StackPanel Background="Black">
+                                    <TextBlock Text="CAST Execution Summary" Background="Black" Foreground="White" Margin="5" />
+                                </StackPanel>
+                            </Expander.ToolTip>
+                            <StackPanel Margin="5">
+                                <Button Name="btnMonthlyReport" Tag="Restricted" Click="MenuButtonClickEventHandler" Content="CAST Execution Summary"  Style="{StaticResource MenuButtonNormalStyle}" Background="{StaticResource ResourceKey=ButtonBackgroundColor}" Height="35"  Foreground="{StaticResource ButtonForegroundColor}"/>
+                            </StackPanel>
+                        </Expander>
+                    </StackPanel>
+                </Expander>
+
+                <Border Grid.Column="1"  BorderBrush="White" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" BorderThickness="0.5,0">
+                    <DockPanel HorizontalAlignment="Center" VerticalAlignment="Top" Name="contentPanel">
+
+                    </DockPanel>
+                </Border>
+            </Grid>
+            <DockPanel FlowDirection="LeftToRight" HorizontalAlignment="Stretch" Grid.Row="2"  Name="statusbarPanel" >
+                <Border BorderBrush="White" BorderThickness="0,1,0,0" Name="brdStatus" >
+                    <Border.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="#FFE6CCCC" Offset="0"/>
+                            <GradientStop Color="#FFF76868" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <TextBlock FontSize="16" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,0,0,0" Name="txbStatus" FontWeight="SemiBold" Text="Ready ..." Foreground="Black" />
+                </Border>
+            </DockPanel>
+        </Grid>
+    </ScrollViewer>
 </Window>

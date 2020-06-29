@@ -19,8 +19,6 @@ namespace Agilisium.TalentManager.Model.Configuration
             Property(e => e.StartDate).IsRequired();
             Property(e => e.DeliveryManagerID).IsOptional();
             Property(e => e.ProjectManagerID).IsRequired();
-            Property(e => e.SubPracticeID).IsOptional();
-            Property(e => e.PracticeID).IsRequired();
             Property(e => e.IsReserved).IsRequired();
 
             ToTable("Project");

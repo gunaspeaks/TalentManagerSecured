@@ -19,5 +19,7 @@
         public int RatingID { get; set; }
 
         public string EmployeeID { get; set; }
+
+        public string EmployeeName { get; set; }
     }
 }

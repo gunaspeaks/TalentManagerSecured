@@ -31,5 +31,7 @@ namespace Agilisium.TalentManager.WebUI.Models
         public string SkillCategory { get; set; }
 
         public string EmployeeID { get; set; }
+
+        public string EmployeeName { get; set; }
     }
 }

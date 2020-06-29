@@ -10,7 +10,6 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
-        //loadPracticeDropDownListForProjectPage();
         $("#StartDate").datepicker({
 
             dateFormat: "mm/dd/yy",
@@ -43,27 +42,6 @@
     })
 
     $(function () {
-        $("#PracticeID").change(function (evt) {
-
-            if ($("#PracticeID").text() != "Please Select") {
-                $.ajax({
-                    url: rootUrl + "Project/SubPracticeList",
-                    type: 'POST',
-                    data: { id: $("#PracticeID").val() },
-                    success: function (data) {
-                        $('#SubPracticeID').empty();
-                        $.each(data, function () {
-                            $("#SubPracticeID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
-                        });
-                        ddlSubPractice.prop('disabled', false);
-                    },
-                    error: function (xhr) { alert('Error while loading the Sub Practice list'); }
-                });
-            }
-        });
-    });
-
-    $(function () {
         $("#BusinessUnitID").change(function (event) {
             if ($("#BusinessUnitID").val() != 3) {
                 $("#ProjectTypeID").val(9);
@@ -72,7 +50,6 @@
             else {
                 $("#ProjectTypeID").removeAttr("disabled");
             }
-            loadPracticeDropDownListForProjectPage();
         });
     });
 
@@ -100,8 +77,8 @@
                         <td width="5%"></td>
                         <td width="25%">
                             <div class="form-group">
-                                @Html.LabelFor(model => model.ProjectAccountID)
-                                @Html.DropDownListFor(model => model.ProjectAccountID, (IEnumerable<SelectListItem>)ViewBag.AccountsListItems, "Please Select", new { @class = "form-control" })
+                                @Html.LabelFor(model => model.ProjectTypeID)
+                                @Html.DropDownListFor(model => model.ProjectTypeID, (IEnumerable<SelectListItem>)ViewBag.ProjectTypeListItems, "Please Select", new { @class = "form-control" })
                             </div>
                         </td>
                         <td width="5%"></td>
@@ -117,21 +94,19 @@
                         <td>
                             <div class="form-group">
                                 @Html.LabelFor(model => model.BusinessUnitID)
-                                @Html.DropDownListFor(model => model.BusinessUnitID, (IEnumerable<SelectListItem>)ViewBag.BuListItems, "Please Select", new { @class = "form-control" })
+                                @Html.DropDownListFor(model => model.BusinessUnitID, (IEnumerable<SelectListItem>)ViewBag.BuListItems, "Please Select", new { @class = "form-control", @disabled = "disabled" })
                             </div>
                         </td>
                         <td width="5%"></td>
                         <td>
                             <div class="form-group">
-                                @Html.LabelFor(model => model.PracticeID)
-                                @Html.DropDownListFor(model => model.PracticeID, (IEnumerable<SelectListItem>)ViewBag.PracticeListItems, "Please Select", new { @class = "form-control" })
+                                @Html.LabelFor(model => model.ProjectAccountID)
+                                @Html.DropDownListFor(model => model.ProjectAccountID, (IEnumerable<SelectListItem>)ViewBag.AccountsListItems, "Please Select", new { @class = "form-control" })
                             </div>
                         </td>
                         <td width="5%"></td>
                         <td>
                             <div class="form-group">
-                                @Html.LabelFor(model => model.ProjectTypeID)
-                                @Html.DropDownListFor(model => model.ProjectTypeID, (IEnumerable<SelectListItem>)ViewBag.ProjectTypeListItems, "Please Select", new { @class = "form-control" })
                             </div>
                         </td>
                     </tr>
@@ -161,7 +136,7 @@
                         <td>
                             <div class="form-group">
                                 @Html.LabelFor(model => model.StartDate)
-                                @Html.EditorFor(model => model.StartDate, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.EditorFor(model => model.StartDate, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })
                             </div>
                         </td>
                         <td width="5%"></td>

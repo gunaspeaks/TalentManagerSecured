@@ -78,7 +78,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
         {
             logger.Info("Generate CSV file for the attachment");
             string filePath = "";
-            StringBuilder recordString = new StringBuilder($"Employee ID,Employee Name,Primary Skills,Secondary Skills,Business Unit,POD,Project Name,Account Name,Allocation Type,Allocation Start Date,Allocation End Date,Project Manager,Comments{Environment.NewLine}");
+            StringBuilder recordString = new StringBuilder($"Employee ID,Employee Name,Primary Skills,Secondary Skills,Business Unit,Project Name,Account Name,Allocation Type,Allocation Start Date,Allocation End Date,Project Manager,Comments{Environment.NewLine}");
             try
             {
                 List<BillabilityWiseAllocationDetailDto> detailsDtos = allocationService.GetBillabilityWiseAllocationDetail("all", "all").ToList();
@@ -89,7 +89,6 @@ namespace Agilisium.TalentManager.ServiceProcessors
                     recordString.Append($"{dto.PrimarySkills?.Replace(",", "")},");
                     recordString.Append($"{dto.SecondarySkills?.Replace(",", "")},");
                     recordString.Append($"{dto.BusinessUnit},");
-                    recordString.Append($"{dto.POD},");
                     recordString.Append($"{dto.ProjectName},");
                     recordString.Append($"{dto.AccountName},");
                     recordString.Append($"{dto.AllocationType},");

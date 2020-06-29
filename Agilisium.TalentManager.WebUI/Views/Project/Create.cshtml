@@ -13,7 +13,6 @@
         var clientProjectID = 9;
         var deliveryBUID = 3;
 
-        loadPracticeDropDownListForProjectPage();
         $("#StartDate").datepicker({
 
             dateFormat: "mm/dd/yy",
@@ -21,6 +20,7 @@
             changeYear: true,
             showAnim: "fadeIn",
         });
+
         $("#EndDate").datepicker({
 
             dateFormat: "mm/dd/yy",
@@ -28,6 +28,7 @@
             changeYear: true,
             showAnim: "fadeIn",
         });
+
         $("#SowStartDate").datepicker({
 
             dateFormat: "mm/dd/yy",
@@ -77,27 +78,6 @@
         });
     });
 
-    $(function () {
-        $("#PracticeID").change(function (evt) {
-
-            if ($("#PracticeID").text() != "Please Select") {
-
-                $.ajax({
-                    url: rootUrl + "Project/SubPracticeList",
-                    type: 'POST',
-                    data: { id: $("#PracticeID").val() },
-                    success: function (data) {
-                        $('#SubPracticeID').empty();
-                        $.each(data, function () {
-                            $("#SubPracticeID").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
-                        });
-                        //$("#SubPracticeID").attr('disabled', 'disabled');
-                    },
-                    error: function (xhr) { alert('Error while loading the Sub Practice list'); }
-                });
-            }
-        });
-    });
 </script>
 
 <div class="panel panel-default">
@@ -128,8 +108,8 @@
                         <td width="5%"></td>
                         <td width="25%">
                             <div class="form-group">
-                                @Html.LabelFor(model => model.ProjectAccountID)
-                                @Html.DropDownListFor(model => model.ProjectAccountID, (IEnumerable<SelectListItem>)ViewBag.AccountsListItems, "Please Select", new { @class = "form-control" })
+                                @Html.LabelFor(model => model.ProjectTypeID)
+                                @Html.DropDownListFor(model => model.ProjectTypeID, (IEnumerable<SelectListItem>)ViewBag.ProjectTypeListItems, "Please Select", new { @class = "form-control" })
                             </div>
                         </td>
                         <td width="5%"></td>
@@ -151,15 +131,13 @@
                         <td width="5%"></td>
                         <td>
                             <div class="form-group">
-                                @Html.LabelFor(model => model.PracticeID)
-                                @Html.DropDownListFor(model => model.PracticeID, (IEnumerable<SelectListItem>)ViewBag.PracticeListItems, "Please Select", new { @class = "form-control" })
+                                @Html.LabelFor(model => model.ProjectAccountID)
+                                @Html.DropDownListFor(model => model.ProjectAccountID, (IEnumerable<SelectListItem>)ViewBag.AccountsListItems, "Please Select", new { @class = "form-control" })
                             </div>
                         </td>
                         <td width="5%"></td>
                         <td>
                             <div class="form-group">
-                                @Html.LabelFor(model => model.ProjectTypeID)
-                                @Html.DropDownListFor(model => model.ProjectTypeID, (IEnumerable<SelectListItem>)ViewBag.ProjectTypeListItems, "Please Select", new { @class = "form-control" })
                             </div>
                         </td>
                     </tr>

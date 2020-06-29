@@ -51,6 +51,8 @@
     <Compile Include="Abstract\IEmployeeTechService.cs" />
     <Compile Include="Abstract\IRecruitmentRequestService.cs" />
     <Compile Include="Abstract\IProjectAccountService.cs" />
+    <Compile Include="Abstract\IBuLevelService.cs" />
+    <Compile Include="Abstract\IResourceLevelService.cs" />
     <Compile Include="Abstract\IServiceRequestService.cs" />
     <Compile Include="Abstract\ISystemSettingsService.cs" />
     <Compile Include="Abstract\IVendorService.cs" />
@@ -71,6 +73,8 @@
     <Compile Include="Concreate\PracticeService.cs" />
     <Compile Include="Concreate\ProjectAccountService.cs" />
     <Compile Include="Concreate\ProjectService.cs" />
+    <Compile Include="Concreate\BuLevelService.cs" />
+    <Compile Include="Concreate\ResourceLevelService.cs" />
     <Compile Include="Concreate\ServiceRequestService.cs" />
     <Compile Include="Concreate\SubPracticeService.cs" />
     <Compile Include="Concreate\SystemSettingsService.cs" />

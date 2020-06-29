@@ -12,7 +12,8 @@
     {
         BusinessDevelopment = 1,
         BusinessOperations,
-        Delivery
+        Delivery,
+        RMG=103,
     }
 
     public enum BenchCategory
@@ -32,5 +33,13 @@
     {
         Lab=10,
 
+    }
+
+    public enum SkillRating
+    {
+        Limited=78,
+        Basic,
+        Proficient,
+        Advanced
     }
 }

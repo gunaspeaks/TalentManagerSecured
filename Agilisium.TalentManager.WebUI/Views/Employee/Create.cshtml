@@ -10,11 +10,8 @@
 
 <script type="text/javascript">
 
-
     $(document).ready(function () {
         generateEmployeeIDForEmpPage();
-        loadPracticeDropDownListForEmpPage();
-        loadSubPracticeDropDownForEmpPage();
 
         $("#DateOfJoin").datepicker({
 
@@ -51,13 +48,101 @@
 
     $(function () {
         $("#BusinessUnitID").change(function (event) {
-            loadPracticeDropDownListForEmpPage();
+            if ($("#BusinessUnitID").val() == 3) {
+                loadAccountsDropDownListForEmpPage();
+                GetBillableTypeListForEmpPage();
+            }
+            else {
+                loadBuLevelDropDownListForEmpPage();
+            }
+
         });
     });
 
     $(function () {
-        $("#PracticeID").change(function (evt) {
-            loadSubPracticeDropDownForEmpPage();
+        $("#Level1ID").change(function (evt) {
+            if ($("#Level1ID").val() > 0) {
+                var levelName = $("#Level1ID option:selected").html().toLowerCase();
+                if ($("#BusinessUnitID").val() == 1) {
+                    loadResourceLevelDropDownListForEmpPage();
+                }
+
+                if ($("#BusinessUnitID").val() == 2) {
+                    if (levelName == 'admin') {
+                        GetBOLevel2ListForInEmpPageWithAdmin();
+                    }
+                    else if (levelName == 'finance') {
+                        GetBOLevel2ListForInEmpPageWithFinance();
+                    }
+                    else {
+                        loadBuLevelDropDownListForEmpPageFromLevel2();
+                        $("#Level2ID").val($("#Level1ID").val());
+                        $("#Level3ID").val($("#Level1ID").val());
+                        $("#Level4ID").val($("#Level1ID").val());
+                        $("#Level5ID").val($("#Level1ID").val());
+                    }
+                }
+
+                if ($("#BusinessUnitID").val() == 3) {
+                    loadProjectsDropDownListForEmpPage();
+                }
+
+                if (levelName == 'growth bench') {
+                    loadLevel2ListOnRmgGrowthBenchForEmpPage();
+                }
+            }
+        });
+    });
+
+    $(function () {
+        $("#Level2ID").change(function (evt) {
+            if ($("#BusinessUnitID").val() == 1 || $("#BusinessUnitID").val() == 2) {
+                $("#Level3ID").val($("#Level2ID").val());
+                $("#Level4ID").val($("#Level2ID").val());
+                $("#Level5ID").val($("#Level2ID").val());
+            }
+
+            var level1Name = $("#Level1ID option:selected").html().toLowerCase();
+            if (level1Name == 'growth bench') {
+                var levelName = $("#Level2ID option:selected").html().toLowerCase();
+                if (levelName == "earmarked") {
+                    loadAccountsListForEmpPageWithRmgEarked();
+                    GetLevel5ListForEmpPageWithRmGEarmarked();
+                }
+                else {
+                    loadLevel3ListOnRmgGrowthBenchForEmpPage();
+                }
+            }
+        });
+    });
+
+    $(function () {
+        $("#Level3ID").change(function (evt) {
+            var levelName = $("#Level3ID option:selected").html().toLowerCase();
+
+            if ($("#BusinessUnitID").val() == 3) {
+                if (levelName == "non-billable") {
+                    GetLevel4NonBillableListForEmpPage();
+                    GetLevel5NonBillableListForEmpPage();
+                }
+                else {
+                    GetBillableTypeListForLevel45InEmpPage();
+                    GetBillableTypeListForLevel5InEmpPage();
+                    $("#Level4ID").val($("#Level3ID").val());
+                }
+            }
+
+            var level1Name = $("#Level1ID option:selected").html().toLowerCase();
+            if (level1Name == 'growth bench') {
+                var levelName = $("#Level2ID option:selected").html().toLowerCase();
+                if (levelName == "earmarked") {
+                    loadProjectsDropDownListForEmpPageWithRmgEarmarked();
+                }
+                else {
+                    $("#Level4ID").val($("#Level3ID").val());
+                    $("#Level5ID").val($("#Level3ID").val());
+                }
+            }
         });
     });
 
@@ -85,18 +170,18 @@
     {
         @Html.AntiForgeryToken()
         <div class="panel-body">
-            @Html.ValidationSummary(false, "Please correct the below Validation Errors to save the data")
+            @Html.ValidationSummary(true, "Please correct the below Validation Errors to save the data")
             <div>
-                <table style="width:86%;" cellpadding="5" cellspacing="5px">
+                <table style="width:96%;" cellpadding="5" cellspacing="5px">
                     <tr>
-                        <td width="20%">
+                        <td width="15%">
                             <div class="form-group">
                                 @Html.LabelFor(model => model.EmploymentTypeID)
                                 @Html.DropDownListFor(model => model.EmploymentTypeID, (IEnumerable<SelectListItem>)ViewBag.EmploymentTypeListItems, "Please Select", new { @class = "form-control" })
                             </div>
                         </td>
                         <td width="2%"></td>
-                        <td width="20%">
+                        <td width="15%">
                             <div class="form-group">
                                 @Html.HiddenFor(model => model.EmployeeID, new { id = "empID" })
                                 @Html.LabelFor(model => model.EmployeeID)
@@ -104,36 +189,43 @@
                             </div>
                         </td>
                         <td width="2%"></td>
-                        <td width="20%">
+                        <td width="15%">
                             <div class="form-group">
                                 @Html.LabelFor(model => model.FirstName)
                                 @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control" } })
                             </div>
                         </td>
                         <td width="2%"></td>
-                        <td width="20%">
+                        <td width="15%">
                             <div class="form-group">
                                 @Html.LabelFor(model => model.LastName)
                                 @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
                             </div>
                         </td>
+                        <td width="2%"></td>
+                        <td width="15%">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.IsManager)
+                                @Html.EditorFor(model => model.IsManager, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
                     </tr>
                     <tr>
-                        <td width="20%">
+                        <td>
                             <div class="form-group">
                                 @Html.LabelFor(model => model.DateOfJoin)
                                 @Html.EditorFor(model => model.DateOfJoin, new { htmlAttributes = new { @class = "form-control" } })
                             </div>
                         </td>
                         <td width="2%"></td>
-                        <td width="20%">
+                        <td>
                             <div class="form-group">
                                 @Html.LabelFor(model => model.EmailID)
                                 @Html.EditorFor(model => model.EmailID, new { htmlAttributes = new { @class = "form-control" } })
                             </div>
                         </td>
                         <td width="2%"></td>
-                        <td width="20%">
+                        <td>
                             <div class="form-group">
                                 @Html.LabelFor(model => model.BusinessUnitID)
                                 @Html.DropDownListFor(model => model.BusinessUnitID, (IEnumerable<SelectListItem>)ViewBag.BuListItems, "Please Select", new { @class = "form-control" })
@@ -146,23 +238,11 @@
                                 @Html.DropDownListFor(model => model.ReportingManagerID, (IEnumerable<SelectListItem>)ViewBag.ReportingManagerListItems, "Please Select", new { @class = "form-control" })
                             </div>
                         </td>
+                        <td width="2%"></td>
+                        <td></td>
                     </tr>
                     <tr>
-                        <td width="20%">
-                            <div class="form-group">
-                                @Html.LabelFor(model => model.PracticeID)
-                                @Html.DropDownListFor(model => model.PracticeID, (IEnumerable<SelectListItem>)ViewBag.PracticeListItems, "Please Select", new { @class = "form-control" })
-                            </div>
-                        </td>
-                        <td width="2%"></td>
-                        <td width="20%">
-                            <div class="form-group">
-                                @Html.LabelFor(model => model.SubPracticeID)
-                                @Html.DropDownListFor(model => model.SubPracticeID, (IEnumerable<SelectListItem>)ViewBag.SubPracticeListItems, "Please Select", new { @class = "form-control" })
-                            </div>
-                        </td>
-                        <td width="2%"></td>
-                        <td width="20%">
+                        <td>
                             <div class="form-group">
                                 @Html.LabelFor(model => model.PrimarySkills)
                                 @Html.EditorFor(model => model.PrimarySkills, new { htmlAttributes = new { @class = "form-control" } })
@@ -171,64 +251,93 @@
                         <td width="2%"></td>
                         <td>
                             <div class="form-group">
-                                @Html.LabelFor(model => model.SecondarySkills)
-                                @Html.EditorFor(model => model.SecondarySkills, new { htmlAttributes = new { @class = "form-control" } })
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td width="20%">
-                            <div class="form-group">
-                                @Html.LabelFor(model => model.TotalExperience)
-                                @Html.EditorFor(model => model.TotalExperience, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.LabelFor(model => model.OverallExperience)
+                                @Html.EditorFor(model => model.OverallExperience, new { htmlAttributes = new { @class = "form-control" } })
                             </div>
                         </td>
                         <td width="2%"></td>
-                        <td width="20%">
+                        <td>
                             <div class="form-group">
                                 @Html.LabelFor(model => model.TechnicalRank)
                                 @Html.DropDownListFor(model => model.TechnicalRank, (IEnumerable<SelectListItem>)ViewBag.GradeListItems, "Please Select", new { @class = "form-control" })
                             </div>
                         </td>
                         <td width="2%"></td>
-                        <td width="20%">
+                        <td>
                             <div class="form-group">
                                 @Html.LabelFor(model => model.PassportNo)
                                 @Html.EditorFor(model => model.PassportNo, new { htmlAttributes = new { @class = "form-control" } })
                             </div>
                         </td>
                         <td width="2%"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
                         <td>
                             <div class="form-group">
                                 @Html.LabelFor(model => model.PassportValidUpto)
                                 @Html.EditorFor(model => model.PassportValidUpto, new { htmlAttributes = new { @class = "form-control" } })
                             </div>
                         </td>
-                    </tr>
-                    <tr>
-                        <td width="20%">
+                        <td width="2%"></td>
+
+                        <td>
                             <div class="form-group">
                                 @Html.LabelFor(model => model.VisaCategoryID)
                                 @Html.DropDownListFor(model => model.VisaCategoryID, (IEnumerable<SelectListItem>)ViewBag.VisaCategoryListItems, "Please Select", new { @class = "form-control" })
                             </div>
                         </td>
                         <td width="2%"></td>
-                        <td width="20%">
+                        <td>
                             <div class="form-group">
                                 @Html.LabelFor(model => model.VisaValidUpto)
                                 @Html.EditorFor(model => model.VisaValidUpto, new { htmlAttributes = new { @class = "form-control" } })
                             </div>
                         </td>
                         <td width="2%"></td>
-                        <td width="20%">
+                        <td>
                             <div class="form-group">
-                                @Html.LabelFor(model => model.TravelledCountries)
-                                @Html.EditorFor(model => model.TravelledCountries, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.LabelFor(model => model.IsTechResource)
+                                @Html.EditorFor(model => model.IsTechResource, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+                        <td width="2%"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Level1ID, new { @id = "Level1ID_Lable" })
+                                @Html.DropDownListFor(model => model.Level1ID, (IEnumerable<SelectListItem>)ViewBag.EmptyListItems, "Please Select", new { @class = "form-control" })
                             </div>
                         </td>
                         <td width="2%"></td>
                         <td>
                             <div class="form-group">
+                                @Html.LabelFor(model => model.Level2ID, new { @id = "Level2ID_Lable" })
+                                @Html.DropDownListFor(model => model.Level2ID, (IEnumerable<SelectListItem>)ViewBag.EmptyListItems, "Please Select", new { @class = "form-control" })
+                            </div>
+                        </td>
+                        <td width="2%"></td>
+
+                        <td>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Level3ID, new { @id = "Level3ID_Lable" })
+                                @Html.DropDownListFor(model => model.Level3ID, (IEnumerable<SelectListItem>)ViewBag.EmptyListItems, "Please Select", new { @class = "form-control", })
+                            </div>
+                        </td>
+                        <td width="2%"></td>
+                        <td>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Level4ID, new { @id = "Level4ID_Lable" })
+                                @Html.DropDownListFor(model => model.Level4ID, (IEnumerable<SelectListItem>)ViewBag.EmptyListItems, "Please Select", new { @class = "form-control", })
+                            </div>
+                        </td>
+                        <td width="2%"></td>
+                        <td>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Level5ID, new { @id = "Level5ID_Lable" })
+                                @Html.DropDownListFor(model => model.Level5ID, (IEnumerable<SelectListItem>)ViewBag.EmptyListItems, "Please Select", new { @class = "form-control", })
                             </div>
                         </td>
                     </tr>

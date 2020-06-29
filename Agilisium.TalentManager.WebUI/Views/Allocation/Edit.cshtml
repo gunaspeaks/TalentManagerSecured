@@ -11,7 +11,6 @@
 <script>
 
     $(document).ready(function () {
-
         $("#AllocationStartDate").datepicker({
 
             dateFormat: "mm/dd/yy",
@@ -19,6 +18,7 @@
             changeYear: true,
             showAnim: "fadeIn",
         });
+
         $("#AllocationEndDate").datepicker({
 
             dateFormat: "mm/dd/yy",
@@ -78,7 +78,6 @@
 
     $(function () {
         $("#AllocationTypeID").change(function (evtn) {
-
             var allocationType = $("#AllocationTypeID option:selected").html().toLowerCase();
             $("#BenchCategoryID").val(0)
             if (allocationType.indexOf('bench') >= 0) {
