@@ -5,11 +5,13 @@ namespace Agilisium.TalentManager.Service.Abstract
 {
     public interface IDropDownSubCategoryService
     {
+        bool Exists(string subCategoryName, int categoryID);
+
         bool Exists(string subCategoryName);
 
         bool Exists(int id);
 
-        bool Exists(string subCategoryName, int id);
+        bool Exists(string subCategoryName,int categoryID, int id);
 
         IEnumerable<DropDownSubCategoryDto> GetAll(int pageSize = -1, int pageNo = -1);
 

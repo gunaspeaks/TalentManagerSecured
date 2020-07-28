@@ -27,13 +27,13 @@ namespace Agilisium.TalentManager.Model
             if (isNewEntity)
             {
                 CreatedBy = userName;
-                CreatedOn = DateTime.Now;
+                CreatedOn = DateTime.Today;
                 IsDeleted = false;
             }
             else
             {
                 UpdatedBy = userName;
-                UpdatedOn = DateTime.Now;
+                UpdatedOn = DateTime.Today;
             }
         }
     }

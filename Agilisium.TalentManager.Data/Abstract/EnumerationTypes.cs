@@ -40,6 +40,7 @@
         Limited=78,
         Basic,
         Proficient,
-        Advanced
+        Advanced,
+        Expert
     }
 }

@@ -104,7 +104,6 @@ namespace Agilisium.TalentManager.WebUI.Models
         public int? TechnicalRank { get; set; }
 
         [DisplayName("Overall Experience")]
-        [Required]
         public string OverallExperience { get; set; }
 
         [DisplayName("Passport Number")]
@@ -166,5 +165,8 @@ namespace Agilisium.TalentManager.WebUI.Models
         [DisplayName("Is In Management Role")]
         [Required]
         public bool? IsManager { get; set; }
+
+        [DisplayName("Past Experience")]
+        public float? PastExperience { get; set; }
     }
 }

@@ -21,7 +21,7 @@ namespace Agilisium.TalentManager.PostgresDbHelper
                     qry = PostgresSqlQueries.GET_COUNT_OF_NON_ALLOCATED_EMPLOYEES_FROM_NON_DELIVERY;
                 }
 
-                qry = qry.Replace("__CURRENT_DATE__", $"{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}");
+                qry = qry.Replace("__CURRENT_DATE__", $"{DateTime.Today.Year}-{DateTime.Today.Month}-{DateTime.Today.Day}");
                 Npgsql.NpgsqlCommand cmd = new Npgsql.NpgsqlCommand(qry, con);
                 object res = cmd.ExecuteScalar();
                 int.TryParse(res.ToString(), out count);
@@ -45,7 +45,7 @@ namespace Agilisium.TalentManager.PostgresDbHelper
                 con = new Npgsql.NpgsqlConnection(PostgresSqlQueries.CONNECTION_STRING);
                 con.Open();
                 string qry = PostgresSqlQueries.GET_PRACTICE_WISE_HEAD_COUNT;
-                qry = qry.Replace("__CURRENT_DATE__", $"{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}");
+                qry = qry.Replace("__CURRENT_DATE__", $"{DateTime.Today.Year}-{DateTime.Today.Month}-{DateTime.Today.Day}");
                 Npgsql.NpgsqlCommand cmd = new Npgsql.NpgsqlCommand(qry, con);
                 Npgsql.NpgsqlDataReader res = cmd.ExecuteReader();
 
@@ -81,7 +81,7 @@ namespace Agilisium.TalentManager.PostgresDbHelper
                 con = new Npgsql.NpgsqlConnection(PostgresSqlQueries.CONNECTION_STRING);
                 con.Open();
                 string qry = PostgresSqlQueries.GET_SUB_PRACTICE_WISE_HEAD_COUNT;
-                qry = qry.Replace("__CURRENT_DATE__", $"{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}");
+                qry = qry.Replace("__CURRENT_DATE__", $"{DateTime.Today.Year}-{DateTime.Today.Month}-{DateTime.Today.Day}");
                 Npgsql.NpgsqlCommand cmd = new Npgsql.NpgsqlCommand(qry, con);
                 Npgsql.NpgsqlDataReader res = cmd.ExecuteReader();
                 int? nullInt = null;
@@ -135,7 +135,7 @@ namespace Agilisium.TalentManager.PostgresDbHelper
                 {
                     qry = PostgresSqlQueries.GET_ALLOCATION_DETAIL_FOR_BENCH.Replace("__BENCH_CATEGORY__", "74");
                 }
-                qry = qry.Replace("__CURRENT_DATE__", $"{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}");
+                qry = qry.Replace("__CURRENT_DATE__", $"{DateTime.Today.Year}-{DateTime.Today.Month}-{DateTime.Today.Day}");
                 qry = qry.Replace("__ALLOCATION_TYPE_ID__", allocationType.ToString());
 
                 Npgsql.NpgsqlCommand cmd = new Npgsql.NpgsqlCommand(qry, con);
@@ -190,7 +190,7 @@ namespace Agilisium.TalentManager.PostgresDbHelper
             {
                 con = new Npgsql.NpgsqlConnection(PostgresSqlQueries.CONNECTION_STRING);
                 con.Open();
-                string qry = PostgresSqlQueries.GET_MANAGER_WISE_PROJECTS_SUMMARY.Replace("__CURRENT_DATE__", $"{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}");
+                string qry = PostgresSqlQueries.GET_MANAGER_WISE_PROJECTS_SUMMARY.Replace("__CURRENT_DATE__", $"{DateTime.Today.Year}-{DateTime.Today.Month}-{DateTime.Today.Day}");
                 Npgsql.NpgsqlCommand cmd = new Npgsql.NpgsqlCommand(qry, con);
                 Npgsql.NpgsqlDataReader res = cmd.ExecuteReader();
 
@@ -305,7 +305,7 @@ namespace Agilisium.TalentManager.PostgresDbHelper
             {
                 con = new Npgsql.NpgsqlConnection(PostgresSqlQueries.CONNECTION_STRING);
                 con.Open();
-                string query= PostgresSqlQueries.POD_WISE_EMPLOYEE_COUNT.Replace("__CURRENT_DATE__", $"{ DateTime.Now.Year}-{ DateTime.Now.Month}-{ DateTime.Now.Day}");
+                string query= PostgresSqlQueries.POD_WISE_EMPLOYEE_COUNT.Replace("__CURRENT_DATE__", $"{ DateTime.Today.Year}-{ DateTime.Today.Month}-{ DateTime.Today.Day}");
                 Npgsql.NpgsqlCommand cmd = new Npgsql.NpgsqlCommand(query, con);
                 Npgsql.NpgsqlDataReader res = cmd.ExecuteReader();
 

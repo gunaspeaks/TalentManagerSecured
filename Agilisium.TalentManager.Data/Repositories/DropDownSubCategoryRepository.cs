@@ -28,15 +28,20 @@ namespace Agilisium.TalentManager.Repository.Repositories
             DataContext.SaveChanges();
         }
 
-        public bool Exists(string itemName, int id)
+        public bool Exists(string itemName, int categoryID, int id)
         {
             return Entities.Any(c => c.SubCategoryName.ToLower() == itemName.ToLower() &&
-            c.SubCategoryID != id && c.IsDeleted == false);
+            c.SubCategoryID != id && c.IsDeleted == false && c.CategoryID == categoryID);
         }
 
-        public bool Exists(string subCategoryName)
+        public bool Exists(string itemName)
         {
-            return Entities.Any(c => c.SubCategoryName.ToLower() == subCategoryName.ToLower() && c.IsDeleted == false);
+            return Entities.Any(c => c.SubCategoryName.ToLower() == itemName.ToLower() && c.IsDeleted == false);
+        }
+
+        public bool Exists(string subCategoryName, int categoryID)
+        {
+            return Entities.Any(c => c.SubCategoryName.ToLower() == subCategoryName.ToLower() && c.CategoryID == categoryID && c.IsDeleted == false);
         }
 
         public bool Exists(int id)
@@ -196,7 +201,9 @@ namespace Agilisium.TalentManager.Repository.Repositories
     {
         IEnumerable<DropDownSubCategoryDto> GetSubCategories(int categoryID, int pageSize = -1, int pageNo = -1);
 
-        bool Exists(string itemName, int id);
+        bool Exists(string itemName, int categoryID, int id);
+
+        bool Exists(string itemName, int categoryID);
 
         bool IsReservedEntry(int subCategoryID);
 

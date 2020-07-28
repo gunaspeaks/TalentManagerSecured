@@ -44,5 +44,9 @@ namespace Agilisium.TalentManager.Service.Abstract
         int TotalRecordsCount(string findBy);
 
         List<EmpSkillSummaryDto> GetAllSkillSummary(string findBy, int pageSize = -1, int pageNo = -1);
+
+        List<EmployeeSkillsReportDto> GetEmployeeSkillsReport(string filterBy, string filterValue,string filterText, int pageSize = -1, int pageNo = -1);
+
+        int GetEmployeeSkillsReportCount(string filterBy, string filterValue, string filterText);
     }
 }

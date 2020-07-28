@@ -100,7 +100,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
             emailBody.Replace("__MANAGER_NAME__", managerName);
             emailBody.Replace("__DAY__", reportingDay.ToString());
             CultureInfo ci = Thread.CurrentThread.CurrentCulture;
-            string monthName = ci.DateTimeFormat.GetMonthName(DateTime.Now.Month);
+            string monthName = ci.DateTimeFormat.GetMonthName(DateTime.Today.Month);
             emailBody.Replace("__MONTH_NAME__", monthName);
             return emailBody.ToString();
         }
@@ -132,7 +132,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
             //    }
 
             //    logger.Info("create the file");
-            //    string fileName = $"EmployeesMappedUnder-{podName}-AsOn-{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}.csv";
+            //    string fileName = $"EmployeesMappedUnder-{podName}-AsOn-{DateTime.Today.Year}-{DateTime.Today.Month}-{DateTime.Today.Day}.csv";
             //    filePath = FilesHandler.CreateFile(appTempDirectory, fileName, recordString.ToString());
             //}
             //catch (Exception exp)

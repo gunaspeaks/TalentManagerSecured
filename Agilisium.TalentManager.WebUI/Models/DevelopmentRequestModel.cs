@@ -11,7 +11,7 @@ namespace Agilisium.TalentManager.WebUI.Models
     {
         public DevelopmentRequestModel()
         {
-            RequestedOn = DateTime.Now;
+            RequestedOn = DateTime.Today;
         }
 
         public int RequestID { get; set; }

@@ -34,14 +34,14 @@ namespace Agilisium.TalentManager.Repository.Repositories
         public bool Exists(string itemName)
         {
             return Entities.Any(e => e.FirstName.ToLower() == itemName.ToLower()
-                && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now))
+                && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Today))
                 && e.IsDeleted == false);
         }
 
         public bool Exists(int id)
         {
             return Entities.Any(e => e.EmployeeEntryID == id
-            && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now))
+            && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Today))
             && e.IsDeleted == false);
         }
 
@@ -80,7 +80,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                         PassportNo = emp.PassportNo,
                         PassportValidUpto = emp.PassportValidUpto,
                         TechnicalRank = emp.TechnicalRank,
-                        OverallExperience = emp.OverallExperience,
+                        PastExperience = emp.PastExperience,
                         VisaCategoryID = emp.VisaCategoryID,
                         VisaValidUpto = emp.VisaValidUpto,
                         VisaCategory = vtd.SubCategoryName,
@@ -133,7 +133,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
             List<Employee> pastEmployees = (from emp in Entities
                                             where emp.IsDeleted == true
-                                            || (emp.LastWorkingDay.HasValue == true && emp.LastWorkingDay.Value < DateTime.Now)
+                                            || (emp.LastWorkingDay.HasValue == true && emp.LastWorkingDay.Value < DateTime.Today)
                                             select emp).ToList();
 
             foreach (Employee emp in pastEmployees)
@@ -164,7 +164,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         public int GetPastEmployeesCount()
         {
-            return Entities.Count(emp => emp.IsDeleted == true || (emp.LastWorkingDay.HasValue == true && emp.LastWorkingDay.Value < DateTime.Now));
+            return Entities.Count(emp => emp.IsDeleted == true || (emp.LastWorkingDay.HasValue == true && emp.LastWorkingDay.Value < DateTime.Today));
         }
 
         public bool IsDuplicateName(string firstName, string lastName)
@@ -215,7 +215,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
             if (oldEmp.BusinessUnitID != updatedEmp.BusinessUnitID)
             {
-                if (DataContext.ProjectAllocations.Any(a => a.IsDeleted == false && a.AllocationEndDate >= DateTime.Now
+                if (DataContext.ProjectAllocations.Any(a => a.IsDeleted == false && a.AllocationEndDate >= DateTime.Today
                  && a.EmployeeID == oldEmp.EmployeeEntryID))
                 {
                     string oldBuName = DataContext.DropDownSubCategories.FirstOrDefault(s => s.SubCategoryID == oldEmp.BusinessUnitID)?.SubCategoryName;
@@ -231,7 +231,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                     string oldAccName = DataContext.ProjectAccounts.FirstOrDefault(a => a.AccountID == oldEmp.Level1ID)?.AccountName;
                     foreach (Project prj in projects)
                     {
-                        if (DataContext.ProjectAllocations.Any(a => a.IsDeleted == false && a.AllocationEndDate >= DateTime.Now
+                        if (DataContext.ProjectAllocations.Any(a => a.IsDeleted == false && a.AllocationEndDate >= DateTime.Today
                          && a.ProjectID == prj.ProjectID))
                         {
                             throw new InvalidOperationException($"You can't change the Account when there is an active allocation with the previous account {oldAccName}");
@@ -242,7 +242,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                 if (oldEmp.Level2ID != updatedEmp.Level2ID)
                 {
                     Project project = DataContext.Projects.Where(p => p.ProjectAccountID == oldEmp.Level2ID).FirstOrDefault();
-                    if (DataContext.ProjectAllocations.Any(a => a.IsDeleted == false && a.AllocationEndDate >= DateTime.Now
+                    if (DataContext.ProjectAllocations.Any(a => a.IsDeleted == false && a.AllocationEndDate >= DateTime.Today
                      && a.ProjectID == project.ProjectID))
                     {
                         throw new InvalidOperationException($"You can't change the Project when there is an active allocation with the previous Project {project.ProjectName}");
@@ -274,7 +274,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
         {
             return (from emp in Entities
                     where emp.IsDeleted == false && emp.IsManager == true
-                    && (emp.LastWorkingDay.HasValue == false || (emp.LastWorkingDay.HasValue == true && emp.LastWorkingDay.Value >= DateTime.Now))
+                    && (emp.LastWorkingDay.HasValue == false || (emp.LastWorkingDay.HasValue == true && emp.LastWorkingDay.Value >= DateTime.Today))
                     orderby emp.EmployeeID
                     select new EmployeeDto
                     {
@@ -333,12 +333,12 @@ namespace Agilisium.TalentManager.Repository.Repositories
             {
                 return Entities.Count(e => e.IsDeleted == false
                 && (e.LastWorkingDay.HasValue == false
-                || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now)));
+                || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Today)));
             }
             else
             {
                 return Entities.Count(e => e.IsDeleted == false
-                && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now))
+                && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Today))
                 && (e.FirstName.ToLower().StartsWith(searchText.ToLower())
                 || e.LastName.ToLower().StartsWith(searchText.ToLower())));
             }
@@ -409,13 +409,13 @@ namespace Agilisium.TalentManager.Repository.Repositories
         public int PracticeWiseRecordsCount(int practiceID)
         {
             return Entities.Count(e => e.IsDeleted == false
-                && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now)));
+                && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Today)));
         }
 
         public int SubPracticeWiseRecordsCount(int subPracticeID)
         {
             return Entities.Count(e => e.IsDeleted == false
-                && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now)));
+                && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Today)));
         }
 
         public ResourceCountDto GetEmployeesCountSummary()
@@ -425,7 +425,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
                 TotalCount = (from e in Entities
                               where e.IsDeleted == false
-              && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue && e.LastWorkingDay.Value >= DateTime.Now))
+              && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue && e.LastWorkingDay.Value >= DateTime.Today))
                               select e).Count(),
                 DeliveryCount = GetEmployeesCountByBU(BusinessUnit.Delivery),
                 BoCount = GetEmployeesCountByBU(BusinessUnit.BusinessOperations),
@@ -472,8 +472,8 @@ namespace Agilisium.TalentManager.Repository.Repositories
                 join pr in DataContext.Projects on ald.ProjectID equals pr.ProjectID into pre
                 from prd in pre.DefaultIfEmpty()
                 where e.VisaCategoryID.HasValue && e.IsDeleted == false
-                && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue && e.LastWorkingDay.Value >= DateTime.Now))
-                && ald.AllocationEndDate >= DateTime.Now && ald.IsDeleted == false
+                && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue && e.LastWorkingDay.Value >= DateTime.Today))
+                && ald.AllocationEndDate >= DateTime.Today && ald.IsDeleted == false
                 orderby e.FirstName, e.LastName
                 select new EmployeeVisaDto
                 {
@@ -553,7 +553,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                                               join rm in Entities on emp.ReportingManagerID equals rm.EmployeeEntryID into rme
                                               from rmd in rme.DefaultIfEmpty()
                                               where emp.IsDeleted == false && emp.LastWorkingDay.HasValue == false
-                                              || (emp.LastWorkingDay.HasValue == true && emp.LastWorkingDay.Value >= DateTime.Now)
+                                              || (emp.LastWorkingDay.HasValue == true && emp.LastWorkingDay.Value >= DateTime.Today)
                                               orderby emp.EmployeeID
                                               select new EmpAndAllocationDto
                                               {
@@ -565,17 +565,18 @@ namespace Agilisium.TalentManager.Repository.Repositories
                                                   PrimarySkills = emp.PrimarySkills,
                                                   VisaCategory = emp.VisaCategoryID.HasValue ? DataContext.DropDownSubCategories.FirstOrDefault(s => s.SubCategoryID == emp.VisaCategoryID).SubCategoryName : "",
                                                   VisaValidUpto = emp.VisaValidUpto,
-                                                  OveralExperience = emp.OverallExperience,
+                                                  PastExperience = emp.PastExperience,
                                                   ProjectManager = "",
                                                   ReportingManager = rmd.FirstName + " " + rmd.LastName,
+                                                  DateOfJoin = emp.DateOfJoin,
                                               }).Distinct().ToList();
 
             foreach (EmpAndAllocationDto emp in emps)
             {
                 EmpAssetDetail asset = DataContext.EmpAssetDetails.FirstOrDefault(ea => ea.EmployeeEntryID == emp.EmployeeEntryID);
-                emp.PrimarySkills = asset?.PrimarySkills+";"+asset?.SecondarySkills;
-                emp.OveralExperience = asset?.OverallExperience;
-                DateTime today = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+                emp.PrimarySkills = asset?.PrimarySkills + ";" + asset?.SecondarySkills;
+                emp.PastExperience = asset?.PastExperience;
+                DateTime today = new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day);
                 ProjectAllocation allocation = DataContext.ProjectAllocations.Where(pa => pa.EmployeeID == emp.EmployeeEntryID && pa.IsDeleted == false
                 && pa.AllocationEndDate >= today).OrderByDescending(al => al.AllocationEndDate).FirstOrDefault();
 
@@ -646,7 +647,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                         from rmd in rme.DefaultIfEmpty()
 
                         where emp.IsDeleted == false && emp.LastWorkingDay.HasValue == false
-                        || (emp.LastWorkingDay.HasValue == true && emp.LastWorkingDay.Value >= DateTime.Now)
+                        || (emp.LastWorkingDay.HasValue == true && emp.LastWorkingDay.Value >= DateTime.Today)
                         orderby emp.EmployeeID
                         select new EmployeeDto
                         {
@@ -663,6 +664,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                             Certifications = DataContext.EmpCertifications.Count(ec => ec.IsDeleted == false && ec.EmployeeID == emp.EmployeeEntryID),
                             IsTechResource = emp.IsTechResource,
                             OverallExperience = emp.OverallExperience,
+                            PastExperience = emp.PastExperience,
                         };
 
             if (string.IsNullOrEmpty(searchText) == false)
@@ -693,6 +695,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                 PassportValidUpto = employeeDto.PassportValidUpto,
                 TechnicalRank = employeeDto.TechnicalRank,
                 OverallExperience = employeeDto.OverallExperience,
+                PastExperience = employeeDto.PastExperience,
                 VisaCategoryID = employeeDto.VisaCategoryID,
                 VisaValidUpto = employeeDto.VisaValidUpto,
                 IsDeleted = false,
@@ -729,6 +732,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
             targetEntity.PassportValidUpto = sourceEntity.PassportValidUpto;
             targetEntity.TechnicalRank = sourceEntity.TechnicalRank;
             targetEntity.OverallExperience = sourceEntity.OverallExperience;
+            targetEntity.PastExperience = sourceEntity.PastExperience;
             targetEntity.VisaCategoryID = sourceEntity.VisaCategoryID;
             targetEntity.VisaValidUpto = sourceEntity.VisaValidUpto;
             targetEntity.Level1ID = sourceEntity.Level1ID;
@@ -748,9 +752,9 @@ namespace Agilisium.TalentManager.Repository.Repositories
                     join a in DataContext.ProjectAllocations on e.EmployeeEntryID equals a.EmployeeID
                     where a.AllocationTypeID == (int)allocationType
                     && e.LastWorkingDay.HasValue == false
-                    && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now))
+                    && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Today))
                     && e.IsDeleted == false && a.IsDeleted == false
-                    && a.AllocationEndDate >= DateTime.Now
+                    && a.AllocationEndDate >= DateTime.Today
                     select a.EmployeeID).Distinct().Count();
         }
 
@@ -758,7 +762,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
         {
             return (from e in Entities
                     where e.IsDeleted == false
-                   && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Now))
+                   && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Today))
                    && e.BusinessUnitID == (int)bu
                     select e).Count();
         }

@@ -178,7 +178,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         {
             EmployeeModel emp = new EmployeeModel()
             {
-                DateOfJoin = DateTime.Now,
+                DateOfJoin = DateTime.Today,
             };
 
             try
@@ -650,7 +650,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                     //recordString.Append($"{dto.StrengthArea},");
                     recordString.Append($"{dto.VisaCategory},");
                     recordString.Append($"{dto.VisaValidUpto?.ToString("dd-MMM-yyyy")},");
-                    recordString.Append($"{dto.OveralExperience},");
+                    recordString.Append($"{dto.PastExperience},");
                     //recordString.Append($"{dto.AccountName},");
                     //recordString.Append($"{dto.ProjectName},");
                     recordString.Append($"{dto.ProjectManager},");
@@ -668,7 +668,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             }
             byte[] byteArr = Encoding.ASCII.GetBytes(recordString.ToString());
             MemoryStream stream = new MemoryStream(byteArr);
-            return File(stream, "application/vnd.ms-excel", $"Employees As On {DateTime.Now.Year}/{DateTime.Now.Month}/{DateTime.Now.Day}.csv");
+            return File(stream, "application/vnd.ms-excel", $"Employees As On {DateTime.Today.Year}/{DateTime.Today.Month}/{DateTime.Today.Day}.csv");
         }
 
         public ActionResult AddCertification(int? cid, int? eid)
@@ -775,7 +775,17 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         {
             IEnumerable<EmployeeDto> employees = empService.GetAllEmployees(searchText, RecordsPerPage, pageNo);
             IEnumerable<EmployeeModel> employeeModels = Mapper.Map<IEnumerable<EmployeeDto>, IEnumerable<EmployeeModel>>(employees);
-
+            foreach(EmployeeModel model in employeeModels)
+            {
+                if (model.PastExperience.HasValue)
+                {
+                    model.OverallExperience = $"{String.Format("{0:0.0}",model.PastExperience.Value + ((float)DateTime.Today.Subtract(model.DateOfJoin).TotalDays / 365))}";
+                }
+                else
+                {
+                    model.OverallExperience = $"{String.Format("{0:0.0}", (float)DateTime.Today.Subtract(model.DateOfJoin).TotalDays / 365)}";
+                }
+            }
             return employeeModels;
         }
 
@@ -783,6 +793,17 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         {
             IEnumerable<EmployeeDto> employees = empService.GetAllPastEmployees(RecordsPerPage, pageNo);
             IEnumerable<EmployeeModel> employeeModels = Mapper.Map<IEnumerable<EmployeeDto>, IEnumerable<EmployeeModel>>(employees);
+            foreach (EmployeeModel model in employeeModels)
+            {
+                if (model.PastExperience.HasValue)
+                {
+                    model.OverallExperience = $"{String.Format("{0:0.0}", model.PastExperience.Value + ((float)DateTime.Today.Subtract(model.DateOfJoin).TotalDays / 365))}";
+                }
+                else
+                {
+                    model.OverallExperience = $"{String.Format("{0:0.0}", (float)DateTime.Today.Subtract(model.DateOfJoin).TotalDays / 365)}";
+                }
+            }
 
             return employeeModels;
         }

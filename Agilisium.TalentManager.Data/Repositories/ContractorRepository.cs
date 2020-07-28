@@ -120,7 +120,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         public int GetActiveContractorsCount()
         {
-            return Entities.Where(p => p.IsDeleted == false && p.EndDate >= DateTime.Now).Count();
+            return Entities.Where(p => p.IsDeleted == false && p.EndDate >= DateTime.Today).Count();
         }
 
         private Contractor CreateBusinessEntity(ContractorDto contractorDto, bool isNewEntity = false)

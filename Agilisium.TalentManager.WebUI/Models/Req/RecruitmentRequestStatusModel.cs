@@ -8,7 +8,7 @@ namespace Agilisium.TalentManager.WebUI.Models
     {
         public RecruitmentRequestStatusModel()
         {
-            RequestUpdatedOn = DateTime.Now;
+            RequestUpdatedOn = DateTime.Today;
         }
 
         public int RecruitmentRequestID { get; set; }

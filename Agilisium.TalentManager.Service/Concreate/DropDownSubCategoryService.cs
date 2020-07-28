@@ -20,19 +20,25 @@ namespace Agilisium.TalentManager.Service.Concreate
             repository.Add(subCategory);
         }
 
+        public bool Exists(string subCategoryName, int categoryID)
+        {
+            return repository.Exists(subCategoryName, categoryID);
+        }
+
         public bool Exists(string subCategoryName)
         {
             return repository.Exists(subCategoryName);
         }
+
 
         public bool Exists(int id)
         {
             return repository.Exists(id);
         }
 
-        public bool Exists(string subCategoryName, int id)
+        public bool Exists(string subCategoryName, int categoryID, int id)
         {
-            return repository.Exists(subCategoryName, id);
+            return repository.Exists(subCategoryName,categoryID, id);
         }
 
         public IEnumerable<DropDownSubCategoryDto> GetAll(int pageSize = -1, int pageNo = -1)

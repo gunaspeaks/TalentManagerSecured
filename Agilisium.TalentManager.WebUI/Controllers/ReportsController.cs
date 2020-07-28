@@ -20,10 +20,11 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         private readonly IPracticeService practiceService;
         private readonly IProjectAccountService accountsService;
         private readonly IDropDownSubCategoryService subCategoryService;
+        private readonly IEmployeeTechService techService;
 
         public ReportsController(IAllocationService allocationService, IProjectService projectService,
             IEmployeeService empService, IPracticeService practiceService, IProjectAccountService accountsService,
-            IDropDownSubCategoryService subCategoryService)
+            IDropDownSubCategoryService subCategoryService, IEmployeeTechService techService)
         {
             this.allocationService = allocationService;
             this.projectService = projectService;
@@ -31,6 +32,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             this.practiceService = practiceService;
             this.accountsService = accountsService;
             this.subCategoryService = subCategoryService;
+            this.techService = techService;
         }
 
         // GET: Reports
@@ -39,6 +41,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             return View();
         }
 
+        [HttpGet]
         public ActionResult ManagerWiseAllocations()
         {
             List<ManagerWiseAllocationModel> managerSummary = new List<ManagerWiseAllocationModel>();
@@ -69,6 +72,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             return View(model);
         }
 
+        [HttpGet]
         public ActionResult UtilizationReportSummary()
         {
             List<BillabilityWiseAllocationSummaryModel> allocations = new List<BillabilityWiseAllocationSummaryModel>();
@@ -217,6 +221,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             return File(stream, "application/vnd.ms-excel", "Resource Allocation Report.csv");
         }
 
+        [HttpGet]
         public ActionResult VisaHoldingEmployees()
         {
             List<EmployeeVisaModel> entries = new List<EmployeeVisaModel>();
@@ -232,6 +237,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             return View(entries);
         }
 
+        [HttpGet]
         public ActionResult PodWiseCount()
         {
             List<PodWiseHeadCountModel> entries = new List<PodWiseHeadCountModel>();
@@ -289,7 +295,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             UtilizationReportDetailViewModel model = new UtilizationReportDetailViewModel();
             try
             {
-                if (from.HasValue == false && upto.HasValue == false)
+                if (from.HasValue  == false || upto.HasValue == false)
                 {
                     DisplayWarningMessage("No records found. Please try with different dates");
                 }
@@ -343,7 +349,208 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             return File(stream, "application/vnd.ms-excel", "Billable Allocations Report.csv");
         }
 
+        public ActionResult GetEmpSkillsReport(string filterBy, int? filterValue, string filterText = "", int page = 1)
+        {
+            EmployeeSkillsReportViewModel viewModel = new EmployeeSkillsReportViewModel()
+            {
+                FilterBy = filterBy,
+                FilterValue = filterValue,
+                FilterText = filterText,
+            };
+
+            try
+            {
+                InitializeEmpSkillsReportPage(viewModel);
+
+                viewModel.PagingInfo = new PagingInfo
+                {
+                    TotalRecordsCount = 0,
+                    RecordsPerPage = RecordsPerPage,
+                    CurentPageNo = page
+                };
+
+                viewModel.PagingInfo.TotalRecordsCount = techService.GetEmployeeSkillsReportCount(filterBy, filterValue.HasValue ? filterValue.Value.ToString() : "", filterText);
+                if (viewModel.PagingInfo.TotalRecordsCount > 0)
+                {
+                    List<EmployeeSkillsReportDto> empSkillsDto = techService.GetEmployeeSkillsReport(filterBy, filterValue.HasValue ? filterValue.Value.ToString() : "", filterText, RecordsPerPage, page);
+                    var empReport = Mapper.Map<List<EmployeeSkillsReportDto>, List<EmployeeSkillsReportModel>>(empSkillsDto);
+                    foreach (var model in empReport)
+                    {
+                        float overallExp = 0;
+                        if (model.PastExperience.HasValue)
+                        {
+                            overallExp = model.PastExperience.Value + ((float)DateTime.Today.Subtract(model.DateOfJoin).TotalDays / 365);
+                        }
+                        else
+                        {
+                            overallExp = (float)DateTime.Today.Subtract(model.DateOfJoin).TotalDays / 365;
+                        }
+                        model.OverallExperience = string.Format("{0:0.0}", overallExp);
+                    }
+                    viewModel.EmployeeSkillsReports = empReport;
+                }
+                else
+                {
+                    DisplayWarningMessage("No records to display");
+                }
+            }
+            catch (Exception exp)
+            {
+                DisplayLoadErrorMessage(exp);
+            }
+
+            return View(viewModel);
+        }
+
+        public FileStreamResult DownloadEmpSkillsReport(string filterBy, int? filterValue, string filterText = "", int page = 1)
+        {
+            StringBuilder recordString = new StringBuilder($"Employee ID,Employee Name,Account Name,Project Name,Billability,Primary Skills,Secondary Skills,Overall Experience,Project Manager,Reporting Manager,Allocated From,Allocated Upto,Last Working Day{Environment.NewLine}");
+            try
+            {
+                List<EmployeeSkillsReportDto> empSkillsDto = techService.GetEmployeeSkillsReport(filterBy, filterValue.HasValue ? filterValue.Value.ToString() : "", filterText, RecordsPerPage, -1);
+                foreach (EmployeeSkillsReportDto dto in empSkillsDto)
+                {
+                    recordString.Append($"{dto.EmployeeID},");
+                    recordString.Append($"{dto.EmployeeName},");
+                    recordString.Append($"{dto.AccountName},");
+                    recordString.Append($"{dto.ProjectName},");
+                    recordString.Append($"{dto.AllocationType},");
+                    recordString.Append($"{dto.PrimarySkills?.Replace(",", ";")},");
+                    recordString.Append($"{dto.SecondarySkills?.Replace(",", ";")},");
+                    float overallExp = 0;
+                    if (dto.PastExperience.HasValue)
+                    {
+                        overallExp = dto.PastExperience.Value + ((float)DateTime.Today.Subtract(dto.DateOfJoin).TotalDays / 365);
+                    }
+                    else
+                    {
+                        overallExp = (float)DateTime.Today.Subtract(dto.DateOfJoin).TotalDays / 365;
+                    }
+
+                    recordString.Append($"{String.Format("{0:0.0}", overallExp)},");
+                    recordString.Append($"{dto.ProjectManager},");
+                    recordString.Append($"{dto.ReportingManager},");
+                    recordString.Append($"{dto.AlloctionStartDate?.ToString("dd/MMM/yyyy")},");
+                    recordString.Append($"{dto.AllocationEndDate?.ToString("dd/MMM/yyyy")},");
+                    recordString.Append($"{dto.LastWorkingDay?.ToString("dd/MMM/yyyy")}{Environment.NewLine}");
+                }
+            }
+            catch (Exception exp)
+            {
+                DisplayLoadErrorMessage(exp);
+            }
+            byte[] byteArr = Encoding.ASCII.GetBytes(recordString.ToString());
+            MemoryStream stream = new MemoryStream(byteArr);
+            return File(stream, "application/vnd.ms-excel", "Billable Allocations Report.csv");
+        }
+
+        private void InitializeEmpSkillsReportPage(EmployeeSkillsReportViewModel viewModel)
+        {
+            viewModel.FilterTypeDropDownItems = new List<SelectListItem>
+            {
+                new SelectListItem
+                {
+                    Text = "Project Account",
+                    Value = "acc"
+                },
+                new SelectListItem
+                {
+                    Text = "Project Name",
+                    Value = "prj"
+                },
+                new SelectListItem
+                {
+                    Text = "Allocation Type",
+                    Value = "allc"
+                },
+                new SelectListItem
+                {
+                    Text = "Employee Name",
+                    Value = "emp"
+                },
+                new SelectListItem
+                {
+                    Text = "Tech. SKills",
+                    Value = "techs"
+                },
+                new SelectListItem
+                {
+                    Text = "Employee ID",
+                    Value = "eid"
+                },
+                new SelectListItem
+                {
+                    Text = "Total Experience",
+                    Value = "tot",
+                },
+                new SelectListItem
+                {
+                    Text = "Project Manager",
+                    Value = "pm"
+                },
+                new SelectListItem
+                {
+                    Text = "Reporting Manager",
+                    Value = "RM"
+                }
+            };
+
+            if (string.IsNullOrEmpty(viewModel.FilterBy) == false && Session["FilterValueListItems"] != null)
+            {
+                viewModel.FilterValueDropDownItems = (List<SelectListItem>)Session["FilterValueListItems"];
+            }
+        }
+
+        [HttpPost]
+        public JsonResult LoadFilterValueListForSkillsReport(string filterBy)
+        {
+            List<SelectListItem> filterValues = new List<SelectListItem>();
+            switch (filterBy)
+            {
+                case "emp":
+                    filterValues = GetEmployeesList();
+                    break;
+                case "acc":
+                    filterValues = GetAllAccountsList();
+                    break;
+                case "prj":
+                    filterValues = GetProjectsList();
+                    break;
+                case "allc":
+                    filterValues = GetAllocationTypeList();
+                    break;
+                case "pm":
+                case "rm":
+                    filterValues = GetAllManagersList();
+                    break;
+            }
+
+
+            filterValues.Insert(0, new SelectListItem
+            {
+                Text = "Please Select",
+                Value = "0",
+            });
+            Session["FilterValueListItems"] = filterValues;
+            return Json(filterValues);
+        }
+
         #region Private Methods
+
+        private List<SelectListItem> GetAllManagersList()
+        {
+            List<EmployeeDto> employees = empService.GetAllManagers();
+
+            List<SelectListItem> empDDList = (from e in employees
+                                              select new SelectListItem
+                                              {
+                                                  Text = $"{e.FirstName} {e.LastName}",
+                                                  Value = e.EmployeeEntryID.ToString()
+                                              }).OrderBy(i => i.Text).ToList();
+
+            ViewBag.ProjectManagerListItems = empDDList;
+            return empDDList;
+        }
 
         private List<SelectListItem> GetEmployeesList()
         {
@@ -355,7 +562,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                                                Text = $"{e.FirstName} {e.LastName}",
                                                Value = e.EmployeeEntryID.ToString()
                                            }).OrderBy(i => i.Text).ToList();
-
+            //pmList.Insert(0, new SelectListItem { Text = "All Employees", Value = "alle" });
             return pmList;
         }
 
@@ -385,6 +592,20 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                                                       Value = p.PracticeID.ToString()
                                                   }).ToList();
             return practiceItems;
+        }
+
+        private List<SelectListItem> GetAllocationTypeList()
+        {
+            IEnumerable<DropDownSubCategoryDto> buList = subCategoryService.GetSubCategories((int)CategoryType.UtilizationCode);
+
+            List<SelectListItem> allocationTypeItems = (from c in buList
+                                                        orderby c.SubCategoryName
+                                                        select new SelectListItem
+                                                        {
+                                                            Text = c.SubCategoryName,
+                                                            Value = c.SubCategoryID.ToString()
+                                                        }).ToList();
+            return allocationTypeItems;
         }
 
         private List<SelectListItem> GetAllAccountsList()

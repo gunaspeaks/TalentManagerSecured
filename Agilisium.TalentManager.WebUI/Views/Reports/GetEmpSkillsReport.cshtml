@@ -1,0 +1,234 @@
+﻿@using Agilisium.TalentManager.WebUI.Helpers
+@model Agilisium.TalentManager.WebUI.Models.EmployeeSkillsReportViewModel
+
+@{
+    ViewBag.Title = "Employee Skillset Report With Current Allocations";
+}
+<script>
+    $(document).ready(function () {
+        var selText = $("#FilterBy option:selected").html().toLowerCase();
+        if (selText == "tech. skills" || selText == "employee id" || selText == "total experience") {
+            document.getElementById("FilterValue").style.display = "none";
+            document.getElementById("FilterText").style.display = "block";
+        }
+        else {
+            document.getElementById("FilterValue").style.display = "block";
+            document.getElementById("FilterText").style.display = "none";
+            //loadFilterDropDown();
+        }
+    });
+
+    $(function () {
+        $("#FilterBy").change(function (evt) {
+            var selText = $("#FilterBy option:selected").html().toLowerCase();
+            if (selText == "tech. skills" || selText == "employee id" || selText == "total experience") {
+                document.getElementById("FilterValue").style.display = "none";
+                document.getElementById("FilterText").style.display = "block";
+            }
+            else {
+                document.getElementById("FilterValue").style.display = "block";
+                document.getElementById("FilterText").style.display = "none";
+                loadFilterDropDown();
+            }
+        });
+    });
+
+    loadFilterDropDown = function () {
+        $.ajax({
+            url: rootUrl + "Reports/LoadFilterValueListForSkillsReport",
+            type: 'POST',
+            data: { filterBy: $("#FilterBy").val() },
+            success: function (data) {
+                $('#FilterValue').empty();
+                $.each(data, function () {
+                    $("#FilterValue").append($("<option></option>").val(parseInt(this['Value'])).text(this['Text']));
+                });
+            },
+            error: function (xhr) { alert('Error while loading filter values'); }
+        });
+    }
+
+</script>
+
+
+<div class="panel panel-default" style="width:auto">
+    <div style="text-align:center" class="panel-heading">
+        <h3><b>Employee Skillset Report With Current Allocations</b></h3><text>(<b> @Model.PagingInfo.TotalRecordsCount </b> records found)</text> @Html.ActionLink("(Download as CSV Format)", "DownloadEmpSkillsReport", new { filterType = Model.FilterBy, filterValue = Model.FilterValue, filterText = Model.FilterText })
+    </div>
+    <div>
+        <table style="width:100%">
+            <tr>
+                <td>
+                    <div class="panel-body">
+                        @using (Html.BeginForm("GetEmpSkillsReport", "Reports", new { filterType = Model.FilterBy, filterValue = Model.FilterValue, filterText = Model.FilterText, page = 1 }))
+                        {
+                            <table style=" align-self:center;width:50%">
+                                <tr>
+                                    <td width="30%">
+                                        @Html.DropDownListFor(model => model.FilterBy, Model.FilterTypeDropDownItems, "Filter By", new { @class = "form-control" })
+                                    </td>
+                                    <td width="5px"></td>
+                                    <td width="40%">
+                                        @Html.DropDownListFor(model => model.FilterValue, Model.FilterValueDropDownItems, "Please Select", new { @class = "form-control" })
+                                        @Html.TextBoxFor(model => model.FilterText, new { @class = "form-control", @style = "display:none" })
+                                    </td>
+                                    <td width="5px"></td>
+                                    <td>
+                                        <input type="submit" class="btn btn-primary" value="Show" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                </tr>
+                            </table>
+                        }
+                        <div>
+                            <table style="font-size:11px; width:98%" class="table table-striped table-condensed table-bordered">
+                                <tr>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.EmployeeSkillsReports.FirstOrDefault().EmployeeID)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.EmployeeSkillsReports.FirstOrDefault().EmployeeName)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.EmployeeSkillsReports.FirstOrDefault().AccountName)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.EmployeeSkillsReports.FirstOrDefault().ProjectName)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.EmployeeSkillsReports.FirstOrDefault().AllocationType)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.EmployeeSkillsReports.FirstOrDefault().OverallExperience)
+                                    </th>
+                                    <th width="15%" class="text-center">
+                                        <div>
+                                            <text>Primary Skills</text>
+                                            <text>(Expert+Advanced+Proficient)</text>
+                                        </div>
+                                    </th>
+                                    <th width="15%" class="text-center">
+                                        <div>
+                                            <text>Secondary Skills</text><br />
+                                            <text>(Basic+Limited)</text>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.EmployeeSkillsReports.FirstOrDefault().ProjectManager)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.EmployeeSkillsReports.FirstOrDefault().ReportingManager)
+                                    </th>
+                                    <th class="text-right">
+                                        @Html.DisplayNameFor(model => model.EmployeeSkillsReports.FirstOrDefault().AlloctionStartDate)
+                                    </th>
+                                    <th class="text-right">
+                                        @Html.DisplayNameFor(model => model.EmployeeSkillsReports.FirstOrDefault().AllocationEndDate)
+                                    </th>
+                                </tr>
+
+                                @foreach (var item in Model.EmployeeSkillsReports)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.EmployeeID)&nbsp;
+                                            @if (item.LastWorkingDay.HasValue)
+                                            {
+                                                <span style="color:red;font-size:large" data-toggle="tooltip" title="Last Working Day: @item.LastWorkingDay.Value.ToString("dd/MMM/yyyy")">***</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.EmployeeName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.AccountName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.ProjectName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.AllocationType)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.OverallExperience)
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <span data-toggle="tooltip" title="@item.PrimarySkills">
+                                                    @if (!String.IsNullOrWhiteSpace(item.PrimarySkills))
+                                                    {
+                                                        if (item.PrimarySkills.Length > 50)
+                                                        {
+                                                            <text>@item.PrimarySkills.Substring(0, 50) ......</text>
+                                                        }
+                                                        else
+                                                        {
+                                                            <text> @item.PrimarySkills</text>
+                                                        }
+                                                    }
+                                                </span>
+                                            </div>
+                                            @*@Html.DisplayFor(modelItem => item.PrimarySkills)*@
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <span data-toggle="tooltip" title="@item.SecondarySkills">
+                                                    @if (!String.IsNullOrWhiteSpace(item.SecondarySkills))
+                                                    {
+                                                        if (item.SecondarySkills.Length > 50)
+                                                        {
+                                                            <text>@item.SecondarySkills.Substring(0, 50) ......</text>
+                                                        }
+                                                        else
+                                                        {
+                                                            <text> @item.SecondarySkills</text>
+                                                        }
+                                                    }
+                                                </span>
+                                            </div>
+                                            @*@Html.DisplayFor(modelItem => item.SecondarySkills)*@
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.ProjectManager)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.ReportingManager)
+                                        </td>
+                                        <td class="text-right">
+                                            @if (item.AlloctionStartDate.HasValue)
+                                            {
+                                                <text>@item.AlloctionStartDate.Value.ToString("dd/MMM/yyyy")</text>
+                                            }
+                                            else
+                                            {
+                                                <text>&nbsp;</text>
+                                            }
+                                        </td>
+                                        <td class="text-right">
+                                            @if (item.AllocationEndDate.HasValue)
+                                            {
+                                                <text>@item.AllocationEndDate.Value.ToString("dd/MMM/yyyy")</text>
+                                            }
+                                            else
+                                            {
+                                                <text>&nbsp;</text>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+
+                            </table>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="panel-footer">
+        <div class="btn-group pull-right">
+            @Html.AddPagination(Model.PagingInfo, x => Url.Action("GetEmpSkillsReport", new { filterBy = Model.FilterBy, filterValue = Model.FilterValue, filterText = Model.FilterText, page = x }))
+        </div>
+    </div>
+</div>

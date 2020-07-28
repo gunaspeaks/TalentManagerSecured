@@ -38,41 +38,41 @@ namespace Agilisium.TalentManager.ServiceProcessors
             if (serviceSettings.ExecutionInterval == "Daily")
             {
                 DateTime executedDate = serviceSettings.ExecutedDate.Value;
-                return executedDate.Day == DateTime.Now.Day && executedDate.Month == DateTime.Now.Month && executedDate.Year == DateTime.Now.Year;
+                return executedDate.Day == DateTime.Today.Day && executedDate.Month == DateTime.Today.Month && executedDate.Year == DateTime.Today.Year;
             }
 
             if (serviceSettings.ExecutionInterval == "Weekly")
             {
-                DateTime startDate = DateTime.Now, endDate = DateTime.Now;
-                switch (DateTime.Now.DayOfWeek)
+                DateTime startDate = DateTime.Today, endDate = DateTime.Today;
+                switch (DateTime.Today.DayOfWeek)
                 {
                     case DayOfWeek.Sunday:
-                        startDate = DateTime.Now;
-                        endDate = DateTime.Now.AddDays(6);
+                        startDate = DateTime.Today;
+                        endDate = DateTime.Today.AddDays(6);
                         break;
                     case DayOfWeek.Monday:
-                        startDate = DateTime.Now.AddDays(-1);
-                        endDate = DateTime.Now.AddDays(5);
+                        startDate = DateTime.Today.AddDays(-1);
+                        endDate = DateTime.Today.AddDays(5);
                         break;
                     case DayOfWeek.Tuesday:
-                        startDate = DateTime.Now.AddDays(-2);
-                        endDate = DateTime.Now.AddDays(4);
+                        startDate = DateTime.Today.AddDays(-2);
+                        endDate = DateTime.Today.AddDays(4);
                         break;
                     case DayOfWeek.Wednesday:
-                        startDate = DateTime.Now.AddDays(-3);
-                        endDate = DateTime.Now.AddDays(3);
+                        startDate = DateTime.Today.AddDays(-3);
+                        endDate = DateTime.Today.AddDays(3);
                         break;
                     case DayOfWeek.Thursday:
-                        startDate = DateTime.Now.AddDays(-4);
-                        endDate = DateTime.Now.AddDays(2);
+                        startDate = DateTime.Today.AddDays(-4);
+                        endDate = DateTime.Today.AddDays(2);
                         break;
                     case DayOfWeek.Friday:
-                        startDate = DateTime.Now.AddDays(-5);
-                        endDate = DateTime.Now.AddDays(1);
+                        startDate = DateTime.Today.AddDays(-5);
+                        endDate = DateTime.Today.AddDays(1);
                         break;
                     case DayOfWeek.Saturday:
-                        DateTime.Now.AddDays(-6);
-                        endDate = DateTime.Now;
+                        DateTime.Today.AddDays(-6);
+                        endDate = DateTime.Today;
                         break;
                 }
 
@@ -81,8 +81,8 @@ namespace Agilisium.TalentManager.ServiceProcessors
 
             if (serviceSettings.ExecutionInterval == "Monthly")
             {
-                DateTime startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-                DateTime endDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 28);
+                DateTime startDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+                DateTime endDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 28);
                 return serviceSettings.ExecutedDate.Value >= startDate && serviceSettings.ExecutedDate.Value <= endDate;
             }
 

@@ -1055,8 +1055,8 @@ namespace Agilisium.TalentManager.PostgresModel
         //            {
         //                ProjectName = "Lab " + practice.PracticeName.Replace(" ",""),
         //                BusinessUnitID = practice.BusinessUnitID,
-        //                EndDate = new DateTime(DateTime.Now.Year, 12, 31),
-        //                StartDate = new DateTime(DateTime.Now.Year, 1, 1),
+        //                EndDate = new DateTime(DateTime.Today.Year, 12, 31),
+        //                StartDate = new DateTime(DateTime.Today.Year, 1, 1),
         //                PracticeID = practice.PracticeID
         //            }
         //        };

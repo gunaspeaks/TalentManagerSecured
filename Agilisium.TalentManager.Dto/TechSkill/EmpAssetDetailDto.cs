@@ -31,5 +31,7 @@ namespace Agilisium.TalentManager.Dto
         public string ReportingTo { get; set; }
 
         public string EmailID { get; set; }
+
+        public float? PastExperience { get; set; }
     }
 }

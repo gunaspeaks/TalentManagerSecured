@@ -16,12 +16,14 @@ namespace Agilisium.TalentManager.Model.Entities
 
         public string SecondarySkills { get; set; }
 
-        public string OverallExperience { get; set; }
+        public float? PastExperience { get; set; }
 
         public int VisaStatusID { get; set; }
 
         public string Designation { get; set; }
 
         public int EmployeeEntryID { get; set; }
+
+        public string OverallExperience { get; set; }
     }
 }

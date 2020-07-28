@@ -109,7 +109,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    if (subCategoryService.Exists(subCategory.SubCategoryName))
+                    if (subCategoryService.Exists(subCategory.SubCategoryName, subCategory.CategoryID))
                     {
                         DisplayWarningMessage($"Sub-Category Name '{subCategory.SubCategoryName}' is duplicate");
                         return View(subCategory);

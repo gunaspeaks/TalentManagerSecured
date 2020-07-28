@@ -10,7 +10,7 @@ namespace Agilisium.TalentManager.WebUI.Models
     {
         public RecruitmentRequestModel()
         {
-            RequestedDate = DateTime.Now;
+            RequestedDate = DateTime.Today;
             TotalPosition = 1;
         }
 

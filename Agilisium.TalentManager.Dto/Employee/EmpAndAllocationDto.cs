@@ -28,7 +28,7 @@ namespace Agilisium.TalentManager.Dto
 
         public int? TechnicalRank { get; set; }
 
-        public string OveralExperience { get; set; }
+        public float? PastExperience { get; set; }
 
         public string AllocationType { get; set; }
 
@@ -47,5 +47,7 @@ namespace Agilisium.TalentManager.Dto
         public string BusinessUnit { get; set; }
 
         public string StrengthArea { get; set; }
+
+        public DateTime DateOfJoin { get; set; }
     }
 }

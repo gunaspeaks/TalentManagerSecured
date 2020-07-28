@@ -11,7 +11,7 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
-        generateEmployeeIDForEmpPage();
+        //generateEmployeeIDForEmpPage();
 
         $("#DateOfJoin").datepicker({
 
@@ -251,8 +251,8 @@
                         <td width="2%"></td>
                         <td>
                             <div class="form-group">
-                                @Html.LabelFor(model => model.OverallExperience)
-                                @Html.EditorFor(model => model.OverallExperience, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.LabelFor(model => model.PastExperience)
+                                @Html.EditorFor(model => model.PastExperience, new { htmlAttributes = new { @class = "form-control" } })
                             </div>
                         </td>
                         <td width="2%"></td>
@@ -302,7 +302,12 @@
                             </div>
                         </td>
                         <td width="2%"></td>
-                        <td></td>
+                        <td>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.LastWorkingDay)
+                                @Html.EditorFor(model => model.LastWorkingDay, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
                     </tr>
                     <tr>
                         <td>

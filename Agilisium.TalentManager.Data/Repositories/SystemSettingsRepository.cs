@@ -79,8 +79,8 @@ namespace Agilisium.TalentManager.Repository.Repositories
         public void UpdateWindowsServiceStatus(WindowsServiceSettingsDto serviceSettings)
         {
             WindowsServiceSettings winService = DataContext.WindowsServiceSettingEntries.FirstOrDefault(w => w.ServiceID == serviceSettings.ServiceID);
-            winService.ExecutedDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
-            winService.ExecutedTime = $"{DateTime.Now.Hour}:{DateTime.Now.Minute}";
+            winService.ExecutedDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day);
+            winService.ExecutedTime = $"{DateTime.Today.Hour}:{DateTime.Today.Minute}";
             winService.ExecutionInterval = serviceSettings.ExecutionInterval;
             winService.ServiceName = serviceSettings.ServiceName;
             winService.UpdateTimeStamp(serviceSettings.LoggedInUserName);

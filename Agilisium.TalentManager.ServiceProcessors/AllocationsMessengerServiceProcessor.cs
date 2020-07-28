@@ -59,7 +59,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
             ResourceCountDto dto = empService.GetEmployeesCountSummary();
             string emailTemplateContent = FilesHandler.GetFileContent(templateFilePath);
             StringBuilder emailBody = new StringBuilder(emailTemplateContent);
-            emailBody.Replace("__TODAY__", DateTime.Now.Year.ToString() + "/" + DateTime.Now.Month + "/" + DateTime.Now.Day);
+            emailBody.Replace("__TODAY__", DateTime.Today.Year.ToString() + "/" + DateTime.Today.Month + "/" + DateTime.Today.Day);
             emailBody.Replace("__TOTAL_COUNT__", dto.TotalCount.ToString());
             emailBody.Replace("__DELIVERY_COUNT__", dto.DeliveryCount.ToString());
             emailBody.Replace("__BD_COUNT__", dto.BdCount.ToString());
@@ -99,7 +99,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
                 }
 
                 
-                string fileName = $"ResourceAllocationReport-AsOn-{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}.csv";
+                string fileName = $"ResourceAllocationReport-AsOn-{DateTime.Today.Year}-{DateTime.Today.Month}-{DateTime.Today.Day}.csv";
                 filePath = FilesHandler.CreateFile(appTempDirectory, fileName, recordString.ToString());
             }
             catch (Exception exp)

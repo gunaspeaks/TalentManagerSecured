@@ -294,7 +294,7 @@ namespace Agilisium.TalentManager.Tools.DataUploader
 
                     row["BU"] = rawDataGrid.Rows[rowNo].Cells[2].Value?.ToString();
 
-                    DateTime dtDOJ = DateTime.Now;
+                    DateTime dtDOJ = DateTime.Today;
                     if (rawDataGrid.Rows[rowNo].Cells[3].Value != null)
                     {
                         string dtStr = rawDataGrid.Rows[rowNo].Cells[3].Value.ToString();

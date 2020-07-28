@@ -59,5 +59,7 @@ namespace Agilisium.TalentManager.Model.Entities
         public int? Level5ID { get; set; }
 
         public bool? IsManager { get; set; }
+
+        public float? PastExperience { get; set; }
     }
 }

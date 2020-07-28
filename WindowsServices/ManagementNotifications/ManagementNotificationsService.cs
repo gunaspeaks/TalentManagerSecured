@@ -99,18 +99,18 @@ namespace Agilisium.TalentManager.WindowsServices.ManagementNotifications
 
             try
             {
-                if (dayOfExecution != DateTime.Now.Day)
+                if (dayOfExecution != DateTime.Today.Day)
                 {
                     logger.Info($"Service will not be processed today as today is not {dayOfExecution} as configured");
                     return;
                 }
 
                 int reportingDay = 27;
-                if (DateTime.Now.DayOfWeek == DayOfWeek.Thursday)
+                if (DateTime.Today.DayOfWeek == DayOfWeek.Thursday)
                 {
                     reportingDay += 1;
                 }
-                else if (DateTime.Now.DayOfWeek == DayOfWeek.Friday)
+                else if (DateTime.Today.DayOfWeek == DayOfWeek.Friday)
                 {
                     reportingDay += 2;
                 }

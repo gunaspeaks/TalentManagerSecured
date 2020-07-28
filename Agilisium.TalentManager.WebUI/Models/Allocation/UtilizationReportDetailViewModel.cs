@@ -10,8 +10,8 @@ namespace Agilisium.TalentManager.WebUI.Models
     {
         public UtilizationReportDetailViewModel()
         {
-            From = DateTime.Now;
-            Upto = DateTime.Now;
+            From = DateTime.Today;
+            Upto = DateTime.Today;
             Allocations = new List<BillabilityWiseAllocationDetailModel>();
 
             FilterTypeListItems = new List<SelectListItem>

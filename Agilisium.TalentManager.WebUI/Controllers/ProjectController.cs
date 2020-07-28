@@ -76,8 +76,8 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         {
             ProjectModel project = new ProjectModel()
             {
-                StartDate = DateTime.Now,
-                EndDate = DateTime.Now.AddDays(15)
+                StartDate = DateTime.Today,
+                EndDate = DateTime.Today.AddDays(15)
             };
 
             try

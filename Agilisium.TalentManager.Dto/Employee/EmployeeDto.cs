@@ -91,5 +91,7 @@ namespace Agilisium.TalentManager.Dto
         public string Level5 { get; set; }
 
         public bool? IsManager { get; set; }
+
+        public float? PastExperience { get; set; }
     }
 }

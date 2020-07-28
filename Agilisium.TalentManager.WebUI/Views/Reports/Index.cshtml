@@ -3,52 +3,40 @@
     ViewBag.Title = "Resource Management Reports";
 }
 
-<div class="panel panel-default">
-    <div style="text-align:center" class="panel-heading">
-        <h3><b>Resource Management Reports</b></h3>
-    </div>
-    <div class="panel-body">
-        <table>
-            <tr>
-                <td>
-                    @Html.ActionLink("Manager-Wise Allocation Report", "ManagerWiseAllocations", null, new { @class = "btn btn-primary" })
-                </td>
-            </tr>
-            <tr>
-                <td height="5px"></td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.ActionLink("Utilization Report", "UtilizationReportSummary", null, new { @class = "btn btn-primary" })
-                </td>
-            </tr>
-            <tr>
-                <td height="5px"></td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.ActionLink("Resource Allocation Aging Report", "UtilizedDaysSummary", null, new { @class = "btn btn-primary" })
-                </td>
-            </tr>
-            <tr>
-                <td height="5px"></td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.ActionLink("Visa Holding Employees Report", "VisaHoldingEmployees", null, new { @class = "btn btn-primary" })
-                </td>
-            </tr>
-            <tr>
-                <td height="5px"></td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.ActionLink("Billable Allocations for Finance", "BillableAllocations", new { @from = DateTime.Now, @upto = DateTime.Now }, new { @class = "btn btn-primary" })
-                </td>
-            </tr>
-            <tr style="background-color:red; height:5px; visibility:collapse;">
-                <td></td>
-            </tr>
-        </table>
-    </div>
+
+<div class="panel panel-default" style="align-content:center">
+    <table style="margin-left:75px;margin-top:30px;margin-bottom:200px;width:75%;">
+        <tr>
+            <td height="5px" colspan="4"></td>
+        </tr>
+        <tr>
+            <td width="33%">
+                @Html.ActionLink("Manager-Wise Allocation Report", "ManagerWiseAllocations", null, new { @class = "btn btn-primary", @style = "width:90%;height:35px;text-align:center;border-radius:50px" })
+            </td>
+            <td width="33%">
+                @Html.ActionLink("Utilization Report", "UtilizationReportSummary", null, new { @class = "btn btn-primary", @style = "width:90%;text-align:center;border-radius:50px" })
+            </td>
+            <td>
+                @Html.ActionLink("Aging Report (Resource Allocation)", "UtilizedDaysSummary", null, new { @class = "btn btn-primary", @style = "width:90%;text-align:center;border-radius:50px" })
+            </td>
+        </tr>
+        <tr>
+            <td height="20px" colspan="4"></td>
+        </tr>
+        <tr>
+            <td>
+                @Html.ActionLink("Visa Holding Employees Report", "VisaHoldingEmployees", null, new { @class = "btn btn-primary", @style = "width:90%;text-align:center;border-radius:50px" })
+            </td>
+            <td>
+                @Html.ActionLink("Billable Allocations for Finance", "BillableAllocations", new { @from = new DateTime(DateTime.Now.Year, DateTime.Now.Month,1), @upto = DateTime.Today }, new { @class = "btn btn-primary", @style = "width:90%;text-align:center;border-radius:50px" })
+            </td>
+            <td>
+                @Html.ActionLink("Employee Skillset With Allocations", "GetEmpSkillsReport", new { @filterBy = "", @filterValue = "" }, new { @class = "btn btn-primary", @style = "width:90%;text-align:center;border-radius:50px" })
+            </td>
+        </tr>
+        <tr>
+            <td height="5px"></td>
+        </tr>
+
+    </table>
 </div>

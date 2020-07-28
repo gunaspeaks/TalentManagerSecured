@@ -77,7 +77,7 @@ namespace Agilisium.TalentManager.WindowsServices
         {
             logger.Info("");
             logger.Info("*********************************************************************************************");
-            logger.Info($"Service execution triggered on {DateTime.Now.DayOfWeek}");
+            logger.Info($"Service execution triggered on {DateTime.Today.DayOfWeek}");
 
             if (ProcessorHelper.IsExecutionCompleted(ServiceProcessors.WindowsServices.WeeklyAllocationsMailer))
             {
@@ -87,9 +87,9 @@ namespace Agilisium.TalentManager.WindowsServices
 
             try
             {
-                if (dayOfWeek != (int)DateTime.Now.DayOfWeek)
+                if (dayOfWeek != (int)DateTime.Today.DayOfWeek)
                 {
-                    logger.Info($"Skipping service execution as it is {DateTime.Now.DayOfWeek.ToString()}.");
+                    logger.Info($"Skipping service execution as it is {DateTime.Today.DayOfWeek.ToString()}.");
                     return;
                 }
                 logger.Info("Initiating processor");

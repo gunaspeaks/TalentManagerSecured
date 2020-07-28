@@ -46,12 +46,12 @@ namespace Agilisium.TalentManager.ServiceProcessors
 
         public int ProcessAllocations()
         {
-            logger.Info($"Service Execution Time : {DateTime.Now.ToLongTimeString()}");
+            logger.Info($"Service Execution Time : {DateTime.Today.ToLongTimeString()}");
             int newAllocations = 0;
             try
             {
                 List<ProjectAllocationDto> activeAllocations = allocationRepo.GetAllRecords().ToList();
-                List<ProjectAllocationDto> allocationsToProcess = activeAllocations.Where(a => a.AllocationEndDate.Subtract(DateTime.Now).TotalDays <= 31
+                List<ProjectAllocationDto> allocationsToProcess = activeAllocations.Where(a => a.AllocationEndDate.Subtract(DateTime.Today).TotalDays <= 31
                 && a.ProjectName.ToLower().Contains("bench") == false).ToList();
                 logger.Info($"There are {allocationsToProcess.Count} allocations to be processed");
                 foreach (ProjectAllocationDto allocation in allocationsToProcess)
@@ -64,7 +64,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
                         continue;
                     }
 
-                    double daysDifference = allocation.AllocationEndDate.Subtract(DateTime.Now).TotalDays;
+                    double daysDifference = allocation.AllocationEndDate.Subtract(DateTime.Today).TotalDays;
                     logger.Info($"Allocation days difference {daysDifference}");
                     if ((daysDifference > 29 && daysDifference < 31)
                         || (daysDifference > 14 && daysDifference < 16)
@@ -114,7 +114,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
                     if (!allocation.EmployeeEntryID.HasValue) continue;
 
                     logger.Info($"Processing Employee ID {allocation.EmployeeEntryID}");
-                    if (allocationRepo.AnyActiveAllocationInBenchProject(allocation.EmployeeEntryID.Value, DateTime.Now))
+                    if (allocationRepo.AnyActiveAllocationInBenchProject(allocation.EmployeeEntryID.Value, DateTime.Today))
                     {
                         logger.Info("found another allocation in bench project. This employee will not be moved to a new bench project");
                         // found another allocation with the extended date. igore this allocation
@@ -185,7 +185,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
             //ProjectAllocationDto newAllocation = new ProjectAllocationDto
             //{
             //    AllocationEndDate = benchProject.EndDate,
-            //    AllocationStartDate = DateTime.Now,
+            //    AllocationStartDate = DateTime.Today,
             //    AllocationTypeID = (int)AllocationType.NonCommittedBuffer,
             //    EmployeeID = employeeID,
             //    PercentageOfAllocation = 100,
@@ -293,7 +293,7 @@ namespace Agilisium.TalentManager.ServiceProcessors
 
             StringBuilder emailBody = new StringBuilder(emailTemplateContent);
             CultureInfo ci = Thread.CurrentThread.CurrentUICulture;
-            emailBody.Replace("__START_DATE__", $"{DateTime.Now.Day}/{ci.DateTimeFormat.GetAbbreviatedMonthName(DateTime.Now.Month)}/{DateTime.Now.Year}");
+            emailBody.Replace("__START_DATE__", $"{DateTime.Today.Day}/{ci.DateTimeFormat.GetAbbreviatedMonthName(DateTime.Today.Month)}/{DateTime.Today.Year}");
             emailBody.Replace("__END_DATE__", $"{benchProject.EndDate.Day}/{ci.DateTimeFormat.GetAbbreviatedMonthName(benchProject.EndDate.Month)}/{benchProject.EndDate.Year}");
             emailBody.Replace("__RESOURCE_NAME__", $"{employee.FirstName} {employee.LastName}");
             emailBody.Replace("__PROJECT_NAME__", benchProject.ProjectName);

@@ -166,7 +166,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    if (!model.Email.ToLower().EndsWith("@agilisium.com"))
+                    if (!(model.Email.ToLower().EndsWith("@agilisium.com")|| model.Email.ToLower().EndsWith("@agileiss.com")))
                     {
                         DisplayWarningMessage("Please use Agilisium Email ID to register");
                         return View(model);

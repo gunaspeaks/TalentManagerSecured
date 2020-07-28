@@ -33,7 +33,10 @@
                 <th class="text-left">
                     @Html.DisplayNameFor(model => model.Employees.FirstOrDefault().PrimarySkills)
                 </th>
-                <th class="text-center">
+                <th class="text-left">
+                    @Html.DisplayNameFor(model => model.Employees.FirstOrDefault().PastExperience)
+                </th>
+                <th class="text-left">
                     @Html.DisplayNameFor(model => model.Employees.FirstOrDefault().OverallExperience)
                 </th>
                 <th class="text-center">
@@ -50,56 +53,75 @@
 
             @foreach (var item in Model.Employees)
             {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EmployeeID)
-                </td>
-                <td>
-                    @if (User.IsInRole("Super Admin") || User.IsInRole("Human Resource") || User.IsInRole("Admin"))
-                    {
-                        @Html.ActionLink($"{item.FirstName} {item.LastName}", "Edit", new { id = item.EmployeeEntryID, page = Request.QueryString["page"] });
-                    }
-                    else
-                    {
-                        <label>@item.FirstName &nbsp; @item.LastName </label>
-                    }
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.BusinessUnitName)
-                </td>
-                <td class="text-right">
-                    <text>@item.DateOfJoin.ToString("dd/MMM/yyyy")</text>
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PrimarySkills)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.OverallExperience)
-                </td>
-                <td class="text-center">
-                    @if (item.IsTechResource.HasValue && item.IsTechResource.Value)
-                    {
-                        <text>Yes</text>
-                    }
-                    else
-                    {
-                        <text>No</text>
-                    }
-                </td>
-                <td class="text-center">
-                    @Html.ActionLink(item.Certifications.ToString(), "Certifications", new { eid = item.EmployeeEntryID, page = Request.QueryString["page"] })
-                </td>
-                @if (User.IsInRole("Super Admin") || User.IsInRole("Human Resource") || User.IsInRole("Admin"))
-                {
-                    <td class="text-center">
-                        @using (Html.BeginForm("Delete", "Employee"))
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EmployeeID)
+                    </td>
+                    <td>
+                        @if (User.IsInRole("Super Admin") || User.IsInRole("Human Resource") || User.IsInRole("Admin"))
                         {
-                            @Html.Hidden("id", item.EmployeeEntryID)
-                            <input type="submit" onclick="return confirm('Are you sure you about deleting this Employee?');" class="btn btn-default btn-xs" value="Delete" />
+                            @Html.ActionLink($"{item.FirstName} {item.LastName}", "Edit", new { id = item.EmployeeEntryID, page = Request.QueryString["page"] });
+                        }
+                        else
+                        {
+                            <label>@item.FirstName &nbsp; @item.LastName </label>
                         }
                     </td>
-                }
-            </tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BusinessUnitName)
+                    </td>
+                    <td class="text-right">
+                        <text>@item.DateOfJoin.ToString("dd/MMM/yyyy")</text>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PrimarySkills)
+                    </td>
+                    <td class="text-left">
+
+                        @if (item.PastExperience.HasValue)
+                        {
+                            <text>@String.Format("{0:0.0} years", item.PastExperience.Value)</text>
+                        }
+                        else
+                        {
+                            <text>Not Available</text>
+                        }
+                    </td>
+                    <td class="text-left">
+                        @if (!String.IsNullOrWhiteSpace(item.OverallExperience))
+                        {
+                            string str = $"{item.OverallExperience} years";
+                            <text>@str</text>
+                        }
+                        else
+                        {
+                            <text>Not Available</text>
+                        }
+                    </td>
+                    <td class="text-center">
+                        @if (item.IsTechResource.HasValue && item.IsTechResource.Value)
+                        {
+                            <text>Yes</text>
+                        }
+                        else
+                        {
+                            <text>No</text>
+                        }
+                    </td>
+                    <td class="text-center">
+                        @Html.ActionLink(item.Certifications.ToString(), "Certifications", new { eid = item.EmployeeEntryID, page = Request.QueryString["page"] })
+                    </td>
+                    @if (User.IsInRole("Super Admin") || User.IsInRole("Human Resource") || User.IsInRole("Admin"))
+                    {
+                        <td class="text-center">
+                            @using (Html.BeginForm("Delete", "Employee"))
+                            {
+                                @Html.Hidden("id", item.EmployeeEntryID)
+                                <input type="submit" onclick="return confirm('Are you sure you about deleting this Employee?');" class="btn btn-default btn-xs" value="Delete" />
+                            }
+                        </td>
+                    }
+                </tr>
             }
 
         </table>
@@ -122,7 +144,7 @@
                         @Html.ActionLink("Add a New Employee", "Create", null, new { @class = "btn btn-primary" })
                     }
                     <div class="btn-group pull-right">
-                        @Html.AddPagination(Model.PagingInfo, x => Url.Action("List", new { page = x }))
+                        @Html.AddPagination(Model.PagingInfo, x => Url.Action("List", new { searchText = Model.SearchText, page = x }))
                     </div>
                 </td>
             </tr>

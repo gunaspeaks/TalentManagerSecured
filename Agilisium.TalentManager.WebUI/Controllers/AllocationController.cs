@@ -125,8 +125,8 @@ namespace Agilisium.TalentManager.WebUI.Controllers
         {
             AllocationModel project = new AllocationModel
             {
-                AllocationStartDate = DateTime.Now,
-                AllocationEndDate = DateTime.Now,
+                AllocationStartDate = DateTime.Today,
+                AllocationEndDate = DateTime.Today,
                 PercentageOfAllocation = 100
             };
 

@@ -23,7 +23,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                 Comments = entity.LattestComment,
                 RecruitmentRequestID = subCategory.RecruitmentRequestID,
                 RequestStatusID = statusID ?? 1,
-                RequestUpdatedOn = DateTime.Now,
+                RequestUpdatedOn = DateTime.Today,
                 JoinedPositions = 0,
                 OfferedPositions = 0,
             };
