@@ -28,7 +28,7 @@
                 @Html.ActionLink("Visa Holding Employees Report", "VisaHoldingEmployees", null, new { @class = "btn btn-primary", @style = "width:90%;text-align:center;border-radius:50px" })
             </td>
             <td>
-                @Html.ActionLink("Billable Allocations for Finance", "BillableAllocations", new { @from = new DateTime(DateTime.Now.Year, DateTime.Now.Month,1), @upto = DateTime.Today }, new { @class = "btn btn-primary", @style = "width:90%;text-align:center;border-radius:50px" })
+                @Html.ActionLink("Architects List", "GetArchsList", null, new { @class = "btn btn-primary", @style = "width:90%;text-align:center;border-radius:50px" })
             </td>
             <td>
                 @Html.ActionLink("Employee Skillset With Allocations", "GetEmpSkillsReport", new { @filterBy = "", @filterValue = "" }, new { @class = "btn btn-primary", @style = "width:90%;text-align:center;border-radius:50px" })

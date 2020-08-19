@@ -6,7 +6,7 @@
 
 <div class="panel panel-default">
     <div style="text-align:center" class="panel-heading">
-        <h3><b>Project Allocations</b></h3>
+        <h3><b>Project Allocations</b></h3><text>(<b> @Model.Count() </b> records found)</text> @Html.ActionLink("(Download in CSV Format)", "DownloadAllAllocations", new { id = Request.QueryString["id"] })
     </div>
     <div class="panel-body">
         <table class="table table-striped table-condensed table-bordered">
@@ -33,12 +33,22 @@
                     @Html.DisplayNameFor(model => model.AllocationEndDate)
                 </th>
             </tr>
+            @if (Model.Count() == 0)
+            {
+                <tr>
+                    <td style="text-align:center; background-color:aquamarine;" colspan="7">
+                        <text style="font-size:15px">
+                            There are no active allocations to display
+                        </text>
+                    </td>
+                </tr>
+            }
 
             @foreach (var item in Model)
             {
                 <tr>
                     <td>
-                        @Html.ActionLink(item.EmployeeName, "Edit", new { id = item.AllocationEntryID })
+                        @Html.ActionLink(String.IsNullOrWhiteSpace(item.EmployeeName) ? "---" : item.EmployeeName, "Edit", new { id = item.AllocationEntryID })
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.ProjectName)

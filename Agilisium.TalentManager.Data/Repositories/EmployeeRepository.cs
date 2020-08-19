@@ -91,7 +91,8 @@ namespace Agilisium.TalentManager.Repository.Repositories
                         Level5ID = emp.Level5ID,
                         IsManager = emp.IsManager,
                         StrengthAreaID = emp.StrengthAreaID,
-                        IsTechResource = emp.IsTechResource,
+                        IsTechResource = emp.IsTechResource.HasValue ? emp.IsTechResource : false,
+                        IsArchitect = emp.IsArchitect.HasValue ? emp.IsArchitect : false,
                     }).FirstOrDefault();
         }
 
@@ -132,7 +133,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
             List<EmployeeDto> employees = new List<EmployeeDto>();
 
             List<Employee> pastEmployees = (from emp in Entities
-                                            where emp.IsDeleted == true
+                                            where emp.IsDeleted == false
                                             || (emp.LastWorkingDay.HasValue == true && emp.LastWorkingDay.Value < DateTime.Today)
                                             select emp).ToList();
 
@@ -242,8 +243,8 @@ namespace Agilisium.TalentManager.Repository.Repositories
                 if (oldEmp.Level2ID != updatedEmp.Level2ID)
                 {
                     Project project = DataContext.Projects.Where(p => p.ProjectAccountID == oldEmp.Level2ID).FirstOrDefault();
-                    if (DataContext.ProjectAllocations.Any(a => a.IsDeleted == false && a.AllocationEndDate >= DateTime.Today
-                     && a.ProjectID == project.ProjectID))
+                    if (project != null && DataContext.ProjectAllocations.Any(a => a.IsDeleted == false && a.AllocationEndDate >= DateTime.Today
+                       && a.ProjectID == project.ProjectID))
                     {
                         throw new InvalidOperationException($"You can't change the Project when there is an active allocation with the previous Project {project.ProjectName}");
                     }
@@ -460,33 +461,50 @@ namespace Agilisium.TalentManager.Repository.Repositories
         public IEnumerable<EmployeeVisaDto> GetVisaHoldingEmployees()
         {
             IEnumerable<EmployeeVisaDto> entries = null;
-
+            int validVisaID = DataContext.DropDownSubCategories.FirstOrDefault(s => s.SubCategoryName.Contains("No Valid Visa") && s.IsDeleted == false).SubCategoryID;
             entries = (
                 from e in Entities
-                join vc in DataContext.DropDownSubCategories on e.VisaCategoryID equals vc.SubCategoryID into vce
-                from vcd in vce.DefaultIfEmpty()
-                join al in DataContext.ProjectAllocations on e.EmployeeEntryID equals al.EmployeeID into ale
-                from ald in ale.DefaultIfEmpty()
-                join at in DataContext.DropDownSubCategories on ald.AllocationTypeID equals at.SubCategoryID into ate
-                from atd in ate.DefaultIfEmpty()
-                join pr in DataContext.Projects on ald.ProjectID equals pr.ProjectID into pre
-                from prd in pre.DefaultIfEmpty()
-                where e.VisaCategoryID.HasValue && e.IsDeleted == false
+                where e.VisaCategoryID.HasValue && e.VisaCategoryID != validVisaID && e.IsDeleted == false
                 && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue && e.LastWorkingDay.Value >= DateTime.Today))
-                && ald.AllocationEndDate >= DateTime.Today && ald.IsDeleted == false
-                orderby e.FirstName, e.LastName
+                orderby e.EmployeeID
                 select new EmployeeVisaDto
                 {
-                    AllocationType = atd.SubCategoryName,
                     EmployeeID = e.EmployeeID,
                     EmployeeEntryID = e.EmployeeEntryID,
                     EmployeeName = e.FirstName + " " + e.LastName,
                     PrimarySkills = e.PrimarySkills,
-                    ProjectName = prd.ProjectName,
                     SecondarySkills = e.SecondarySkills,
-                    VisaCategory = vcd.SubCategoryName,
+                    VisaCategory = DataContext.DropDownSubCategories.FirstOrDefault(s => s.SubCategoryID == e.VisaCategoryID).SubCategoryName,
                     VisaValidity = e.VisaValidUpto
-                });
+                }).ToList();
+
+            foreach(var emp in entries)
+            {
+                var alloc = DataContext.ProjectAllocations.Where(a => a.EmployeeID == emp.EmployeeEntryID && a.AllocationEndDate >= DateTime.Today)
+                    .OrderByDescending(a => a.AllocationEndDate).FirstOrDefault();
+                if (alloc == null) continue;
+                emp.AllocationType = DataContext.DropDownSubCategories.FirstOrDefault(s => s.SubCategoryID == alloc.AllocationTypeID)?.SubCategoryName;
+                emp.ProjectName = DataContext.Projects.FirstOrDefault(p => p.ProjectID == alloc.ProjectID)?.ProjectName;
+            }
+            // code to retrieve primary and secondary skills
+            //var skills = (from ets in DataContext.EmployeeSkills
+            //              group ets by ets.EmployeeEntryID into gts
+            //              select gts
+            //).ToList();
+
+            //foreach (var emp in entries)
+            //{
+            //    if (skills.Any(t => t.Key == emp.EmployeeEntryID))
+            //    {
+            //        var g = skills.FirstOrDefault(t => t.Key == emp.EmployeeEntryID);
+            //        var ps = string.Join(" ", g.Select(s => DataContext.TechSkills.FirstOrDefault(ts => ts.TechSkillID == s.EmployeeSkillID
+            //        && (ts.TechSkillCategoryID == (int)SkillRating.Advanced || ts.TechSkillCategoryID == (int)SkillRating.Expert || ts.TechSkillCategoryID == (int)SkillRating.Proficient))?.TechSkillName));
+            //        string sk = string.Join(" ", g.Select(s => DataContext.TechSkills.FirstOrDefault(ts => ts.TechSkillID == s.EmployeeSkillID
+            //        && (ts.TechSkillCategoryID == (int)SkillRating.Basic || ts.TechSkillCategoryID == (int)SkillRating.Limited ))?.TechSkillName));
+            //        emp.PrimarySkills = ps.Trim();
+            //        emp.SecondarySkills = sk.Trim();
+            //    }
+            //}
             return entries;
         }
 
@@ -662,9 +680,10 @@ namespace Agilisium.TalentManager.Repository.Repositories
                             EmploymentTypeName = etd.SubCategoryName,
                             ReportingManagerName = rmd.FirstName + " " + rmd.LastName,
                             Certifications = DataContext.EmpCertifications.Count(ec => ec.IsDeleted == false && ec.EmployeeID == emp.EmployeeEntryID),
-                            IsTechResource = emp.IsTechResource,
+                            IsTechResource = emp.IsTechResource.HasValue ? emp.IsTechResource : false,
                             OverallExperience = emp.OverallExperience,
                             PastExperience = emp.PastExperience,
+                            IsArchitect = emp.IsArchitect.HasValue ? emp.IsArchitect : false,
                         };
 
             if (string.IsNullOrEmpty(searchText) == false)
@@ -707,6 +726,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                 Level5ID = employeeDto.Level5ID,
                 IsManager = employeeDto.IsManager.HasValue ? employeeDto.IsManager : false,
                 IsTechResource = employeeDto.IsTechResource.HasValue ? employeeDto.IsTechResource : false,
+                IsArchitect = employeeDto.IsTechResource.HasValue ? employeeDto.IsArchitect : false,
             };
 
             employee.UpdateTimeStamp(employeeDto.LoggedInUserName, true);
@@ -742,6 +762,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
             targetEntity.Level5ID = sourceEntity.Level5ID;
             targetEntity.IsManager = sourceEntity.IsManager.HasValue ? sourceEntity.IsManager : false;
             targetEntity.IsTechResource = sourceEntity.IsTechResource.HasValue ? sourceEntity.IsTechResource : false;
+            targetEntity.IsArchitect = sourceEntity.IsArchitect.HasValue ? sourceEntity.IsArchitect : false;
 
             targetEntity.UpdateTimeStamp(sourceEntity.LoggedInUserName);
         }
@@ -766,6 +787,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
                    && e.BusinessUnitID == (int)bu
                     select e).Count();
         }
+
 
         #endregion
     }

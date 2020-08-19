@@ -5,7 +5,9 @@ using Agilisium.TalentManager.WebUI.Models;
 using AutoMapper;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web.Mvc;
 
 namespace Agilisium.TalentManager.WebUI.Controllers
@@ -80,6 +82,32 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             }
 
             return View(allocations);
+        }
+
+        public FileStreamResult DownloadAllAllocations(int id)
+        {
+            StringBuilder recordString = new StringBuilder($"Employee Name,Project Name,Account Name,Allocation Type,Percentage of Allocation,Allocated From,Allocated Upto{Environment.NewLine}");
+            try
+            {
+                List<ProjectAllocationDto> modelsDto = allocationService.GetAllAllocationsByProjectID(id);
+                foreach (var dto in modelsDto)
+                {
+                    recordString.Append($"{dto.EmployeeName},");
+                    recordString.Append($"{dto.ProjectName},");
+                    recordString.Append($"{dto.AccountName},");
+                    recordString.Append($"{dto.AllocationTypeName},");
+                    recordString.Append($"{dto.PercentageOfAllocation},");
+                    recordString.Append($"{dto.AllocationStartDate.ToString("dd/MMM/yyyy")},");
+                    recordString.Append($"{dto.AllocationEndDate.ToString("dd/MMM/yyyy")}{Environment.NewLine}");
+                }
+            }
+            catch (Exception exp)
+            {
+                DisplayLoadErrorMessage(exp);
+            }
+            byte[] byteArr = Encoding.ASCII.GetBytes(recordString.ToString());
+            MemoryStream stream = new MemoryStream(byteArr);
+            return File(stream, "application/vnd.ms-excel", "Billable Allocations Report.csv");
         }
 
         public ActionResult AllocationHistory(string filterType = "Please Select", string filterValue = "0", string sortBy = "EmployeeName", string sortType = "asc", int page = 1)

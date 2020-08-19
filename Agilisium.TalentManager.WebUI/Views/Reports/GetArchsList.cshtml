@@ -1,0 +1,84 @@
+﻿@model IEnumerable<Agilisium.TalentManager.WebUI.Models.ArchitectEmpModel>
+
+@{
+    ViewBag.Title = "Offshore Architects";
+}
+
+<div class="panel panel-default">
+    <div style="text-align:center" class="panel-heading">
+        <h3><b>Offshore Architects</b></h3>@Html.ActionLink("(Download in CSV Format)", "DownloadArchitectEmps", new { offshore = 1 })
+    </div>
+    <div class="panel-body">
+        <div>
+            <table style="width:100%" class="table table-striped table-condensed table-bordered">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.EmployeeID)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.EmployeeName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.AccountName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ProjectName)
+                    </th>
+                    <th class="text-right">
+                        @Html.DisplayNameFor(model => model.AllocatedFrom)
+                    </th>
+                    <th class="text-right">
+                        @Html.DisplayNameFor(model => model.AllocatedUpTo)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.AllocationType)
+                    </th>
+                </tr>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.EmployeeID)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.EmployeeName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.AccountName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ProjectName)
+                        </td>
+                        <td class="text-right">
+                            @if (item.AllocatedFrom.HasValue)
+                            {
+                                <text>@item.AllocatedFrom.Value.ToString("dd/MMM/yyyy")</text>
+                            }
+                            else
+                            {
+                                <text> &nbsp;</text>
+                            }
+                        </td>
+                        <td class="text-right">
+                            @if (item.AllocatedUpTo.HasValue)
+                            {
+                                <text>@item.AllocatedUpTo.Value.ToString("dd/MMM/yyyy")</text>
+                            }
+                            else
+                            {
+                                <text> &nbsp;</text>
+                            }
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.AllocationType)
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+    <div class="panel-footer">
+        @Html.ActionLink("Back to Reports Index", "Index", null, new { @class = "btn btn-default" })
+    </div>
+</div>

@@ -298,8 +298,7 @@ namespace Agilisium.TalentManager.Tools.DmlQueryGenerationTool
 
         private async Task<int> ProcessEmployeeTable()
         {
-            EmployeeRepository repo = new EmployeeRepository();
-            List<EmployeeDto> records = repo.GetAll().ToList();
+            List<Employee> records = postgressDataContext.Employees.ToList();
             int recCount = 0;
             if (records.Count == 0) return 0;
 
@@ -310,7 +309,7 @@ namespace Agilisium.TalentManager.Tools.DmlQueryGenerationTool
             {
                 string baseQry = "INSERT INTO \"TalentManager\".\"Employee\" (\"EmployeeID\", \"FirstName\",\"LastName\",\"EmailID\",\"BusinessUnitID\",\"DateOfJoin\",\"LastWorkingDay\",\"PrimarySkills\",\"SecondarySkills\",\"ReportingManagerID\",\"UtilizationTypeID\",\"EmploymentTypeID\",\"IsDeleted\",\"VisaCategoryID\",\"VisaValidUpto\",\"PassportNo\",\"PassportValidUpto\",\"StrengthAreaID\",\"OverallExperience\",\"TechnicalRank\",\"EmployeeEntryID\",\"IsTechResource\",\"Level1ID\",\"Level2ID\",\"Level3ID\",\"Level4ID\",\"Level5ID\",\"IsManager\") VALUES (";
                 StringBuilder dmlQry = new StringBuilder();
-                foreach (EmployeeDto rec in records)
+                foreach (Employee rec in records)
                 {
                     dmlQry.Append($"{baseQry}'{rec.EmployeeID}','{rec.FirstName.Trim()}','{rec.LastName.Trim()}','{rec.EmailID}',{rec.BusinessUnitID},{GetStringForDate(rec.DateOfJoin)},{GetStringForNullableDate(rec.LastWorkingDay)},'{rec.PrimarySkills}','{rec.SecondarySkills}',{(rec.ReportingManagerID.HasValue ? rec.ReportingManagerID.ToString() : NULL_STRING)},{(rec.UtilizationTypeID.HasValue ? rec.UtilizationTypeID.ToString() : NULL_STRING)},{rec.EmploymentTypeID},'False',{(rec.VisaCategoryID.HasValue ? rec.VisaCategoryID.ToString() : NULL_STRING)},{GetStringForNullableDate(rec.VisaValidUpto)},'{rec.PassportNo}',{GetStringForNullableDate(rec.PassportValidUpto)},{(rec.StrengthAreaID.HasValue ? rec.StrengthAreaID.ToString() : NULL_STRING)},'{rec.OverallExperience}',{(rec.TechnicalRank.HasValue ? rec.TechnicalRank.ToString() : NULL_STRING)},{rec.EmployeeEntryID},'{(rec.IsTechResource.HasValue ? rec.IsTechResource.ToString() : FALSE_STRING)}',{(rec.Level1ID.HasValue ? rec.Level1ID.ToString() : NULL_STRING)},{(rec.Level2ID.HasValue ? rec.Level2ID.ToString() : NULL_STRING)},{(rec.Level3ID.HasValue ? rec.Level3ID.ToString() : NULL_STRING)},{(rec.Level4ID.HasValue ? rec.Level4ID.ToString() : NULL_STRING)},{(rec.Level5ID.HasValue ? rec.Level5ID.ToString() : NULL_STRING)},'{(rec.IsManager.HasValue ? rec.IsManager.ToString() : FALSE_STRING)}');{Environment.NewLine}");
                 }

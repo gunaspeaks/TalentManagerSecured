@@ -239,7 +239,12 @@
                             </div>
                         </td>
                         <td width="2%"></td>
-                        <td></td>
+                        <td>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.IsArchitect)
+                                @Html.EditorFor(model => model.IsArchitect, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
                     </tr>
                     <tr>
                         <td>

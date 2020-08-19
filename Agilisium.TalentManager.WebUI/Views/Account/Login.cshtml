@@ -4,11 +4,11 @@
     ViewBag.Title = "Log in";
 }
 
-    <table style="width:100%;align-self:center; border:1px; background-color:lightyellow;color:red">
-        <tr>
-            <td align="center"><h2><b>Resource Management Tool</b></h2></td>
-        </tr>
-    </table>
+<table style="width:100%;align-self:center; border:1px; background-color:lightyellow;color:red">
+    <tr>
+        <td align="center"><h2><b>Resource Management Tool</b></h2></td>
+    </tr>
+</table>
 <table style="width:100%;">
     <tr>
         <td align="center">
@@ -61,6 +61,7 @@
                                 <div class="form-group">
                                     <div class="col-md-offset-2 col-md-10">
                                         <input type="submit" value="Log in" class="btn btn-default btn-primary" />
+                                        @Html.ActionLink("Forgot your password?", "ForgotPassword")
                                     </div>
                                 </div>
                             </td>
@@ -72,9 +73,9 @@
                             @Html.ActionLink("Register as a new user", "Register")
                         </p>*@
                     @* Enable this once you have account confirmation enabled for password reset functionality*@
-                    @*<p>
-                            @Html.ActionLink("Forgot your password?", "ForgotPassword")
-                        </p>*@
+                    <p>
+                        
+                    </p>
                 }
             </section>
 

@@ -18,26 +18,32 @@
     <div class="panel-body">
         <table class="table table-striped table-condensed table-bordered">
             <tr>
-                <th class="text-left">
+                <th class="text-center">
                     @Html.DisplayNameFor(model => model.Employees.FirstOrDefault().EmployeeID)
                 </th>
-                <th class="text-left">
+                <th class="text-center">
                     @Html.DisplayName("Employee Name")
                 </th>
-                <th class="text-left">
+                <th class="text-center">
                     @Html.DisplayNameFor(model => model.Employees.FirstOrDefault().BusinessUnitName)
                 </th>
-                <th class="text-right">
+                <th class="text-center">
                     @Html.DisplayNameFor(model => model.Employees.FirstOrDefault().DateOfJoin)
                 </th>
-                <th class="text-left">
+                <th class="text-center">
                     @Html.DisplayNameFor(model => model.Employees.FirstOrDefault().PrimarySkills)
                 </th>
-                <th class="text-left">
+                <th class="text-center">
                     @Html.DisplayNameFor(model => model.Employees.FirstOrDefault().PastExperience)
                 </th>
-                <th class="text-left">
+                <th class="text-center">
                     @Html.DisplayNameFor(model => model.Employees.FirstOrDefault().OverallExperience)
+                </th>
+                <th class="text-center">
+                    @Html.DisplayNameFor(model => model.Employees.FirstOrDefault().IsManager)
+                </th>
+                <th class="text-center">
+                    @Html.DisplayNameFor(model => model.Employees.FirstOrDefault().IsArchitect)
                 </th>
                 <th class="text-center">
                     @Html.DisplayNameFor(model => model.Employees.FirstOrDefault().IsTechResource)
@@ -96,6 +102,26 @@
                         else
                         {
                             <text>Not Available</text>
+                        }
+                    </td>
+                    <td class="text-center">
+                        @if (item.IsManager.HasValue && item.IsManager.Value)
+                        {
+                            <text>Yes</text>
+                        }
+                        else
+                        {
+                            <text>No</text>
+                        }
+                    </td>
+                    <td class="text-center">
+                        @if (item.IsArchitect.HasValue && item.IsArchitect.Value)
+                        {
+                            <text>Yes</text>
+                        }
+                        else
+                        {
+                            <text>No</text>
                         }
                     </td>
                     <td class="text-center">

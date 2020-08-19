@@ -14,8 +14,6 @@ namespace Agilisium.TalentManager.Dto
 
         public string EmployeeName { get; set; }
 
-        public string POD { get; set; }
-
         public string AllocationType { get; set; }
 
         public string ProjectName { get; set; }

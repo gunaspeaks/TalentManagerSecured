@@ -150,5 +150,10 @@ namespace Agilisium.TalentManager.Service.Concreate
         {
             return repository.GetAllocationsForDates(fromDate, uptoDate).ToList();
         }
+
+        public List<EmpArchitectDto> GetAllArchitectEmployees()
+        {
+            return repository.GetAllArchitectEmployees().ToList();
+        }
     }
 }

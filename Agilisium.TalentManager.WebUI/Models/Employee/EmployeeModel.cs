@@ -168,5 +168,8 @@ namespace Agilisium.TalentManager.WebUI.Models
 
         [DisplayName("Past Experience")]
         public float? PastExperience { get; set; }
+
+        [DisplayName("Is In Architect Role")]
+        public bool? IsArchitect { get; set; }
     }
 }

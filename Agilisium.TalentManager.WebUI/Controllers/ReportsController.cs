@@ -127,11 +127,28 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                 model.FilterValue = filterValue;
                 List<UtilizedDaysSummaryDto> summaryDtos = allocationService.GetUtilizedDaysSummary(filterType, filterValue, sortBy, sortType);
                 model.Employees = Mapper.Map<List<UtilizedDaysSummaryDto>, List<UtilizedDaysSummaryModel>>(summaryDtos);
-                //model.FilterValueListItems = GetFilterValueListItems(filterType);
-                //LoadFilterValueListItems(filterType);
                 if (model.Employees.Count() == 0)
                 {
                     DisplayWarningMessage("No records found");
+                }
+            }
+            catch (Exception exp)
+            {
+                DisplayLoadErrorMessage(exp);
+            }
+            return View(model);
+        }
+
+        public ActionResult GetArchsList()
+        {
+            List<ArchitectEmpModel> model = new List<ArchitectEmpModel>();
+            try
+            {
+                List<EmpArchitectDto> summaryDtos = allocationService.GetAllArchitectEmployees();
+                model = Mapper.Map<List<EmpArchitectDto>, List<ArchitectEmpModel>>(summaryDtos);
+                if (model.Count() == 0)
+                {
+                    DisplayWarningMessage("No records found.");
                 }
             }
             catch (Exception exp)
@@ -195,6 +212,33 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             return File(stream, "application/vnd.ms-excel", "Resource Allocation Report.csv");
         }
 
+        public FileStreamResult DownloadArchitectEmps()
+        {
+            StringBuilder recordString = new StringBuilder($"Employee ID,Employee Name,Account Name,Project Name,Allocation Type,Allocation From,Allocation Upto{Environment.NewLine}");
+            try
+            {
+                List<EmpArchitectDto> detailsDtos = allocationService.GetAllArchitectEmployees();
+                foreach (EmpArchitectDto dto in detailsDtos)
+                {
+                    recordString.Append($"{dto.EmployeeID},");
+                    recordString.Append($"{dto.EmployeeName},");
+                    recordString.Append($"{dto.AccountName},");
+                    recordString.Append($"{dto.ProjectName},");
+                    recordString.Append($"{dto.AllocationType},");
+                    recordString.Append($"{dto.AllocatedFrom?.ToString("dd/MMM/yyyy")},");
+                    recordString.Append($"{dto.AllocatedUpTo?.ToString("dd/MMM/yyyy")}{Environment.NewLine}");
+                }
+
+            }
+            catch (Exception exp)
+            {
+                DisplayLoadErrorMessage(exp);
+            }
+            byte[] byteArr = Encoding.ASCII.GetBytes(recordString.ToString());
+            MemoryStream stream = new MemoryStream(byteArr);
+                return File(stream, "application/vnd.ms-excel", "Agilisium-Architects.csv");
+        }
+
         public FileStreamResult DownloadUtilizedDaysSummary(string filterType, string filterValue)
         {
             StringBuilder recordString = new StringBuilder($"Employee ID,Employee Name,Date of Join,Last Allocation End Date,Last Allocation Age In Days,Number Of Allocations{Environment.NewLine}");
@@ -235,6 +279,35 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                 DisplayLoadErrorMessage(exp);
             }
             return View(entries);
+        }
+
+        public FileStreamResult DownloadVisaHoldingEmployees(string filterType, string filterValue)
+        {
+            StringBuilder recordString = new StringBuilder($"Employee ID,Employee Name,Allocation Type,Project Name,Primary Skills,Secondary Skills,Visa Category,Visa Valid Upto,Travelled Countries{Environment.NewLine}");
+            try
+            {
+                List<EmployeeVisaDto> summaryDtos = empService.GetVisaHolderingEmployees();
+                foreach (EmployeeVisaDto dto in summaryDtos)
+                {
+                    recordString.Append($"{dto.EmployeeID},");
+                    recordString.Append($"{dto.EmployeeName},");
+                    recordString.Append($"{dto.AllocationType},");
+                    recordString.Append($"{dto.ProjectName},");
+                    recordString.Append($"{dto.PrimarySkills},");
+                    recordString.Append($"{dto.SecondarySkills},");
+                    recordString.Append($"{dto.VisaCategory},");
+                    recordString.Append($"{dto.VisaValidity?.ToString("dd/MMM/yyyy")},");
+                    recordString.Append($"{dto.TravelledCountries}{Environment.NewLine}");
+                }
+
+            }
+            catch (Exception exp)
+            {
+                DisplayLoadErrorMessage(exp);
+            }
+            byte[] byteArr = Encoding.ASCII.GetBytes(recordString.ToString());
+            MemoryStream stream = new MemoryStream(byteArr);
+            return File(stream, "application/vnd.ms-excel", "Resource Allocation Report.csv");
         }
 
         [HttpGet]
@@ -295,7 +368,7 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             UtilizationReportDetailViewModel model = new UtilizationReportDetailViewModel();
             try
             {
-                if (from.HasValue  == false || upto.HasValue == false)
+                if (from.HasValue == false || upto.HasValue == false)
                 {
                     DisplayWarningMessage("No records found. Please try with different dates");
                 }
@@ -581,19 +654,6 @@ namespace Agilisium.TalentManager.WebUI.Controllers
             return projectList;
         }
 
-        public List<SelectListItem> GetPracticeList()
-        {
-            List<PracticeDto> practices = practiceService.GetPractices().ToList();
-            List<SelectListItem> practiceItems = (from p in practices
-                                                  orderby p.PracticeName
-                                                  select new SelectListItem
-                                                  {
-                                                      Text = p.PracticeName,
-                                                      Value = p.PracticeID.ToString()
-                                                  }).ToList();
-            return practiceItems;
-        }
-
         private List<SelectListItem> GetAllocationTypeList()
         {
             IEnumerable<DropDownSubCategoryDto> buList = subCategoryService.GetSubCategories((int)CategoryType.UtilizationCode);
@@ -675,9 +735,6 @@ namespace Agilisium.TalentManager.WebUI.Controllers
                     break;
                 case "emp":
                     filterValues = GetEmployeesList();
-                    break;
-                case "pod":
-                    filterValues = GetPracticeList();
                     break;
                 case "prj":
                     filterValues = GetProjectsList();

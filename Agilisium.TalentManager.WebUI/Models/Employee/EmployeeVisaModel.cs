@@ -16,9 +16,6 @@ namespace Agilisium.TalentManager.WebUI.Models
         [DisplayName("Employee Name")]
         public string EmployeeName { get; set; }
 
-        [DisplayName("POD")]
-        public string POD { get; set; }
-
         [DisplayName("Allocation Type")]
         public string AllocationType { get; set; }
 

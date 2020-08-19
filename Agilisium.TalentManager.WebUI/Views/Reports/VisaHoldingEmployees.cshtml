@@ -11,19 +11,16 @@
 
 <div class="panel panel-default">
     <div style="text-align:center" class="panel-heading">
-        <h3><b>Visa Holding Employees Report</b></h3>
+        <h3><b>Visa Holding Employees Report</b></h3>(There are @Model.Count() records found) &nbsp; @Html.ActionLink("(Download in CSV Format)", "DownloadVisaHoldingEmployees", new { offshore = 1 })
     </div>
     <div class="panel-body">
         <table style="width:100%" class="table table-striped table-condensed table-bordered">
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.EmployeeName)
-                </th>
-                <th>
                     @Html.DisplayNameFor(model => model.EmployeeID)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.POD)
+                    @Html.DisplayNameFor(model => model.EmployeeName)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.AllocationType)
@@ -43,52 +40,43 @@
                 <th class="text-right">
                     @Html.DisplayNameFor(model => model.VisaValidity)
                 </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.TravelledCountries)
-                </th>
             </tr>
 
             @foreach (var item in Model)
             {
-            <tr>
-                <td>
-                    @Html.ActionLink(item.EmployeeName, "View", "Employee", new { id = item.EmployeeEntryID })
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EmployeeID)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.POD)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.AllocationType)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ProjectName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PrimarySkills)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.SecondarySkills)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.VisaCategory)
-                </td>
-                <td class="text-right">
-                    @if (item.VisaValidity.HasValue)
-                    {
-                        <text>@item.VisaValidity.Value.ToString("dd/MMM/yyyy")</text>
-                    }
-                    else
-                    {
-                        <text> &nbsp;</text>
-                    }
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TravelledCountries)
-                </td>
-            </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmployeeID)
+            </td>
+            <td>
+                @Html.ActionLink(item.EmployeeName, "View", "Employee", new { id = item.EmployeeEntryID })
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AllocationType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProjectName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PrimarySkills)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SecondarySkills)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VisaCategory)
+            </td>
+            <td class="text-right">
+                @if (item.VisaValidity.HasValue)
+                {
+                    <text>@item.VisaValidity.Value.ToString("dd/MMM/yyyy")</text>
+                }
+                else
+                {
+                    <text> &nbsp;</text>
+                }
+            </td>
+        </tr>
             }
         </table>
     </div>

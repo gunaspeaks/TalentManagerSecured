@@ -93,5 +93,8 @@ namespace Agilisium.TalentManager.Dto
         public bool? IsManager { get; set; }
 
         public float? PastExperience { get; set; }
+
+        public bool? IsArchitect { get; set; }
+
     }
 }

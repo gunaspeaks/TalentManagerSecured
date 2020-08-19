@@ -13,13 +13,13 @@
         BusinessDevelopment = 1,
         BusinessOperations,
         Delivery,
-        RMG=103,
+        RMG = 103,
     }
 
     public enum BenchCategory
     {
-        Earmarked = 74,
-        Available
+        Available = 74,
+        Earmarked = 75,
     }
 
     public enum WindowsServices
@@ -31,16 +31,24 @@
 
     public enum ProjectType
     {
-        Lab=10,
+        Lab = 10,
 
     }
 
     public enum SkillRating
     {
-        Limited=78,
+        Limited = 78,
         Basic,
         Proficient,
         Advanced,
         Expert
+    }
+
+    public enum EmploymentType
+    {
+        OffshorePermanent = 10,
+        Internship,
+        Contract,
+        OnshorePermanent = 117,
     }
 }

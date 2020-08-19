@@ -16,11 +16,6 @@ namespace Agilisium.TalentManager.WebUI.Models
         [DisplayName("Employee Name")]
         public string EmployeeName { get; set; }
 
-        public int PracticeID { get; set; }
-
-        [DisplayName("POD Name")]
-        public string PracticeName { get; set; }
-
         [DisplayName("Last Allocation Age In Days")]
         public int AgingDays { get; set; }
 

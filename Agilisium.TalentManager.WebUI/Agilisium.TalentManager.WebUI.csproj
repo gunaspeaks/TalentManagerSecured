@@ -332,6 +332,7 @@
     <Compile Include="Models\Assets\EmployeeSkillModel.cs" />
     <Compile Include="Models\Assets\EmpSkillSummaryModel.cs" />
     <Compile Include="Models\Assets\EmpSkillSummaryViewModel.cs" />
+    <Compile Include="Models\Reports\ArchitectEmpModel.cs" />
     <Compile Include="Models\Reports\EmployeeSkillsReportModel.cs" />
     <Compile Include="Models\Req\RecruitmentRequestModel.cs" />
     <Compile Include="Models\Req\RecruitmentRequestStatusModel.cs" />
@@ -617,6 +618,7 @@
     <Content Include="Views\RLevel\List.cshtml" />
     <Content Include="Views\BuzAssets\List.cshtml" />
     <Content Include="Views\Reports\GetEmpSkillsReport.cshtml" />
+    <Content Include="Views\Reports\GetArchsList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

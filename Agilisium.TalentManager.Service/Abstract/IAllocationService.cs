@@ -62,5 +62,7 @@ namespace Agilisium.TalentManager.Service.Abstract
         List<int> GetCommittedBufferUnderSpecificProjects();
 
         List<BillabilityWiseAllocationDetailDto> GetAllocationsForDates(DateTime fromDate, DateTime uptoDate);
+
+        List<EmpArchitectDto> GetAllArchitectEmployees();
     }
 }

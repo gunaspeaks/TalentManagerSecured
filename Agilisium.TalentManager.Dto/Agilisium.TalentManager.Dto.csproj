@@ -48,6 +48,7 @@
     <Compile Include="ContractorDto.cs" />
     <Compile Include="Allocation\CustomAllocationDto.cs" />
     <Compile Include="DevelopmentRequestDto.cs" />
+    <Compile Include="Reports\EmpArchitectDto.cs" />
     <Compile Include="Reports\EmployeeSkillsReportDto.cs" />
     <Compile Include="Settings\DropDownCategoryDto.cs" />
     <Compile Include="Settings\DropDownSubCategoryDto.cs" />

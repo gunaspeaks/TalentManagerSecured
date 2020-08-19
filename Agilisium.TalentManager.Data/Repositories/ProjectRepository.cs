@@ -309,18 +309,10 @@ namespace Agilisium.TalentManager.Repository.Repositories
         public IEnumerable<ProjectDto> GetAllByManagerID(int managerID)
         {
             IQueryable<ProjectDto> projects = from p in Entities
-                                              where p.IsDeleted == false
                                               join dm in DataContext.Employees on p.DeliveryManagerID equals dm.EmployeeEntryID into dme
                                               from dmd in dme.DefaultIfEmpty()
-                                              join pm in DataContext.Employees on p.ProjectManagerID equals pm.EmployeeEntryID into pme
-                                              from pmd in pme.DefaultIfEmpty()
-                                              join pt in DataContext.DropDownSubCategories on p.ProjectTypeID equals pt.SubCategoryID into pte
-                                              from ptd in pte.DefaultIfEmpty()
-                                              join pa in DataContext.ProjectAccounts on p.ProjectAccountID equals pa.AccountID into pae
-                                              from pad in pae.DefaultIfEmpty()
-                                              join bs in DataContext.DropDownSubCategories on p.BusinessUnitID equals bs.SubCategoryID into bse
-                                              from bsd in bse.DefaultIfEmpty()
-                                              where p.ProjectManagerID == managerID
+                                              where p.IsDeleted == false && p.ProjectManagerID == managerID
+                                              && p.EndDate >= DateTime.Today
                                               orderby p.ProjectCode
                                               select new ProjectDto
                                               {
@@ -329,15 +321,15 @@ namespace Agilisium.TalentManager.Repository.Repositories
                                                   EndDate = p.EndDate,
                                                   ProjectCode = p.ProjectCode,
                                                   ProjectName = p.ProjectName,
-                                                  ProjectTypeName = ptd.SubCategoryName,
+                                                  ProjectTypeName = (DataContext.DropDownSubCategories.FirstOrDefault(pt => pt.SubCategoryID == p.ProjectTypeID).SubCategoryName),
                                                   Remarks = p.Remarks,
                                                   StartDate = p.StartDate,
-                                                  ProjectManagerName = string.IsNullOrEmpty(pmd.LastName) ? "" : pmd.LastName + ", " + pmd.FirstName,
+                                                  ProjectManagerName = (from e in DataContext.Employees where e.EmployeeEntryID == p.ProjectManagerID select e.FirstName + " " + e.LastName).FirstOrDefault(),
                                                   IsSowAvailable = p.IsSowAvailable,
                                                   ProjectAccountID = p.ProjectAccountID,
-                                                  AccountName = pad.AccountName,
+                                                  AccountName = (DataContext.ProjectAccounts.FirstOrDefault(a => a.AccountID == p.ProjectAccountID).AccountName),
                                                   BusinessUnitID = p.BusinessUnitID,
-                                                  BusinessUnitName = bsd.SubCategoryName,
+                                                  BusinessUnitName = (DataContext.DropDownSubCategories.FirstOrDefault(pt => pt.SubCategoryID == p.BusinessUnitID).SubCategoryName),
                                                   IsReserved = p.IsReserved
                                               };
             return projects;
@@ -379,10 +371,10 @@ namespace Agilisium.TalentManager.Repository.Repositories
         public void Update(ProjectDto entity)
         {
             Project buzEntity = Entities.FirstOrDefault(p => p.ProjectID == entity.ProjectID);
-            if(buzEntity.EndDate.Year>entity.EndDate.Year&& buzEntity.EndDate.Month > entity.EndDate.Month&& buzEntity.EndDate.Day > entity.EndDate.Day)
+            if (buzEntity.EndDate.Year > entity.EndDate.Year && buzEntity.EndDate.Month > entity.EndDate.Month && buzEntity.EndDate.Day > entity.EndDate.Day)
             {
-                if(DataContext.ProjectAllocations.Any(p=>p.IsDeleted==false&&p.ProjectID==entity.ProjectID
-                &&p.AllocationEndDate>=entity.EndDate))
+                if (DataContext.ProjectAllocations.Any(p => p.IsDeleted == false && p.ProjectID == entity.ProjectID
+                 && p.AllocationEndDate >= entity.EndDate))
                 {
                     throw new InvalidOperationException($"You can't reduce the Project End Date as there are some allocations till {buzEntity.EndDate.Year}/{buzEntity.EndDate.Month}/{buzEntity.EndDate.Day}");
                 }

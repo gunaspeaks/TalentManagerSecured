@@ -11,6 +11,7 @@ using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 
 namespace Agilisium.TalentManager.Repository.Repositories
 {
@@ -148,31 +149,24 @@ namespace Agilisium.TalentManager.Repository.Repositories
         public IEnumerable<ProjectAllocationDto> GetAllAllocationsByProjectID(int projectID)
         {
             return from p in Entities
-                   join em in DataContext.Employees on p.EmployeeID equals em.EmployeeEntryID into eme
-                   from emd in eme.DefaultIfEmpty()
-                   join sc in DataContext.DropDownSubCategories on p.AllocationTypeID equals sc.SubCategoryID into sce
-                   from scd in sce.DefaultIfEmpty()
                    join pr in DataContext.Projects on p.ProjectID equals pr.ProjectID into pre
                    from prd in pre.DefaultIfEmpty()
-                   join pm in DataContext.Employees on prd.ProjectManagerID equals pm.EmployeeEntryID into pme
-                   from pmd in pme.DefaultIfEmpty()
-                   join ac in DataContext.ProjectAccounts on prd.ProjectAccountID equals ac.AccountID into ace
-                   from acd in ace.DefaultIfEmpty()
                    where p.IsDeleted == false && p.ProjectID == projectID
+                   && p.AllocationEndDate >= DateTime.Today
                    orderby prd.ProjectName, p.AllocationStartDate
                    select new ProjectAllocationDto
                    {
                        AllocationEndDate = p.AllocationEndDate,
                        AllocationEntryID = p.AllocationEntryID,
                        AllocationStartDate = p.AllocationStartDate,
-                       AllocationTypeName = scd.SubCategoryName,
-                       EmployeeName = emd.FirstName + " " + emd.LastName,
-                       ProjectManagerName = pmd.FirstName + " " + pmd.LastName,
+                       AllocationTypeName = DataContext.DropDownSubCategories.FirstOrDefault(s => s.SubCategoryID == p.AllocationTypeID).SubCategoryName,
+                       EmployeeName = (from e in DataContext.Employees where e.EmployeeEntryID == p.EmployeeID select e.FirstName + " " + e.LastName).FirstOrDefault(),
+                       ProjectManagerName = (from e in DataContext.Employees where e.EmployeeEntryID == prd.ProjectManagerID select e.FirstName + " " + e.LastName).FirstOrDefault(),
                        EmployeeID = p.EmployeeID,
                        ProjectName = prd.ProjectName,
                        Remarks = p.Remarks,
                        PercentageOfAllocation = p.PercentageOfAllocation,
-                       AccountName = acd.AccountName
+                       AccountName = DataContext.ProjectAccounts.FirstOrDefault(a => a.AccountID == prd.ProjectAccountID).AccountName
                    };
 
         }
@@ -409,6 +403,45 @@ namespace Agilisium.TalentManager.Repository.Repositories
             return allocations.Skip((pageNo - 1) * pageSize).Take(pageSize);
         }
 
+        public IEnumerable<EmpArchitectDto> GetAllArchitectEmployees()
+        {
+            List<EmpArchitectDto> architects = new List<EmpArchitectDto>();
+            List<Employee> emps = new List<Employee>();
+                emps = (from e in DataContext.Employees
+                        where e.IsDeleted == false
+                        && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue && e.LastWorkingDay >= DateTime.Today))
+                        && (e.IsArchitect.HasValue == false || (e.IsArchitect.HasValue && e.IsArchitect == true))
+                        select e).ToList();
+            foreach (Employee emp in emps)
+            {
+                var arc = new EmpArchitectDto
+                {
+                    EmployeeID = emp.EmployeeID,
+                    EmployeeName = $"{emp.FirstName} {emp.LastName}",
+                };
+
+                var alloc = (from a in Entities
+                             where a.IsDeleted == false
+               && a.EmployeeID == emp.EmployeeEntryID && a.AllocationEndDate >= DateTime.Today
+                             orderby a.AllocationEndDate descending
+                             select a).FirstOrDefault();
+                if (alloc != null)
+                {
+                    var prj = DataContext.Projects.FirstOrDefault(p => p.ProjectID == alloc.ProjectID);
+                    if (prj != null)
+                    {
+                        arc.ProjectName = prj.ProjectName;
+                        arc.AccountName = DataContext.ProjectAccounts.FirstOrDefault(a => a.AccountID == prj.ProjectAccountID)?.AccountName;
+                    }
+                    arc.AllocatedFrom = alloc.AllocationStartDate;
+                    arc.AllocatedUpTo = alloc.AllocationEndDate;
+                    arc.AllocationType = DataContext.DropDownSubCategories.FirstOrDefault(a => a.SubCategoryID == alloc.AllocationTypeID)?.SubCategoryName;
+                }
+                architects.Add(arc);
+            }
+            return architects;
+        }
+
         private IQueryable<ProjectAllocationDto> SortAllocationItems(IQueryable<ProjectAllocationDto> allocations, string sortBy, string sortType)
         {
             switch (sortBy?.ToLower())
@@ -621,12 +654,12 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
         public bool AnyActiveAllocationInBenchProject(int employeeID, DateTime startDate)
         {
-            return(from a in Entities
-                       join p in DataContext.Projects on a.ProjectID equals p.ProjectID
-                       where a.IsDeleted == false && p.IsDeleted == false
-                           && p.ProjectName.ToLower().Contains("bench")
-                           && a.EmployeeID == employeeID && a.AllocationStartDate >= startDate
-                       select a).Any();
+            return (from a in Entities
+                    join p in DataContext.Projects on a.ProjectID equals p.ProjectID
+                    where a.IsDeleted == false && p.IsDeleted == false
+                        && p.ProjectName.ToLower().Contains("bench")
+                        && a.EmployeeID == employeeID && a.AllocationStartDate >= startDate
+                    select a).Any();
         }
 
         public void EndAllocation(int allocationID)
@@ -723,7 +756,6 @@ namespace Agilisium.TalentManager.Repository.Repositories
             {
                 case "emp":
                 case "psk":
-                case "pod":
                 case "ssk":
                 case "all":
                     // filter by employee name/ primary skills/ secondary skills /pod
@@ -732,23 +764,151 @@ namespace Agilisium.TalentManager.Repository.Repositories
                 case "prj":
                 case "acc":
                     // filter by project's project name/account
-                    allocationDetailDtos = GetAllAllocationDetailFilteredByProjectData(filterBy, filterValue);
                     break;
                 case "alt":
                     // filter by allocation type
                     int.TryParse(filterValue, out int allocationTypeID);
-                    if (DataContext.IsPostgresDB)
+                    switch (allocationTypeID)
                     {
-                        allocationDetailDtos = postgresSqlProcessor.GetAllocationEntriesByAllocationTypeFromPostgres(allocationTypeID);
+                        case -1:
+                            allocationDetailDtos = GetNonAllocatedDirectBuEmp(allocationTypeID);
+                            break;
+                        case -2:
+                            allocationDetailDtos = GetNonAllocatedDirectBuEmp(allocationTypeID);
+                            break;
+                        case -5:
+                            allocationDetailDtos = GetBlockedEmpsForBenchAvailable();
+                            break;
+                        case -6:
+                            allocationDetailDtos = GetBlockedEmpsForBenchEarmarked();
+                            break;
+                        default:
+                            allocationDetailDtos = GetAllocationEntriesByAllocationType(allocationTypeID);
+                            break;
                     }
-                    else
-                    {
-                        allocationDetailDtos = GetAllocationEntriesByAllocationType(allocationTypeID);
-                    }
+
+                    //if (DataContext.IsPostgresDB)
+                    //{
+                    //allocationDetailDtos = postgresSqlProcessor.GetAllocationEntriesByAllocationTypeFromPostgres(allocationTypeID);
+                    //}
+                    //else
+                    //{
+                    //    allocationDetailDtos = GetAllocationEntriesByAllocationType(allocationTypeID);
+                    //}
                     break;
             }
 
             return allocationDetailDtos;
+        }
+
+        public List<BillabilityWiseAllocationDetailDto> GetNonAllocatedDirectBuEmp(int allocationTypeID)
+        {
+
+            List<BillabilityWiseAllocationDetailDto> entries = new List<BillabilityWiseAllocationDetailDto>();
+            List<Employee> emps = new List<Employee>();
+
+            if (allocationTypeID == -1)
+            {
+                // for Delivery 
+                emps = (from e in DataContext.Employees
+                        where e.IsDeleted == false
+                        && (e.LastWorkingDay.HasValue == false || e.LastWorkingDay.HasValue && e.LastWorkingDay >= DateTime.Today)
+                        && e.BusinessUnitID == (int)BusinessUnit.Delivery
+                        select e).ToList();
+            }
+            else
+            {
+                // for BO and BD
+                emps = (from e in DataContext.Employees
+                        where e.IsDeleted == false
+                        && (e.LastWorkingDay.HasValue == false || e.LastWorkingDay.HasValue && e.LastWorkingDay >= DateTime.Today)
+                        && (e.BusinessUnitID == (int)BusinessUnit.BusinessDevelopment || e.BusinessUnitID == (int)BusinessUnit.BusinessOperations)
+                        select e).ToList();
+            }
+            List<DropDownSubCategory> buItems = DataContext.DropDownSubCategories.Where(sc => sc.IsDeleted == false && sc.CategoryID == 1).ToList();
+            foreach (Employee emp in emps)
+            {
+                if (Entities.Any(pa => pa.IsDeleted == false && pa.AllocationEndDate >= DateTime.Today && pa.EmployeeID == emp.EmployeeEntryID))
+                    continue;
+                entries.Add(
+                    new BillabilityWiseAllocationDetailDto
+                    {
+                        AllocationTypeID = allocationTypeID,
+                        AllocationType = allocationTypeID == -1 ? "Not Allocated Yet (Delivery)" : "Not Allocated Yet (BD & BO)",
+                        EmployeeEntryID = emp.EmployeeEntryID,
+                        EmployeeID = emp.EmployeeID,
+                        EmployeeName = emp.FirstName + " " + emp.LastName,
+                        PrimarySkills = emp.PrimarySkills,
+                        SecondarySkills = emp.SecondarySkills,
+                        BusinessUnitID = emp.BusinessUnitID,
+                        BusinessUnit = buItems.FirstOrDefault(bu => bu.SubCategoryID == emp.BusinessUnitID).SubCategoryName,
+                    });
+            }
+            return entries;
+        }
+
+        public List<BillabilityWiseAllocationDetailDto> GetBlockedEmpsForBenchAvailable()
+        {
+            List<BillabilityWiseAllocationDetailDto> entries = new List<BillabilityWiseAllocationDetailDto>();
+
+            entries = (from pa in Entities
+                       join p in DataContext.Projects on pa.ProjectID equals p.ProjectID
+                       join e in DataContext.Employees on pa.EmployeeID equals e.EmployeeEntryID
+                       where pa.IsDeleted == false && pa.AllocationEndDate >= DateTime.Today && pa.AllocationTypeID == (int)AllocationType.Bench && pa.BenchCategoryID == (int)BenchCategory.Available
+                       select new BillabilityWiseAllocationDetailDto
+                       {
+                           AllocationTypeID = pa.AllocationTypeID,
+                           AllocationType = "Bench (Available)",
+                           EmployeeEntryID = pa.EmployeeID,
+                           EmployeeID = e.EmployeeID,
+                           EmployeeName = e.FirstName + " " + e.LastName,
+                           PrimarySkills = e.PrimarySkills,
+                           SecondarySkills = e.SecondarySkills,
+                           BusinessUnitID = e.BusinessUnitID,
+                           BusinessUnit = DataContext.DropDownSubCategories.FirstOrDefault(bu => bu.SubCategoryID == e.BusinessUnitID).SubCategoryName,
+                           AccountName = (from ac in DataContext.ProjectAccounts where ac.AccountID == p.ProjectAccountID select ac.AccountName).FirstOrDefault(),
+                           AllocationEndDate = pa.AllocationEndDate,
+                           AllocationEntryID = pa.AllocationEntryID,
+                           AllocationStartDate = pa.AllocationStartDate,
+                           Comments = pa.Remarks,
+                           ProjectID = p.ProjectID,
+                           ProjectManager = (from e in DataContext.Employees where e.EmployeeEntryID == p.ProjectManagerID select e.FirstName + " " + e.LastName).FirstOrDefault(),
+                           ProjectManagerID = p.ProjectManagerID,
+                           ProjectName = p.ProjectName,
+                       }).ToList();
+            return entries;
+        }
+
+        public List<BillabilityWiseAllocationDetailDto> GetBlockedEmpsForBenchEarmarked()
+        {
+            List<BillabilityWiseAllocationDetailDto> entries = new List<BillabilityWiseAllocationDetailDto>();
+
+            entries = (from pa in Entities
+                       join p in DataContext.Projects on pa.ProjectID equals p.ProjectID
+                       join e in DataContext.Employees on pa.EmployeeID equals e.EmployeeEntryID
+                       where pa.IsDeleted == false && pa.AllocationEndDate >= DateTime.Today && pa.AllocationTypeID == (int)AllocationType.Bench && pa.BenchCategoryID == (int)BenchCategory.Earmarked
+                       select new BillabilityWiseAllocationDetailDto
+                       {
+                           AllocationTypeID = pa.AllocationTypeID,
+                           AllocationType = "Bench (Earmarked)",
+                           EmployeeEntryID = pa.EmployeeID,
+                           EmployeeID = e.EmployeeID,
+                           EmployeeName = e.FirstName + " " + e.LastName,
+                           PrimarySkills = e.PrimarySkills,
+                           SecondarySkills = e.SecondarySkills,
+                           BusinessUnitID = e.BusinessUnitID,
+                           BusinessUnit = DataContext.DropDownSubCategories.FirstOrDefault(bu => bu.SubCategoryID == e.BusinessUnitID).SubCategoryName,
+                           AccountName = (from ac in DataContext.ProjectAccounts where ac.AccountID == p.ProjectAccountID select ac.AccountName).FirstOrDefault(),
+                           AllocationEndDate = pa.AllocationEndDate,
+                           AllocationEntryID = pa.AllocationEntryID,
+                           AllocationStartDate = pa.AllocationStartDate,
+                           Comments = pa.Remarks,
+                           ProjectID = p.ProjectID,
+                           ProjectManager = (from e in DataContext.Employees where e.EmployeeEntryID == p.ProjectManagerID select e.FirstName + " " + e.LastName).FirstOrDefault(),
+                           ProjectManagerID = p.ProjectManagerID,
+                           ProjectName = p.ProjectName,
+                       }).ToList();
+            return entries;
         }
 
         public IEnumerable<UtilizedDaysSummaryDto> GetUtilizedDaysSummary(string filterBy, string filterValue, string sortBy, string sortType)
@@ -837,35 +997,27 @@ namespace Agilisium.TalentManager.Repository.Repositories
         public IEnumerable<BillabilityWiseAllocationDetailDto> GetAllocationsForDates(DateTime fromDate, DateTime uptoDate)
         {
             return from p in Entities
-                   join em in DataContext.Employees on p.EmployeeID equals em.EmployeeEntryID into eme
-                   from emd in eme.DefaultIfEmpty()
-                   join sc in DataContext.DropDownSubCategories on p.AllocationTypeID equals sc.SubCategoryID into sce
-                   from scd in sce.DefaultIfEmpty()
-                   join pr in DataContext.Projects on p.ProjectID equals pr.ProjectID into pre
-                   from prd in pre.DefaultIfEmpty()
-                   join pm in DataContext.Employees on prd.ProjectManagerID equals pm.EmployeeEntryID into pme
-                   from pmd in pme.DefaultIfEmpty()
-                   join rm in DataContext.Employees on emd.ReportingManagerID equals rm.EmployeeEntryID into rme
-                   from rmd in rme.DefaultIfEmpty()
+                   join em in DataContext.Employees on p.EmployeeID equals em.EmployeeEntryID
+                   join pr in DataContext.Projects on p.ProjectID equals pr.ProjectID
                    where p.IsDeleted == false && p.AllocationTypeID == (int)AllocationType.Billable &&
-                   ((p.AllocationStartDate >= fromDate && p.AllocationStartDate <= uptoDate)
-                   || (p.AllocationEndDate >= fromDate && p.AllocationEndDate <= uptoDate))
-                   orderby p.AllocationEntryID
+                   (p.AllocationStartDate <= fromDate && p.AllocationEndDate >= fromDate)
+                   || ((p.AllocationStartDate <= uptoDate && p.AllocationEndDate >= uptoDate))
+                   orderby em.EmployeeID
                    select new BillabilityWiseAllocationDetailDto
                    {
                        AllocationEntryID = p.AllocationEntryID,
                        AllocationEndDate = p.AllocationEndDate,
                        AllocationStartDate = p.AllocationStartDate,
-                       AllocationType = scd.SubCategoryName,
+                       AllocationType = (from e in DataContext.DropDownSubCategories where e.SubCategoryID == p.AllocationTypeID select e.SubCategoryName).FirstOrDefault(),
                        AllocationTypeID = p.AllocationTypeID,
                        EmployeeEntryID = p.EmployeeID,
-                       EmployeeID = emd.EmployeeID,
-                       EmployeeName = emd.FirstName + " " + emd.LastName,
+                       EmployeeID = em.EmployeeID,
+                       EmployeeName = em.FirstName + " " + em.LastName,
                        ProjectID = p.ProjectID,
-                       ProjectManager = pmd.FirstName + " " + pmd.LastName,
-                       ProjectManagerID = pmd.EmployeeEntryID,
-                       ProjectName = prd.ProjectName,
-                       ReportingManager = rmd.FirstName + " " + rmd.LastName,
+                       ProjectManager = (from e in DataContext.Employees where e.EmployeeEntryID == pr.ProjectManagerID select e.FirstName + " " + e.LastName).FirstOrDefault(),
+                       ProjectManagerID = pr.ProjectManagerID,
+                       ProjectName = pr.ProjectName,
+                       ReportingManager = (from e in DataContext.Employees where e.EmployeeEntryID == em.ReportingManagerID select e.FirstName + " " + e.LastName).FirstOrDefault(),
                    };
         }
 
@@ -879,7 +1031,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
 
             List<Employee> employees = (from e in DataContext.Employees
                                         where e.BusinessUnitID == 3 && e.IsDeleted == false && e.LastWorkingDay.HasValue == false
-                                        || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Today)
+                                        && (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Today)
                                         select e).ToList();
 
             foreach (Employee emp in employees)
@@ -903,8 +1055,8 @@ namespace Agilisium.TalentManager.Repository.Repositories
                 {
                     DateTime? allocationEndDate = Entities.Where(a => a.IsDeleted == false
                         && a.EmployeeID == emp.EmployeeEntryID
-                        && a.AllocationEndDate <= DateTime.Today).OrderByDescending(a => a.AllocationEndDate).Take(1).FirstOrDefault()?.AllocationEndDate;
-                    entry.AnyAllocation = $"{Entities.Count(a => a.IsDeleted == false && a.EmployeeID == emp.EmployeeEntryID && a.AllocationEndDate <= DateTime.Today)} Allocation(s)";
+                        && a.AllocationEndDate < DateTime.Today).OrderByDescending(a => a.AllocationEndDate).Take(1).FirstOrDefault()?.AllocationEndDate;
+                    entry.AnyAllocation = $"{Entities.Count(a => a.IsDeleted == false && a.EmployeeID == emp.EmployeeEntryID && a.AllocationEndDate < DateTime.Today)} Allocation(s)";
 
                     if (allocationEndDate.HasValue)
                     {
@@ -936,20 +1088,51 @@ namespace Agilisium.TalentManager.Repository.Repositories
         private List<BillabilityWiseAllocationDetailDto> GetAllocationEntriesByAllocationType(int allocationType)
         {
             List<BillabilityWiseAllocationDetailDto> allocationDetailDtos = null;
-            DbCommand cmd = DataContext.Database.Connection.CreateCommand();
-            cmd.CommandText = "dbo.GetBillabilityWiseDetails";
-            SqlParameter param = new SqlParameter
-            {
-                ParameterName = "AllocationType",
-                Value = allocationType
-            };
-            cmd.Parameters.Add(param);
-            cmd.CommandType = CommandType.StoredProcedure;
-            DataContext.Database.Connection.Open();
-            DbDataReader reader = cmd.ExecuteReader();
-            ObjectResult<BillabilityWiseAllocationDetailDto> items = ((IObjectContextAdapter)DataContext).ObjectContext.Translate<BillabilityWiseAllocationDetailDto>(reader);
-            allocationDetailDtos = items.ToList();
-            DataContext.Database.Connection.Close();
+
+            allocationDetailDtos = (from pa in Entities
+                                    join pr in DataContext.Projects on pa.ProjectID equals pr.ProjectID
+                                    join em in DataContext.Employees on pa.EmployeeID equals em.EmployeeEntryID
+                                    where pa.AllocationEndDate >= DateTime.Today && pa.IsDeleted == false
+                                    where pa.AllocationTypeID == allocationType
+                                    select new BillabilityWiseAllocationDetailDto
+                                    {
+                                        AccountName = (from acc in DataContext.ProjectAccounts where acc.AccountID == pr.ProjectAccountID select acc.AccountName).FirstOrDefault(),
+                                        AllocationEndDate = pa.AllocationEndDate,
+                                        AllocationStartDate = pa.AllocationStartDate,
+                                        AllocationEntryID = pa.AllocationEntryID,
+                                        AllocationType = (from ds in DataContext.DropDownSubCategories where ds.SubCategoryID == pa.AllocationTypeID select ds.SubCategoryName).FirstOrDefault(),
+                                        AllocationTypeID = pa.AllocationTypeID,
+                                        BusinessUnit = (from ds in DataContext.DropDownSubCategories where ds.SubCategoryID == pr.BusinessUnitID select ds.SubCategoryName).FirstOrDefault(),
+                                        BusinessUnitID = pr.BusinessUnitID,
+                                        Comments = pa.Remarks,
+                                        EmployeeEntryID = pa.EmployeeID,
+                                        EmployeeID = em.EmployeeID,
+                                        EmployeeName = em.FirstName + " " + em.LastName,
+                                        PrimarySkills = em.PrimarySkills,
+                                        SecondarySkills = em.SecondarySkills,
+                                        ProjectID = pa.ProjectID,
+                                        ProjectManager = (from e in DataContext.Employees where e.EmployeeEntryID == pr.ProjectManagerID select e.FirstName + " " + e.LastName).FirstOrDefault(),
+                                        ProjectManagerID = pr.ProjectManagerID,
+                                        ProjectName = pr.ProjectName,
+                                        ProjectType = (from ds in DataContext.DropDownSubCategories where ds.SubCategoryID == pr.ProjectTypeID select ds.SubCategoryName).FirstOrDefault(),
+                                        ProjectTypeID = pr.ProjectTypeID,
+                                        ReportingManager = (from e in DataContext.Employees where e.EmployeeEntryID == em.ReportingManagerID select e.FirstName + " " + e.LastName).FirstOrDefault(),
+                                        ReportingManagerID = em.ReportingManagerID,
+                                    }).ToList();
+            //DbCommand cmd = DataContext.Database.Connection.CreateCommand();
+            //cmd.CommandText = "dbo.GetBillabilityWiseDetails";
+            //SqlParameter param = new SqlParameter
+            //{
+            //    ParameterName = "AllocationType",
+            //    Value = allocationType
+            //};
+            //cmd.Parameters.Add(param);
+            //cmd.CommandType = CommandType.StoredProcedure;
+            //DataContext.Database.Connection.Open();
+            //DbDataReader reader = cmd.ExecuteReader();
+            //ObjectResult<BillabilityWiseAllocationDetailDto> items = ((IObjectContextAdapter)DataContext).ObjectContext.Translate<BillabilityWiseAllocationDetailDto>(reader);
+            //allocationDetailDtos = items.ToList();
+            //DataContext.Database.Connection.Close();
             return allocationDetailDtos;
         }
 
@@ -991,24 +1174,13 @@ namespace Agilisium.TalentManager.Repository.Repositories
         {
             if (allocationType == AllocationType.Bench)
             {
-                return (from a in Entities
-                        join e in DataContext.Employees on a.EmployeeID equals e.EmployeeEntryID
-                        where a.IsDeleted == false && e.IsDeleted == false
-                        && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue && e.LastWorkingDay > DateTime.Today))
-                        && a.AllocationEndDate > DateTime.Today && a.BenchCategoryID == (int)benchCategory
-                        && a.AllocationStartDate <= DateTime.Today
-                        select a).Distinct().Count();
+                return Entities.Count(a => a.IsDeleted == false && a.AllocationTypeID == (int)allocationType && a.BenchCategoryID == (int)benchCategory
+                && a.AllocationEndDate >= DateTime.Today && a.AllocationStartDate <= DateTime.Today);
             }
             else
             {
-                return (from e in DataContext.Employees
-                        join a in Entities on e.EmployeeEntryID equals a.EmployeeID
-                        where a.AllocationTypeID == (int)allocationType
-                        && e.IsDeleted == false && a.IsDeleted == false
-                        && a.AllocationEndDate >= DateTime.Today
-                        && a.AllocationStartDate <= DateTime.Today
-                        && (e.LastWorkingDay.HasValue == false || (e.LastWorkingDay.HasValue == true && e.LastWorkingDay.Value >= DateTime.Today))
-                        select a.EmployeeID).Count();
+                return Entities.Count(a => a.AllocationTypeID == (int)allocationType && a.IsDeleted == false
+                && a.AllocationEndDate >= DateTime.Today && a.AllocationStartDate <= DateTime.Today);
             }
         }
 
@@ -1171,26 +1343,29 @@ namespace Agilisium.TalentManager.Repository.Repositories
         private int GetNonAllocatedResourcesCount(bool forDeliveryBU)
         {
             int count = 0;
-            List<Employee> emps = null;
+            List<int> emps = new List<int>();
             if (forDeliveryBU)
             {
                 emps = DataContext.Employees.Where(e => e.IsDeleted == false
                   && e.BusinessUnitID == 3 && (e.LastWorkingDay.HasValue == false
-                  || (e.LastWorkingDay.HasValue && e.LastWorkingDay.Value > DateTime.Today))).ToList();
+                  || (e.LastWorkingDay.HasValue && e.LastWorkingDay.Value >= DateTime.Today))).Select(e => e.EmployeeEntryID).ToList();
             }
             else
             {
                 emps = DataContext.Employees.Where(e => e.IsDeleted == false
-                    && e.BusinessUnitID != 3 && (e.LastWorkingDay.HasValue == false
-                    || (e.LastWorkingDay.HasValue && e.LastWorkingDay.Value > DateTime.Today))).ToList();
-            }
+                    && (e.BusinessUnitID == (int)BusinessUnit.BusinessOperations || e.BusinessUnitID == (int)BusinessUnit.BusinessDevelopment)
+                    && (e.LastWorkingDay.HasValue == false
+                    || (e.LastWorkingDay.HasValue && e.LastWorkingDay.Value >= DateTime.Today))).Select(e => e.EmployeeEntryID).ToList();
 
-            foreach (Employee emp in emps)
+            }
+            //StringBuilder ids = new StringBuilder();
+            foreach (int emp in emps)
             {
-                if (Entities.Count(a => a.IsDeleted == false && a.EmployeeID == emp.EmployeeEntryID && a.AllocationEndDate > DateTime.Today && a.AllocationStartDate <= DateTime.Today) == 0)
+                if (!Entities.Any(a => a.IsDeleted == false && a.EmployeeID == emp && a.AllocationEndDate >= DateTime.Today))
                 {
                     count++;
                 }
+                //ids.Append($"{emp},");
             }
             return count;
         }
@@ -1239,5 +1414,7 @@ namespace Agilisium.TalentManager.Repository.Repositories
         List<int> GetCommittedBufferUnderSpecificProjects();
 
         IEnumerable<BillabilityWiseAllocationDetailDto> GetAllocationsForDates(DateTime from, DateTime upto);
+
+        IEnumerable<EmpArchitectDto> GetAllArchitectEmployees();
     }
 }
